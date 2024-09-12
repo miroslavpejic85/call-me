@@ -1,0 +1,47 @@
+swagger: '2.0'
+
+info:
+    title: Call-me API
+    description: API description for external applications that integrates with Call-me.
+    version: 1.0.0
+
+basePath: /api/v1
+
+schemes:
+    - https
+    - http
+
+paths:
+    /users:
+        get:
+            tags:
+                - 'users'
+            summary: 'Connected users'
+            description: 'Get all connected users'
+            consumes:
+                - 'application/json'
+            produces:
+                - 'application/json'
+            security:
+                - secretApiKey: []
+            responses:
+                '200':
+                    description: 'Connected users'
+                    schema:
+                        $ref: '#/definitions/UsersResponse'
+                '403':
+                    description: 'Unauthorized!'
+
+securityDefinitions:
+    secretApiKey:
+        type: 'apiKey'
+        name: 'authorization'
+        in: 'header'
+        description: 'Format like this: authorization: {API_KEY_SECRET}'
+
+definitions:
+    UsersResponse:
+        type: 'object'
+        properties:
+            users:
+                type: 'array'

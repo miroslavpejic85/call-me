@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    callme:
+        image: call/me:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: callme
+        hostname: callme
+        volumes:
+            - .env:/src/.env:ro
+            - ./app/:/src/app/:ro
+            - ./public/:/src/public/:ro
+        restart: unless-stopped
+        ports:
+            - '${PORT}:${PORT}'
