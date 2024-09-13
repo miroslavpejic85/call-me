@@ -21,7 +21,7 @@ This project allows you to:
 **[Install Node.js and npm](https://nodejs.org/en/download)**
 
 ```shell
-# Copy the .env and edit if need
+# Copy .env.template to .env and customize it according to your needs if needed
 cp .env.template .env
 
 # Install dependencies:
