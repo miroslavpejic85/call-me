@@ -10,7 +10,7 @@
 -   OS: Ubuntu 22.04 LTS.
 -   [Node.js](https://nodejs.org/en/) (LTS) and npm
 -   Domain or Subdomain Name (e.g., `YOUR.DOMAIN.NAME`) with a DNS A record pointing to your server's IPv4 address.
--   `Recommend` utilizing a [Turn Server](../coturn/stun-turn.md) the installation documentation accessible [here](https://docs.mirotalk.com/coturn/installation/).
+-   `Recommend` utilizing a [Turn Server](https://docs.mirotalk.com/coturn/stun-turn/) the installation documentation accessible [here](https://docs.mirotalk.com/coturn/installation/).
 
 ---
 
