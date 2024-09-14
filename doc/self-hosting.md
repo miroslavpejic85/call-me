@@ -258,7 +258,7 @@ For `PM2`:
 ```bash
 #!/bin/bash
 
-cd callme
+cd call-me
 git pull
 pm2 stop app/server.js
 sudo npm install
@@ -272,7 +272,7 @@ For `Docker`:
 ```bash
 #!/bin/bash
 
-cd callme
+cd call-me
 docker-compose down
 docker pull mirotalk/cme:latest
 docker images |grep '<none>' |awk '{print $3}' |xargs docker rmi
