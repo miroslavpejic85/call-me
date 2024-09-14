@@ -6,7 +6,7 @@ WORKDIR /src
 
 # Copy package.json and .env dependencies
 COPY package.json .
-COPY .env ./.env
+COPY .env.template ./.env
 
 # Install necessary system packages and dependencies
 RUN npm install \
