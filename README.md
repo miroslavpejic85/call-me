@@ -21,13 +21,13 @@ This project allows you to:
 **[Install Node.js and npm](https://nodejs.org/en/download)**
 
 ```shell
-# Copy .env.template to .env and customize it according to your needs if needed
+# Copy .env.template to .env
 cp .env.template .env
 
-# Install dependencies:
+# Install dependencies
 npm install
 
-# Start the application:
+# Start the application
 npm start
 ```
 
@@ -46,6 +46,8 @@ Get all connected users
 ```shell
 curl -X GET "http://localhost:8000/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 ```
+
+Docs: http://localhost:8000/api/v1/docs/ or you can check it out live [here](https://cme.mirotalk.com/api/v1/docs/).
 
 ## Self-Hosting
 

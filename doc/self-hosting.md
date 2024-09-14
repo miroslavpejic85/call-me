@@ -6,7 +6,7 @@
 
 -   Server Selection:
     -   [Hetzner](https://www.hetzner.com/cloud) (CX11) - Use [this link](https://hetzner.cloud/?ref=XdRifCzCK3bn) to receive `€⁠20 in cloud credits`
-    -   [Contabo](https://www.dpbolvw.net/click-101027391-14462707) (VPS-0)
+    -   [Contabo](https://www.dpbolvw.net/click-101027391-14462707) (VPS-1)
 -   OS: Ubuntu 22.04 LTS.
 -   [Node.js](https://nodejs.org/en/) (LTS) and npm
 -   Domain or Subdomain Name (e.g., `YOUR.DOMAIN.NAME`) with a DNS A record pointing to your server's IPv4 address.
@@ -16,14 +16,17 @@
 
 ## Installation
 
-Install `NodeJS 18.X` and `npm` using [Node Version Manager](https://docs.mirotalk.com/nvm/nvm/)
+Install `NodeJS 18.X` and `npm` using [Node Version Manager](https://docs.mirotalk.com/utility/nvm/)
 
 ---
 
 ## Quick start
 
 ```bash
-# Copy .env.template to .env and customize it according to your needs if needed
+# Clone call-me repo
+$ git clone https://github.com/miroslavpejic85/call-me.git
+
+# Copy .env.template to .env
 $ cp .env.template .env
 
 # Install dependencies
@@ -68,11 +71,11 @@ $ sudo apt install -y docker.io
 # Instal docker-compose
 $ sudo apt install -y docker-compose
 
-# Copy .env.template to .env and customize it according to your needs if needed
+# Copy .env.template to .env
 $ cp .env.template .env
 
-# Build the docker image
-$ docker build -t call/me . # --load
+# Pull the official Docker image
+$ docker pull call/me:latest
 
 # Create and start containers (-d as daemon)
 $ docker-compose up
@@ -256,6 +259,7 @@ For `PM2`:
 #!/bin/bash
 
 cd callme
+git pull
 pm2 stop app/server.js
 sudo npm install
 pm2 start app/server.js
@@ -270,7 +274,7 @@ For `Docker`:
 
 cd callme
 docker-compose down
-docker build -t call/me . # --load
+docker pull call/me:latest
 docker images |grep '<none>' |awk '{print $3}' |xargs docker rmi
 docker-compose up -d
 ```
@@ -283,14 +287,16 @@ Make the script executable
 $ chmod +x callmeUpdate.sh
 ```
 
-To update your CallMe instance to the latest version, follow these steps:
-
-1. Replace the existing `callme` folder with the newest version
+To update your Call-me instance to the latest version, run the script:
 
 ```bash
-scp -r /path/to/local/folder username@remote_host:/path/to/remote/folder
+./callmeUpdate.sh
 ```
 
-2. Run the update script `./callmeUpdate.sh`
+---
+
+## Changelogs
+
+Stay informed about project updates by following the commits of the Call-me project [here](https://github.com/miroslavpejic85/call-me/commits/main/)
 
 ---

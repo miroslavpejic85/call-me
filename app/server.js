@@ -10,6 +10,7 @@ const socketIO = require('socket.io');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
+const packageJson = require('../package.json');
 
 // Public directory location
 const PUBLIC_DIR = path.join(__dirname, '../', 'public');
@@ -82,6 +83,7 @@ const io = socketIO(server);
 // Start the server and listen on the specified port
 server.listen(port, () => {
     console.log('Server', {
+        version: packageJson.version,
         running_at: host,
         ice: config.iceServers,
         api_key_secret: config.apiKeySecret,

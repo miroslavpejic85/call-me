@@ -1,7 +1,7 @@
 {
     "name": "callme",
-    "version": "1.0.2",
-    "description": "callme",
+    "version": "1.0.3",
+    "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
     "scripts": {

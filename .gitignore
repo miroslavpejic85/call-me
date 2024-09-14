@@ -1,3 +1,8 @@
+.DS_Store
+.cache
+.git
 .env
+
 node_modules
+npm-debug.log
 package-lock.json
