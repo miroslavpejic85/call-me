@@ -1,9 +1,18 @@
 {
     "name": "callme",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/miroslavpejic85/call-me.git"
+    },
+    "keywords": [
+        "docker",
+        "webrtc",
+        "decentralized"
+    ],
     "scripts": {
         "start": "node app/server.js",
         "dev": "nodemon app/server.js",

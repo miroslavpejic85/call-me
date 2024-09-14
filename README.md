@@ -16,6 +16,8 @@ This project allows you to:
 -   `Hang up` the call when done.
 -   `Rest API` to get all connected users.
 
+---
+
 ### Quick Start
 
 **[Install Node.js and npm](https://nodejs.org/en/download)**
@@ -39,6 +41,8 @@ npm start
 
 4. Enjoy your one-to-one video call.
 
+---
+
 ## API
 
 Get all connected users
@@ -48,6 +52,8 @@ curl -X GET "http://localhost:8000/api/v1/users" -H "authorization: call_me_api_
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live [here](https://cme.mirotalk.com/api/v1/docs/).
+
+---
 
 ## Self-Hosting
 

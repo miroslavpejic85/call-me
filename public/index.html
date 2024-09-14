@@ -14,6 +14,14 @@
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
 
+        <!-- https://ogp.me -->
+        <meta property="og:type" content="app-webrtc" />
+        <meta property="og:site_name" content="Call-me" />
+        <meta property="og:title" content="Click the link to make a call." />
+        <meta property="og:description" content="Your Go-To for Instant Video Calls!" />
+        <meta property="og:image" content="https://cme.mirotalk.com/assets/callme.png" />
+        <meta property="og:url" content="https://cme.mirotalk.com" />
+
         <!-- Link to Bootstrap CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" />
 
@@ -55,6 +63,18 @@
                                     </div>
                                     <!-- Sign-in button -->
                                     <button id="signInBtn" type="submit" class="btn btn-primary">Sign In</button>
+                                    <!-- GitHub project -->
+                                    <div id="githubDiv">
+                                        <a
+                                            class="github-button"
+                                            href="https://github.com/miroslavpejic85/call-me"
+                                            data-color-scheme="no-preference: light; light: light; dark: dark;"
+                                            data-size="large"
+                                            data-show-count="true"
+                                            aria-label="Star miroslavpejic85/call-me on GitHub"
+                                            >Star
+                                        </a>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -128,6 +148,9 @@
 
         <!-- Include Bootstrap JavaScript file -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Include GitHub buttons -->
+        <script src="https://buttons.github.io/buttons.js"></script>
 
         <!-- Initialize tooltips -->
         <script>

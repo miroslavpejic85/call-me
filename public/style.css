@@ -109,6 +109,11 @@ input {
     border-radius: 50px !important;
 }
 
+/* GitHub div */
+#githubDiv {
+    margin-top: 35px;
+}
+
 /* Swal2 custom theme */
 .swal2-popup {
     background-color: #333 !important;
