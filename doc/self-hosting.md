@@ -75,7 +75,7 @@ $ sudo apt install -y docker-compose
 $ cp .env.template .env
 
 # Pull the official Docker image
-$ docker pull call/me:latest
+$ docker pull mirotalk/cme:latest
 
 # Create and start containers (-d as daemon)
 $ docker-compose up
@@ -274,7 +274,7 @@ For `Docker`:
 
 cd callme
 docker-compose down
-docker pull call/me:latest
+docker pull mirotalk/cme:latest
 docker images |grep '<none>' |awk '{print $3}' |xargs docker rmi
 docker-compose up -d
 ```
