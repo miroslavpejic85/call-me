@@ -10,6 +10,7 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
+const githubDiv = document.querySelector('#githubDiv');
 const signInPage = document.querySelector('#signInPage');
 const usernameIn = document.querySelector('#usernameIn');
 const signInBtn = document.querySelector('#signInBtn');
@@ -164,6 +165,7 @@ function handleSignIn(data) {
     if (!success) {
         handleError('Username already in use. Try a different username.');
     } else {
+        githubDiv.style.display = 'none';
         signInPage.style.display = 'none';
         roomPage.style.display = 'block';
 

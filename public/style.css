@@ -22,6 +22,12 @@ body {
     background: url('background.jpg') center/cover no-repeat; /* Consolidate background properties */
 }
 
+/* Home Sign in */
+#signInPage {
+    position: absolute;
+    display: block;
+}
+
 /* General Card Styles */
 .card {
     max-width: 400px !important;
@@ -111,7 +117,9 @@ input {
 
 /* GitHub div */
 #githubDiv {
-    margin-top: 35px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 /* Swal2 custom theme */

@@ -83,11 +83,11 @@ const io = socketIO(server);
 // Start the server and listen on the specified port
 server.listen(port, () => {
     console.log('Server', {
-        version: packageJson.version,
         running_at: host,
         ice: config.iceServers,
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
+        version: packageJson.version,
     });
 });
 
