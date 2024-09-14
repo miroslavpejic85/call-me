@@ -33,6 +33,14 @@ let stream;
 // Hide room page initially
 roomPage.style.display = 'none';
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
 // WebSocket event listeners
 socket.on('connect', handleSocketConnect);
 socket.on('message', handleMessage);
