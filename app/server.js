@@ -146,7 +146,7 @@ function handleConnection(socket) {
     function handleMessage(data) {
         const { type } = data;
 
-        console.log('Received message:', type);
+        console.log('Received message', type);
 
         switch (type) {
             case 'signIn':
@@ -212,7 +212,7 @@ function handleConnection(socket) {
                     sendMsgTo(recipientSocket, data);
                 } else {
                     console.warn(`Recipient (${toName}) not found`);
-                    sendError(socket, `User ${toName} not found`);
+                    sendMsgTo(socket, { type: 'notfound', username: toName });
                 }
                 break;
             case 'offerDecline':
