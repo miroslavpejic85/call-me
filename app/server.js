@@ -189,7 +189,7 @@ function handleConnection(socket) {
             socket.username = name;
             console.log('User signed in:', name);
             sendMsgTo(socket, { type: 'signIn', success: true });
-            console.log('Users', getConnectedUsers());
+            console.log('Connected Users', getConnectedUsers());
         } else {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });
         }
@@ -245,7 +245,7 @@ function handleConnection(socket) {
             if (recipientSocket) {
                 sendMsgTo(recipientSocket, { type: 'leave' });
             }
-            console.log('Users', getConnectedUsers());
+            console.log('Connected Users', getConnectedUsers());
         }
     }
 }

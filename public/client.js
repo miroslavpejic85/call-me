@@ -120,6 +120,7 @@ function handleCallClick() {
     const callToUsername = callUsernameIn.value;
     if (callToUsername.length > 0) {
         if (callToUsername === userName) {
+            callUsernameIn.value = '';
             handleError('You cannot call yourself.');
             return;
         }
