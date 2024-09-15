@@ -39,6 +39,10 @@ body {
     background: rgb(0 0 0 / 7%) !important;
 }
 
+.card-header h1 {
+    margin-top: 15px;
+}
+
 /* Video Styles */
 video {
     width: 100%;
@@ -112,6 +116,7 @@ input {
 .btn-custom {
     height: 48px;
     width: 48px;
+    margin: 0.1rem;
     border: none;
     border-radius: 50px !important;
 }
