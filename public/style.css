@@ -112,6 +112,7 @@ input {
 .btn-custom {
     height: 48px;
     width: 48px;
+    border: none;
     border-radius: 50px !important;
 }
 
