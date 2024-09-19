@@ -85,57 +85,50 @@
         </div>
 
         <!-- Room Page -->
-        <div class="container text-center center">
-            <div id="roomPage">
-                <!-- Local video element (user's video) -->
-                <div id="localVideoContainer">
-                    <video id="localVideo"></video>
-                    <span id="localUsername"></span>
-                </div>
-                <!-- Remote video element (video from the other user) -->
-                <video id="remoteVideo"></video>
-                <div class="row text-center">
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <!-- Input field for entering the username to call -->
-                            <input
-                                id="callUsernameIn"
-                                type="text"
-                                class="form-control"
-                                placeholder="Username to call"
-                            />
-                        </div>
-                        <!-- Button to hide/show the local video -->
-                        <button
-                            id="hideBtn"
-                            class="btn btn-custom btn-primary btn-m"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            title="Toggle hide me"
-                        >
-                            <i class="fas fa-eye-slash"></i>
-                        </button>
-                        <!-- Button to initiate a video call -->
-                        <button
-                            id="callBtn"
-                            class="btn btn-custom btn-success btn-m"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            title="Call"
-                        >
-                            <i class="fas fa-phone"></i>
-                        </button>
-                        <!-- Button to hang up the call -->
-                        <button
-                            id="hangUpBtn"
-                            class="btn btn-custom btn-danger btn-m"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            title="Hang up"
-                        >
-                            <i class="fas fa-phone-slash"></i>
-                        </button>
+        <div id="roomPage" class="container text-center center">
+            <!-- Local video element (user's video) -->
+            <div id="localVideoContainer">
+                <video id="localVideo"></video>
+                <span id="localUsername"></span>
+            </div>
+            <!-- Remote video element (video from the other user) -->
+            <video id="remoteVideo"></video>
+            <div class="row text-center">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <!-- Input field for entering the username to call -->
+                        <input id="callUsernameIn" type="text" class="form-control" placeholder="Username to call" />
                     </div>
+                    <!-- Button to hide/show the local video -->
+                    <button
+                        id="hideBtn"
+                        class="btn btn-custom btn-primary btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Toggle hide me"
+                    >
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                    <!-- Button to initiate a video call -->
+                    <button
+                        id="callBtn"
+                        class="btn btn-custom btn-success btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Call"
+                    >
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <!-- Button to hang up the call -->
+                    <button
+                        id="hangUpBtn"
+                        class="btn btn-custom btn-danger btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Hang up"
+                    >
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
                 </div>
             </div>
         </div>
