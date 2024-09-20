@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+    // Handle localStorage data
+    usernameIn.value = localStorage.callMeUsername ? localStorage.callMeUsername : '';
+    callUsernameIn.value = localStorage.callMeUsernameToCall ? localStorage.callMeUsernameToCall : '';
 });
 
 // WebSocket event listeners
@@ -112,6 +115,7 @@ function handleSignInClick() {
             type: 'signIn',
             name: userName,
         });
+        localStorage.callMeUsername = userName;
     }
 }
 
@@ -130,6 +134,7 @@ function handleCallClick() {
             from: userName,
             to: callToUsername,
         });
+        localStorage.callMeUsernameToCall = callToUsername;
     } else {
         handleError('Please enter a username to call.');
     }
