@@ -33,16 +33,47 @@ let stream;
 // Hide room page initially
 roomPage.style.display = 'none';
 
+// On html page loaded...
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize tooltips
+    handleToolTip();
+    handleLocalStorage();
+    handleDirectJoin();
+});
+
+// Initialize tooltips
+function handleToolTip() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-    // Handle localStorage data
+}
+
+// Handle localStorage data
+function handleLocalStorage() {
     usernameIn.value = localStorage.callMeUsername ? localStorage.callMeUsername : '';
     callUsernameIn.value = localStorage.callMeUsernameToCall ? localStorage.callMeUsernameToCall : '';
-});
+}
+
+// Handle Room direct join
+function handleDirectJoin() {
+    const usp = new URLSearchParams(window.location.search);
+    const user = usp.get('user');
+    const call = usp.get('call');
+
+    console.log('Direct Join detected', { user, call });
+
+    if (user) {
+        // SignIn
+        usernameIn.value = user;
+        handleSignInClick();
+
+        if (call) {
+            // Call user if call is provided
+            callUsernameIn.value = call;
+            handleCallClick();
+        }
+    }
+}
 
 // WebSocket event listeners
 socket.on('connect', handleSocketConnect);
@@ -147,7 +178,7 @@ function toggleLocalVideo() {
 
 // Handle hang-up button click
 function handleHangUpClick() {
-    sendMsg({ type: 'leave' });
+    sendMsg({ type: 'leave', name: socket.recipient });
     handleLeave();
 }
 
@@ -178,6 +209,7 @@ function handleSignIn(data) {
     const { success } = data;
     if (!success) {
         handleError('Username already in use. Try a different username.');
+        setTimeout(handleHangUpClick, 2000);
     } else {
         githubDiv.style.display = 'none';
         signInPage.style.display = 'none';
@@ -277,6 +309,7 @@ function offerAccept(data) {
             callUsernameIn.style.display = 'none';
             callBtn.style.display = 'none';
             data.type = 'offerCreate';
+            socket.recipient = data.from;
         } else {
             data.type = 'offerDecline';
         }
@@ -336,12 +369,23 @@ async function sound(name) {
 
 // Handle leaving the room
 function handleLeave() {
-    connectedUser = null;
-    remoteVideo.srcObject = null;
+    // Stop local video tracks
+    if (localVideo.srcObject != null) {
+        localVideo.srcObject.getTracks().forEach((track) => track.stop());
+        localVideo.srcObject = null;
+    }
+    // Stop remote video tracks
+    if (remoteVideo.srcObject != null) {
+        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+        remoteVideo.srcObject = null;
+    }
+    // Disconnect from server
     if (thisConnection) {
         thisConnection.close();
         thisConnection = null;
     }
+    // GoTo homepage
+    connectedUser = null;
     window.location.href = '/';
 }
 

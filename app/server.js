@@ -15,6 +15,9 @@ const packageJson = require('../package.json');
 // Public directory location
 const PUBLIC_DIR = path.join(__dirname, '../', 'public');
 
+// Home page/client
+const HOME = path.join(PUBLIC_DIR, '/index.html');
+
 // Map to store connected users
 const users = new Map();
 
@@ -101,7 +104,7 @@ app.use(config.apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(config.sw
 // Logs requests
 app.use((req, res, next) => {
     console.log('New request', {
-        headers: req.headers,
+        //headers: req.headers,
         body: req.body,
         method: req.method,
         path: req.originalUrl,
@@ -111,7 +114,27 @@ app.use((req, res, next) => {
 
 // Set up route to serve the main HTML file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(PUBLIC_DIR, '/index.html'));
+    res.sendFile(HOME);
+});
+
+// Direct Join room
+app.get('/join/', (req, res) => {
+    if (Object.keys(req.query).length > 0) {
+        console.log('Request query', req.query);
+        // http://localhost:8000/join?user=user1
+        // http://localhost:8000/join?user=user2&call=user1
+        const { user, call } = req.query;
+        if (user || (user && call)) {
+            return res.sendFile(HOME);
+        }
+        return notFound(res);
+    }
+    return notFound(res);
+});
+
+// Page not found
+app.get('*', (req, res) => {
+    return notFound(res);
 });
 
 // Axios API requests
@@ -130,6 +153,11 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
     const users = getConnectedUsers();
     return res.json({ users });
 });
+
+// Page not found
+function notFound(res) {
+    res.json({ data: '404 not found' });
+}
 
 // Function to handle individual WebSocket connections
 function handleConnection(socket) {
@@ -227,12 +255,21 @@ function handleConnection(socket) {
 
     // Function to handle signaling messages (offer, answer, candidate, leave)
     function handleSignalingMessage(data) {
-        const { name } = data;
+        const { type, name } = data;
         const recipientSocket = users.get(name);
-        if (recipientSocket) {
-            sendMsgTo(recipientSocket, { ...data, name: socket.username });
-        } else {
-            sendError(socket, `User ${name} not found`);
+
+        switch (type) {
+            case 'leave':
+                if (recipientSocket !== undefined) {
+                    console.log('Leave room', socket.username);
+                    sendMsgTo(recipientSocket, { type: 'leave' });
+                }
+                break;
+            default:
+                if (recipientSocket !== undefined) {
+                    sendMsgTo(recipientSocket, { ...data, name: socket.username });
+                }
+                break;
         }
     }
 
@@ -241,10 +278,6 @@ function handleConnection(socket) {
         if (socket.username) {
             console.log('User disconnected:', socket.username);
             users.delete(socket.username);
-            const recipientSocket = users.get(socket.recipient);
-            if (recipientSocket) {
-                sendMsgTo(recipientSocket, { type: 'leave' });
-            }
             console.log('Connected Users', getConnectedUsers());
         }
     }

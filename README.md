@@ -43,6 +43,18 @@ npm start
 
 ---
 
+## One-Click Call Between Two Users
+
+Allows a user to `join` the room as a `user1`
+
+[http://localhost:8000/join?user=user1](http://localhost:8000/join?user=user1)
+
+Lets the `user2 join` the room and initiate a `call` to the `user1`
+
+[http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1)
+
+---
+
 ## API
 
 Get all connected users
