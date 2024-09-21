@@ -132,11 +132,6 @@ app.get('/join/', (req, res) => {
     return notFound(res);
 });
 
-// Page not found
-app.get('*', (req, res) => {
-    return notFound(res);
-});
-
 // Axios API requests
 app.get(`${config.apiBasePath}/users`, (req, res) => {
     // check if user is authorized for the API call
@@ -152,6 +147,11 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
     // Get connected users
     const users = getConnectedUsers();
     return res.json({ users });
+});
+
+// Page not found
+app.get('*', (req, res) => {
+    return notFound(res);
 });
 
 // Page not found
