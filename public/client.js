@@ -31,9 +31,6 @@ let connectedUser;
 let thisConnection;
 let stream;
 
-// Hide room page initially
-roomPage.style.display = 'none';
-
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', function () {
     handleToolTip();
@@ -190,6 +187,7 @@ function handleCallClick() {
             to: callToUsername,
         });
         localStorage.callMeUsernameToCall = callToUsername;
+        popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
     } else {
         handleError('Please enter a username to call.');
     }
@@ -270,6 +268,9 @@ function initializeConnection() {
             remoteVideo.playsInline = true;
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
+
+            startSessionTime();
+
             console.log('Remote stream set to video element');
         } else {
             handleError('No stream available in the ontrack event.');
@@ -334,8 +335,6 @@ function offerAccept(data) {
             callBtn.style.display = 'none';
             data.type = 'offerCreate';
             socket.recipient = data.from;
-            // Start session time in h/m/s
-            startSessionTime();
         } else {
             data.type = 'offerDecline';
         }
@@ -416,14 +415,30 @@ function handleLeave() {
 }
 
 // Handle and display errors
-function handleError(message, error = false) {
+function handleError(message, error = false, position = 'top') {
     if (error) console.error(error);
     sound('notify');
     Swal.fire({
+        position,
         title: 'Warning',
         text: message,
         icon: 'warning',
         confirmButtonText: 'OK',
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+    });
+}
+
+// Display Message to user
+function popupMsg(message, position = 'top', timer = 4000) {
+    Swal.fire({
+        position,
+        title: 'Info',
+        html: message,
+        icon: 'info',
+        confirmButtonText: 'OK',
+        timerProgressBar: true,
+        timer,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     });
