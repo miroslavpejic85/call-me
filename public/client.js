@@ -10,6 +10,7 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
+const sessionTime = document.querySelector('#sessionTime');
 const githubDiv = document.querySelector('#githubDiv');
 const signInPage = document.querySelector('#signInPage');
 const usernameIn = document.querySelector('#usernameIn');
@@ -73,6 +74,29 @@ function handleDirectJoin() {
             handleCallClick();
         }
     }
+}
+
+// Session Time
+function startSessionTime() {
+    console.log('Start session time');
+    sessionTime.style.display = 'inline-flex';
+    let sessionElapsedTime = 0;
+    setInterval(function printTime() {
+        sessionElapsedTime++;
+        sessionTime.innerText = secondsToHms(sessionElapsedTime);
+    }, 1000);
+}
+
+// Session Time in h/m/s
+function secondsToHms(d) {
+    d = Number(d);
+    let h = Math.floor(d / 3600);
+    let m = Math.floor((d % 3600) / 60);
+    let s = Math.floor((d % 3600) % 60);
+    let hDisplay = h > 0 ? h + 'h' : '';
+    let mDisplay = m > 0 ? m + 'm' : '';
+    let sDisplay = s > 0 ? s + 's' : '';
+    return hDisplay + ' ' + mDisplay + ' ' + sDisplay;
 }
 
 // WebSocket event listeners
@@ -310,6 +334,8 @@ function offerAccept(data) {
             callBtn.style.display = 'none';
             data.type = 'offerCreate';
             socket.recipient = data.from;
+            // Start session time in h/m/s
+            startSessionTime();
         } else {
             data.type = 'offerDecline';
         }
