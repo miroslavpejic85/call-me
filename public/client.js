@@ -230,8 +230,8 @@ function handleNotFound(data) {
 function handleSignIn(data) {
     const { success } = data;
     if (!success) {
-        handleError('Username already in use. Try a different username.');
-        setTimeout(handleHangUpClick, 2000);
+        handleError('Username already in use.<br/>Please try a different one.');
+        setTimeout(handleHangUpClick, 3000);
     } else {
         githubDiv.style.display = 'none';
         signInPage.style.display = 'none';
@@ -327,6 +327,8 @@ function offerAccept(data) {
         showDenyButton: true,
         confirmButtonText: `Yes`,
         denyButtonText: `No`,
+        timerProgressBar: true,
+        timer: 10000,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
@@ -415,15 +417,15 @@ function handleLeave() {
 }
 
 // Handle and display errors
-function handleError(message, error = false, position = 'top') {
+function handleError(message, error = false, position = 'center', timer = 4000) {
     if (error) console.error(error);
     sound('notify');
     Swal.fire({
         position,
-        title: 'Warning',
-        text: message,
         icon: 'warning',
-        confirmButtonText: 'OK',
+        html: message,
+        timerProgressBar: true,
+        timer,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     });
@@ -433,10 +435,7 @@ function handleError(message, error = false, position = 'top') {
 function popupMsg(message, position = 'top', timer = 4000) {
     Swal.fire({
         position,
-        title: 'Info',
         html: message,
-        icon: 'info',
-        confirmButtonText: 'OK',
         timerProgressBar: true,
         timer,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
