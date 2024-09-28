@@ -158,6 +158,8 @@ signInBtn.addEventListener('click', handleSignInClick);
 callBtn.addEventListener('click', handleCallClick);
 hideBtn.addEventListener('click', toggleLocalVideo);
 hangUpBtn.addEventListener('click', handleHangUpClick);
+localVideoContainer.addEventListener('click', toggleFullScreen);
+remoteVideo.addEventListener('click', toggleFullScreen);
 
 // Handle sign-in button click
 function handleSignInClick() {
@@ -202,6 +204,12 @@ function toggleLocalVideo() {
 function handleHangUpClick() {
     sendMsg({ type: 'leave', name: socket.recipient });
     handleLeave();
+}
+
+// Toggle video full screen mode
+function toggleFullScreen(e) {
+    if (!e.target.srcObject) return;
+    document.fullscreenElement ? document.exitFullscreen() : e.target.requestFullscreen?.();
 }
 
 // Handle ping message from the server

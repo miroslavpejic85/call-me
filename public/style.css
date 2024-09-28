@@ -80,10 +80,18 @@ video {
     border: none;
     border-radius: var(--border-radius);
     object-fit: contain;
+    cursor: pointer;
+}
+video:hover {
+    filter: contrast(105%);
+}
+video::-webkit-media-controls {
+    display: none !important;
 }
 
 /* Local Video Styles */
 #localVideoContainer {
+    z-index: 1;
     position: absolute;
     top: 10px;
     left: 20px;
@@ -105,6 +113,7 @@ video {
 
 /* Remote Video Styles */
 #remoteVideo {
+    z-index: 2;
     width: 100%;
     height: auto;
     background: rgba(0, 0, 0, 0.5);
