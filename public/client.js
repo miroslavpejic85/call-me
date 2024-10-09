@@ -276,6 +276,7 @@ function initializeConnection() {
             remoteVideo.playsInline = true;
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
+            //remoteVideo.click(); // The remote video start in full screen mode if supported
 
             startSessionTime();
 

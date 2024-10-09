@@ -23,6 +23,12 @@ This project allows you to:
 **[Install Node.js and npm](https://nodejs.org/en/download)**
 
 ```shell
+# Clone this repo
+git clone https://github.com/miroslavpejic85/call-me.git
+
+# Go to to dir call-me
+cd call-me
+
 # Copy .env.template to .env
 cp .env.template .env
 
