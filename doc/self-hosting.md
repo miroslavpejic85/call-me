@@ -23,8 +23,11 @@ Install `NodeJS 18.X` and `npm` using [Node Version Manager](https://docs.mirota
 ## Quick start
 
 ```bash
-# Clone call-me repo
+# Clone this repo
 $ git clone https://github.com/miroslavpejic85/call-me.git
+
+# Go to to dir call-me
+$ cd call-me
 
 # Copy .env.template to .env
 $ cp .env.template .env
@@ -70,6 +73,12 @@ $ sudo apt install -y docker.io
 
 # Instal docker-compose
 $ sudo apt install -y docker-compose
+
+# Clone this repo
+$ git clone https://github.com/miroslavpejic85/call-me.git
+
+# Go to to dir call-me
+$ cd call-me
 
 # Copy .env.template to .env
 $ cp .env.template .env
