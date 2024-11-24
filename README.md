@@ -20,6 +20,10 @@ This project allows you to:
 
 ### Quick Start
 
+-   #### Using NodeJs
+
+![nodejs](public/assets/nodejs.png)
+
 **[Install Node.js and npm](https://nodejs.org/en/download)**
 
 ```shell
@@ -38,6 +42,33 @@ npm install
 # Start the application
 npm start
 ```
+
+---
+
+-   #### Using Docker
+
+![docker](public/assets/docker.png)
+
+Install [docker engine](https://docs.docker.com/engine/install/) and [docker compose](https://docs.docker.com/compose/install/)
+
+```shell
+# Clone this repo
+git clone https://github.com/miroslavpejic85/call-me.git
+
+# Go to to dir call-me
+cd call-me
+
+# Copy .env.template to .env
+cp .env.template .env
+
+# Get official image from Docker Hub
+docker-compose pull
+
+# Create and start containers
+docker-compose up
+```
+
+---
 
 1. Open your browser and visit [http://localhost:8000](http://localhost:8000).
 
