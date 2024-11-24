@@ -80,7 +80,7 @@ docker-compose up
 
 ---
 
-## One-Click Call Between Two Users
+## Click to Call
 
 Allows a user to `join` the room as a `user1`
 
