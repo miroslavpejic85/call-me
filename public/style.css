@@ -14,23 +14,27 @@
 
 html,
 body {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     margin: 0;
     padding: 0;
     width: 100vw;
     height: 100vh;
     overflow: auto;
+    scroll-behavior: smooth;
 }
 
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-attachment: fixed; /* Keeps the background in place during scroll */
-    background: url('background.jpg') center center/cover no-repeat;
+    background: url('background.jpg') center/cover no-repeat fixed;
+    background-color: #222; /* Fallback color */
+    will-change: background;
+}
+
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
 }
 
 /* Random image */
