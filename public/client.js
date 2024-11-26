@@ -42,10 +42,23 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Get Random Images
 async function fetchRandomImage() {
+    if (sessionStorage.cachedImage) {
+        // If there's cached data, use it
+        randomImage.src = sessionStorage.cachedImage;
+        console.log('Using cached image');
+        return;
+    }
+
     try {
         const response = await axios.get('/randomImage');
         const data = response.data;
-        randomImage.src = data.urls.regular;
+
+        // Cache the image URL for subsequent calls
+        sessionStorage.cachedImage = data.urls.regular;
+
+        // Update the image source
+        randomImage.src = sessionStorage.cachedImage;
+        console.log('Fetched and cached image');
     } catch (error) {
         console.error('Error fetching image', error.message);
     }
