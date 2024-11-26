@@ -10,17 +10,17 @@ This project enables easy one-to-one video calls directly from your web browser 
 
 This project allows you to:
 
--   `Sign in` with a username.
--   `Make video calls` by entering the recipient's username.
--   `Toggle` your video feed visibility.
--   `Hang up` the call when done.
--   `Rest API` to get all connected users.
+- `Sign in` with a username.
+- `Make video calls` by entering the recipient's username.
+- `Toggle` your video feed visibility.
+- `Hang up` the call when done.
+- `Rest API` to get all connected users.
 
 ---
 
 ### Quick Start
 
--   #### Using NodeJs
+- #### Using NodeJs
 
 ![nodejs](public/assets/nodejs.png)
 
@@ -45,7 +45,7 @@ npm start
 
 ---
 
--   #### Using Docker
+- #### Using Docker
 
 ![docker](public/assets/docker.png)
 
@@ -89,6 +89,22 @@ Allows a user to `join` the room as a `user1`
 Lets the `user2 join` the room and initiate a `call` to the `user1`
 
 [http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1)
+
+---
+
+## Fast Integration
+
+![iframe](public/assets/iframe.png)
+
+Easily integrate `Call-Me` into your website or application with a [simple iframe](https://codepen.io/Miroslav-Pejic/pen/qEWBaKP). Just add the following code to your project:
+
+```html
+<iframe
+    allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; autoplay"
+    src="https://cme.mirotalk.com/"
+    style="width: 100vw; height: 100vh; border: 0px;"
+></iframe>
+```
 
 ---
 

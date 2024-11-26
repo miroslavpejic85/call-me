@@ -10,6 +10,7 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
+const randomImage = document.querySelector('#randomImage');
 const sessionTime = document.querySelector('#sessionTime');
 const githubDiv = document.querySelector('#githubDiv');
 const signInPage = document.querySelector('#signInPage');
@@ -32,11 +33,23 @@ let thisConnection;
 let stream;
 
 // On html page loaded...
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    await fetchRandomImage();
     handleToolTip();
     handleLocalStorage();
     handleDirectJoin();
 });
+
+// Get Random Images
+async function fetchRandomImage() {
+    try {
+        const response = await axios.get('/randomImage');
+        const data = response.data;
+        randomImage.src = data.urls.regular;
+    } catch (error) {
+        console.error('Error fetching image', error.message);
+    }
+}
 
 // Initialize tooltips
 function handleToolTip() {

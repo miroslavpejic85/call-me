@@ -7,6 +7,7 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const socketIO = require('socket.io');
+const axios = require('axios');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
@@ -31,6 +32,7 @@ const config = {
     turnServerUsername: process.env.TURN_SERVER_USERNAME,
     turnServerCredential: process.env.TURN_SERVER_CREDENTIAL,
     apiKeySecret: process.env.API_KEY_SECRET,
+    randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     apiBasePath: '/api/v1',
     swaggerDocument: yaml.load(fs.readFileSync(path.join(__dirname, '/api/swagger.yaml'), 'utf8')),
 };
@@ -115,6 +117,19 @@ app.use((req, res, next) => {
 // Set up route to serve the main HTML file
 app.get('/', (req, res) => {
     res.sendFile(HOME);
+});
+
+// Get Random Background Images
+app.get('/randomImage', async (req, res) => {
+    if (config.randomImageUrl === '') return; // Keep client default bg image
+
+    try {
+        const response = await axios.get(config.randomImageUrl);
+        const data = response.data;
+        res.send(data);
+    } catch (error) {
+        console.error('Error fetching image', error.message);
+    }
 });
 
 // Direct Join room

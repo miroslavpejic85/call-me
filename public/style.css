@@ -20,14 +20,24 @@ body {
     right: 0;
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     overflow: auto;
 }
 
 body {
-    background: url('background.jpg') center center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-attachment: fixed; /* Keeps the background in place during scroll */
+    background: url('background.jpg') center center/cover no-repeat;
+}
+
+/* Random image */
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Session Time */

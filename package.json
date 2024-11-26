@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.0.18",
+    "version": "1.0.19",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -19,6 +19,7 @@
         "lint": "npx prettier --write ."
     },
     "dependencies": {
+        "axios": "^1.7.8",
         "dotenv": "^16.4.5",
         "express": "^4.21.1",
         "js-yaml": "4.1.0",
@@ -27,6 +28,6 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.7",
-        "prettier": "3.3.3"
+        "prettier": "3.4.1"
     }
 }
