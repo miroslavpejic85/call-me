@@ -62,7 +62,7 @@ async function fetchRandomImage() {
         console.log('Fetched and cached image');
 
         // Create and display attribution
-        const attributionText = `Photo by <a href="${data.user.links.html}?utm_source=call-me&utm_medium=referral" target="_blank">${data.user.name}</a> on <a href="https://unsplash.com/?utm_source=call-me&utm_medium=referral target="_blank">Unsplash</a>`;
+        const attributionText = `Photo by <a href="${data.user.links.html}?utm_source=call-me&utm_medium=referral" target="_blank">${data.user.name}</a> on <a href="https://unsplash.com/?utm_source=call-me&utm_medium=referral" target="_blank">Unsplash</a>`;
 
         // Assuming you have an element with id 'attribution' for the attribution text
         attribution.innerHTML = attributionText;
