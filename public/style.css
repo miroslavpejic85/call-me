@@ -43,6 +43,7 @@ body {
     padding: 10px;
     bottom: 0;
     right: 10px;
+    font-size: small;
     color: white;
     background: rgba(0, 0, 0, 0.1);
     border-radius: var(--border-radius);
