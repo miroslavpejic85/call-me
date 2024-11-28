@@ -37,6 +37,17 @@ body {
     }
 }
 
+/* Unsplash and Author attribution */
+#attribution {
+    position: absolute;
+    padding: 10px;
+    bottom: 0;
+    right: 10px;
+    color: white;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+}
+
 /* Random image */
 img {
     width: 100%;

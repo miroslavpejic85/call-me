@@ -10,6 +10,7 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
+const attribution = document.querySelector('#attribution');
 const randomImage = document.querySelector('#randomImage');
 const sessionTime = document.querySelector('#sessionTime');
 const githubDiv = document.querySelector('#githubDiv');
@@ -59,6 +60,12 @@ async function fetchRandomImage() {
         // Update the image source
         randomImage.src = sessionStorage.cachedImage;
         console.log('Fetched and cached image');
+
+        // Create and display attribution
+        const attributionText = `Photo by <a href="${data.user.links.html}?utm_source=call-me&utm_medium=referral" target="_blank">${data.user.name}</a> on <a href="https://unsplash.com/?utm_source=call-me&utm_medium=referral target="_blank"">Unsplash</a>`;
+
+        // Assuming you have an element with id 'attribution' for the attribution text
+        attribution.innerHTML = attributionText;
     } catch (error) {
         console.error('Error fetching image', error.message);
     }
