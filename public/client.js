@@ -275,6 +275,7 @@ function handleSignIn(data) {
         setTimeout(handleHangUpClick, 3000);
     } else {
         githubDiv.style.display = 'none';
+        attribution.style.display = 'none';
         signInPage.style.display = 'none';
         roomPage.style.display = 'block';
 
