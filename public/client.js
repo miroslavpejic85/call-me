@@ -35,10 +35,10 @@ let stream;
 
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
-    await fetchRandomImage();
     handleToolTip();
     handleLocalStorage();
     handleDirectJoin();
+    fetchRandomImage();
 });
 
 // Get Random Images
