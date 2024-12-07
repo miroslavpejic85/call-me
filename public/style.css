@@ -216,6 +216,10 @@ input {
     border: none !important;
 }
 
+.swal2-timer-progress-bar {
+    background-color: green !important;
+}
+
 /* Webkit-Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 10px;

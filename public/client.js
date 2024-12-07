@@ -364,8 +364,9 @@ function offerAccept(data) {
     sound('ring');
     Swal.fire({
         position: 'center',
-        //icon: 'question',
         imageUrl: 'assets/ring.png',
+        imageWidth: 284,
+        imageHeight: 120,
         text: 'Do you want to accept call from ' + data.from + ' ?',
         showDenyButton: true,
         confirmButtonText: `Yes`,
