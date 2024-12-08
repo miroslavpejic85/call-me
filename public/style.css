@@ -47,6 +47,7 @@ body {
 
 /* Unsplash and Author attribution */
 #attribution {
+    z-index: 3;
     position: absolute;
     padding: 10px;
     bottom: 0;
