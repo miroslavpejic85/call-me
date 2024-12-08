@@ -227,6 +227,9 @@ input {
         height: var(--btn-size-mobile);
         width: var(--btn-size-mobile);
     }
+    .btn-custom i {
+        font-size: 12px;
+    }
 }
 
 /* GitHub div */
