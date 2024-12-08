@@ -71,7 +71,6 @@ img {
     left: 0;
     width: 100%; /* Cover the full width */
     height: 100%; /* Cover the full height */
-    z-index: -1; /* Place it behind all other elements */
     object-fit: cover; /* Ensure the image maintains aspect ratio */
 }
 
