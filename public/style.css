@@ -4,20 +4,27 @@
 /* Variables */
 :root {
     --border-radius: 10px;
+    --bg-color: #222;
+    --text-color: #fff;
+    --btn-size: 48px;
+    --btn-size-mobile: 40px;
+    --highlight-color: rgba(0, 0, 0, 0.1);
+    --fallback-bg: #222;
 }
 
 /* Global Styles */
 * {
     outline: none;
-    font-family: 'Comfortaa';
+    font-family: 'Comfortaa', sans-serif;
+    box-sizing: border-box;
 }
 
 html,
 body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: auto;
     scroll-behavior: smooth;
 }
@@ -26,8 +33,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: url('background.jpg') center/cover no-repeat fixed;
-    background-color: #222; /* Fallback color */
+    background:
+        url('background.jpg') center/cover no-repeat fixed,
+        var(--fallback-bg);
     will-change: background;
 }
 
@@ -44,8 +52,8 @@ body {
     bottom: 0;
     right: 10px;
     font-size: small;
-    color: white;
-    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    background: var(--highlight-color);
     border-radius: var(--border-radius);
 }
 
@@ -54,6 +62,23 @@ img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Ensure the random image spans the entire screen */
+#randomImage {
+    position: fixed; /* Fix the image to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%; /* Cover the full width */
+    height: 100%; /* Cover the full height */
+    z-index: -1; /* Place it behind all other elements */
+    object-fit: cover; /* Ensure the image maintains aspect ratio */
+}
+
+/* Prevent buttons from inheriting the image as background */
+button {
+    background: none; /* Remove any background */
+    color: inherit; /* Keep text/icon color */
 }
 
 /* Session Time */
@@ -67,7 +92,7 @@ img {
     right: 20px;
     font-size: 0.9rem;
     font-weight: bold;
-    color: white;
+    color: var(--text-color);
     background: rgba(0, 0, 0, 0.5);
     border-radius: var(--border-radius);
 }
@@ -86,13 +111,13 @@ img {
 
 /* General Card Styles */
 .card {
-    max-width: 400px !important;
+    max-width: 90% !important;
     margin: 0 auto !important;
-    color: #fff !important;
+    color: var(--text-color) !important;
     font-weight: bold !important;
     border: none !important;
-    border-radius: 10px !important;
-    background: rgb(0 0 0 / 7%) !important;
+    border-radius: var(--border-radius) !important;
+    background: rgba(0, 0, 0, 0.07) !important;
 }
 
 .card-header h1 {
@@ -108,9 +133,11 @@ video {
     object-fit: contain;
     cursor: pointer;
 }
+
 video:hover {
     filter: contrast(105%);
 }
+
 video::-webkit-media-controls {
     display: none !important;
 }
@@ -129,9 +156,9 @@ video::-webkit-media-controls {
 
 #localUsername {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    color: #fff;
+    top: 0;
+    left: 0;
+    color: var(--text-color);
     font-size: x-small;
     border-radius: 5px;
     margin: 5px;
@@ -141,10 +168,20 @@ video::-webkit-media-controls {
 #remoteVideo {
     z-index: 2;
     width: 100%;
-    height: auto;
     background: rgba(0, 0, 0, 0.5);
     border-radius: var(--border-radius);
     border: none;
+}
+
+/* Hide Local Video on Mobile */
+@media (max-width: 768px) {
+    #localUsername {
+        font-size: 8px;
+    }
+    #remoteVideo {
+        height: 70vh;
+        object-fit: cover;
+    }
 }
 
 /* Hidden Elements */
@@ -159,11 +196,10 @@ input {
 /* Text Input Styles */
 #callUsernameIn {
     background: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    color: var(--text-color);
     border: none;
 }
 
-/* Placeholder Styles */
 #callUsernameIn::placeholder {
     color: #525252;
     opacity: 1;
@@ -179,11 +215,18 @@ input {
 
 /* Custom button */
 .btn-custom {
-    height: 48px;
-    width: 48px;
+    height: var(--btn-size);
+    width: var(--btn-size);
     margin: 0.1rem;
     border: none;
     border-radius: 50px !important;
+}
+
+@media (max-width: 768px) {
+    .btn-custom {
+        height: var(--btn-size-mobile);
+        width: var(--btn-size-mobile);
+    }
 }
 
 /* GitHub div */
@@ -196,23 +239,27 @@ input {
 /* Swal2 custom theme */
 .swal2-popup {
     background-color: #333 !important;
-    color: #fff !important;
+    color: var(--text-color) !important;
     border: none !important;
 }
+
 .swal2-popup .swal2-styled:focus {
     box-shadow: none !important;
 }
+
 .swal2-title {
-    color: #fff !important;
+    color: var(--text-color) !important;
 }
+
 .swal2-actions .swal2-confirm {
     background-color: #157346 !important;
-    color: #fff !important;
+    color: var(--text-color) !important;
     border: none !important;
 }
+
 .swal2-actions .swal2-cancel {
     background-color: #666 !important;
-    color: #fff !important;
+    color: var(--text-color) !important;
     border: none !important;
 }
 

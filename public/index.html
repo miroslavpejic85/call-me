@@ -8,44 +8,27 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- https://favicon.io/favicon-generator/ -->
+        <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
 
-        <!-- https://ogp.me -->
-        <meta property="og:type" content="app-webrtc" />
-        <meta property="og:site_name" content="Call-me" />
-        <meta property="og:title" content="Click the link to make a call." />
-        <meta property="og:description" content="Your Go-To for Instant Video Calls!" />
-        <meta property="og:image" content="https://cme.mirotalk.com/assets/callme.png" />
-        <meta property="og:url" content="https://cme.mirotalk.com" />
-
-        <!-- Link to Bootstrap CSS -->
+        <!-- Stylesheets -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" />
-
-        <!-- Link to Font Awesome CSS for icons -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-
-        <!-- Link to your custom CSS file -->
         <link rel="stylesheet" href="./style.css" />
-
-        <!-- Link to SweetAlert CSS file -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.8/dist/sweetalert2.min.css" />
-
-        <!-- ink to Animate CSS file -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css/animate.min.css" />
     </head>
-
     <body>
-        <!-- The attribution text will be injected here -->
+        <!-- Attribution -->
         <p id="attribution"></p>
 
-        <!-- Optional Random BG Images -->
-        <img id="randomImage" />
+        <!-- Random Background Image -->
+        <img id="randomImage" src="background.jpg" alt="Random Background Image" />
 
-        <!-- GitHub project -->
+        <!-- GitHub Project Link -->
         <div id="githubDiv">
             <a
                 class="github-button"
@@ -53,36 +36,33 @@
                 data-color-scheme="no-preference: light; light: light; dark: dark;"
                 data-size="large"
                 data-show-count="true"
-                aria-label="Star miroslavpejic85/call-me on GitHub"
-                >Star
+                aria-label="Star Call-me project on GitHub"
+            >
+                Star
             </a>
         </div>
 
         <!-- Sign-in Page -->
         <div id="signInPage" class="container text-center center">
-            <div class="container mt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header"><h1>Call-me</h1></div>
-                            <div class="card-body">
-                                <!-- Sign-in Form -->
-                                <form>
-                                    <div class="mb-3">
-                                        <!-- Input field for entering the username -->
-                                        <input
-                                            id="usernameIn"
-                                            type="email"
-                                            class="form-control"
-                                            id="email"
-                                            placeholder="Enter username"
-                                            required
-                                        />
-                                    </div>
-                                    <!-- Sign-in button -->
-                                    <button id="signInBtn" type="submit" class="btn btn-primary">Sign In</button>
-                                </form>
-                            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h1>Call-me</h1>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <input
+                                        id="usernameIn"
+                                        type="email"
+                                        class="form-control"
+                                        placeholder="Enter username"
+                                        required
+                                    />
+                                </div>
+                                <button id="signInBtn" type="submit" class="btn btn-primary">Sign In</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -91,69 +71,38 @@
 
         <!-- Room Page -->
         <div id="roomPage" class="container text-center center">
-            <!-- Local video element (user's video) -->
             <div id="localVideoContainer">
-                <video id="localVideo"></video>
-                <span id="localUsername"></span>
+                <video id="localVideo" autoplay muted></video>
+                <span id="localUsername">Your Name</span>
             </div>
-            <!-- Remote video element (video from the other user) -->
-            <video id="remoteVideo"></video>
-            <!-- Session time -->
-            <span id="sessionTime">0s</span>
-            <div class="row text-center">
-                <div class="col-md-12">
-                    <div class="mb-3">
-                        <!-- Input field for entering the username to call -->
-                        <input id="callUsernameIn" type="text" class="form-control" placeholder="Username to call" />
-                    </div>
-                    <!-- Button to hide/show the local video -->
-                    <button
-                        id="hideBtn"
-                        class="btn btn-custom btn-primary btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Toggle hide me"
-                    >
+            <video id="remoteVideo" autoplay></video>
+            <span id="sessionTime">Session Time: 0s</span>
+            <div class="row text-center mt-3">
+                <div class="col">
+                    <input id="callUsernameIn" type="text" class="form-control" placeholder="Username to call" />
+                </div>
+            </div>
+            <div class="row text-center mt-3">
+                <div class="col">
+                    <button id="hideBtn" class="btn btn-custom btn-primary" aria-label="Toggle hide me">
                         <i class="fas fa-eye-slash"></i>
                     </button>
-                    <!-- Button to initiate a video call -->
-                    <button
-                        id="callBtn"
-                        class="btn btn-custom btn-success btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Call"
-                    >
+                    <button id="callBtn" class="btn btn-custom btn-success" aria-label="Call User">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <!-- Button to hang up the call -->
-                    <button
-                        id="hangUpBtn"
-                        class="btn btn-custom btn-danger btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Hang up"
-                    >
+                    <button id="hangUpBtn" class="btn btn-custom btn-danger" aria-label="Hang up Call">
                         <i class="fas fa-phone-slash"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- JavaScript libraries for WebSocket and custom client code -->
+        <!-- Scripts -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="client.js"></script>
-
-        <!-- Include Axios file -->
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-        <!-- Include SweetAlert JS file -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.8/dist/sweetalert2.all.min.js"></script>
-
-        <!-- Include Bootstrap JavaScript file -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Include GitHub buttons -->
         <script src="https://buttons.github.io/buttons.js"></script>
     </body>
 </html>
