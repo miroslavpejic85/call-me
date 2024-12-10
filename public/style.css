@@ -67,18 +67,18 @@ img {
 
 /* Ensure the random image spans the entire screen */
 #randomImage {
-    position: fixed; /* Fix the image to the viewport */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%; /* Cover the full width */
-    height: 100%; /* Cover the full height */
-    object-fit: cover; /* Ensure the image maintains aspect ratio */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Prevent buttons from inheriting the image as background */
 button {
-    background: none; /* Remove any background */
-    color: inherit; /* Keep text/icon color */
+    background: none;
+    color: inherit;
 }
 
 /* Session Time */
