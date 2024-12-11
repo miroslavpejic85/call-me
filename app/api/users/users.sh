@@ -1,6 +1,6 @@
 #!/bin/bash
 
-url = "http://localhost:8000/api/v1/users";
+url="http://localhost:8000/api/v1/users";
 
 authorization="call_me_api_key_secret"
 

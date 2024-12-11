@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
     title: Call-me API
     description: API description for external applications that integrates with Call-me.
-    version: 1.0.0
+    version: 1.0.1
 
 basePath: /api/v1
 
@@ -32,6 +32,32 @@ paths:
                 '403':
                     description: 'Unauthorized!'
 
+    /connected:
+        post:
+            tags:
+                - 'connected'
+            summary: 'Connected users to call'
+            description: 'Retrieve all connected users to call'
+            parameters:
+                - in: body
+                  name: user
+                  description: Username
+                  schema:
+                      $ref: '#/definitions/ConnectedRequest'
+            consumes:
+                - 'application/json'
+            produces:
+                - 'application/json'
+            security:
+                - secretApiKey: []
+            responses:
+                '200':
+                    description: 'Connected users to call'
+                    schema:
+                        $ref: '#/definitions/connectedResponse'
+                '403':
+                    description: 'Unauthorized!'
+
 securityDefinitions:
     secretApiKey:
         type: 'apiKey'
@@ -45,3 +71,19 @@ definitions:
         properties:
             users:
                 type: 'array'
+                example: ['call-me', 'miro']
+
+    ConnectedRequest:
+        type: object
+        properties:
+            user:
+                type: string
+                description: 'User identifier'
+                example: 'call-me'
+
+    connectedResponse:
+        type: 'object'
+        properties:
+            connected:
+                type: array
+                example: ['http://localhost:8000/join?user=call-me&call=miro']

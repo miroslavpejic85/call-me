@@ -147,19 +147,57 @@ app.get('/join/', (req, res) => {
     return notFound(res);
 });
 
+// Endpoint to list all connected users available to be called
+app.post(`${config.apiBasePath}/connected`, (req, res) => {
+    // Check if the user is authorized for this API call
+    if (!isAuthorized(req)) {
+        console.log('Unauthorized API call: Get Connected', {
+            headers: req.headers,
+            body: req.body,
+        });
+        return res.status(403).json({ error: 'Unauthorized!' });
+    }
+
+    const { user } = req.body;
+    if (!user) {
+        return res.status(400).json({ error: 'User not provided in request body' });
+    }
+
+    // Get the protocol and host information to build the base URL
+    const protocol = req.protocol; // e.g., 'http' or 'https'
+    const host = req.get('Host'); // e.g., 'localhost:8000'
+    const hostName = req.hostname; // e.g., 'localhost'
+
+    // Construct the base URL depending on the protocol (https or http)
+    const baseUrl = `${protocol}://${protocol === 'https' ? hostName : host}`;
+
+    // Retrieve the list of connected users
+    const users = getConnectedUsers();
+
+    // Generate a list of user-to-call links for the provided user
+    const connected = Array.from(users.values()).reduce((acc, connectedUser) => {
+        // If the current user is not the one requesting, add to the list
+        if (user !== connectedUser) {
+            acc.push(`${baseUrl}/join?user=${user}&call=${connectedUser}`);
+        }
+        return acc;
+    }, []);
+
+    // Return the list of connected users that the provided user can call
+    return res.json({ connected });
+});
+
 // Axios API requests
 app.get(`${config.apiBasePath}/users`, (req, res) => {
     // check if user is authorized for the API call
-    const { authorization } = req.headers;
-    console.log(authorization);
-    if (authorization != config.apiKeySecret) {
+    if (!isAuthorized(req)) {
         console.log('Unauthorized API call: Get Users', {
             headers: req.headers,
             body: req.body,
         });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
-    // Get connected users
+    // Retrieve the list of connected users
     const users = getConnectedUsers();
     return res.json({ users });
 });
@@ -173,6 +211,12 @@ app.get('*', (req, res) => {
 function notFound(res) {
     res.json({ data: '404 not found' });
 }
+
+// Utility function to check API key authorization
+const isAuthorized = (req) => {
+    const { authorization } = req.headers;
+    return authorization === config.apiKeySecret;
+};
 
 // Function to handle individual WebSocket connections
 function handleConnection(socket) {

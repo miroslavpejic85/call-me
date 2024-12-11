@@ -1,11 +1,6 @@
-version: '3'
-
 services:
     callme:
         image: mirotalk/cme:latest
-        build:
-            context: .
-            dockerfile: Dockerfile
         container_name: callme
         hostname: callme
         volumes:

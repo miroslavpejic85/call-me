@@ -113,7 +113,11 @@ Easily integrate `Call-Me` into your website or application with a [simple ifram
 Get all connected users
 
 ```shell
+# Get all connected users
 curl -X GET "http://localhost:8000/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
+# Generate call links for connected users to call
+curl -X POST "http://localhost:8000/api/v1/connected" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json" -d '{"user": "call-me"}'
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live [here](https://cme.mirotalk.com/api/v1/docs/).
