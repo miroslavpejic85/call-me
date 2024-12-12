@@ -33,17 +33,17 @@ paths:
                     description: 'Unauthorized!'
 
     /connected:
-        post:
+        get:
             tags:
                 - 'connected'
             summary: 'Connected users to call'
             description: 'Retrieve all connected users to call'
             parameters:
-                - in: body
-                  name: user
-                  description: Username
-                  schema:
-                      $ref: '#/definitions/ConnectedRequest'
+                - name: user
+                  in: path
+                  description: 'Username of the requesting user'
+                  required: true
+                  type: string
             consumes:
                 - 'application/json'
             produces:
@@ -72,14 +72,6 @@ definitions:
             users:
                 type: 'array'
                 example: ['call-me', 'miro']
-
-    ConnectedRequest:
-        type: object
-        properties:
-            user:
-                type: string
-                description: 'User identifier'
-                example: 'call-me'
 
     connectedResponse:
         type: 'object'
