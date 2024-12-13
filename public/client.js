@@ -187,12 +187,31 @@ function handleMessage(data) {
 }
 
 // Event listeners
+callUsernameIn.addEventListener('keyup', handleCallUsernameKeyUp);
+usernameIn.addEventListener('keyup', handleUsernameKeyUp);
 signInBtn.addEventListener('click', handleSignInClick);
 callBtn.addEventListener('click', handleCallClick);
 hideBtn.addEventListener('click', toggleLocalVideo);
 hangUpBtn.addEventListener('click', handleHangUpClick);
 localVideoContainer.addEventListener('click', toggleFullScreen);
 remoteVideo.addEventListener('click', toggleFullScreen);
+
+
+// Handle CallUsername keyUp
+function handleCallUsernameKeyUp(e){
+    if (e.keyCode === 13) {
+        e.preventDefault();
+        handleCallClick();
+    }
+}
+
+// Handle Username keyUp
+function handleUsernameKeyUp(e){
+    if (e.keyCode === 13) {
+        e.preventDefault();
+        handleSignInClick();
+    }
+}
 
 // Handle sign-in button click
 function handleSignInClick() {
