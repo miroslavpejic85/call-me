@@ -187,8 +187,6 @@ function handleMessage(data) {
 }
 
 // Event listeners
-callUsernameIn.addEventListener('keyup', handleCallUsernameKeyUp);
-usernameIn.addEventListener('keyup', handleUsernameKeyUp);
 signInBtn.addEventListener('click', handleSignInClick);
 callBtn.addEventListener('click', handleCallClick);
 hideBtn.addEventListener('click', toggleLocalVideo);
@@ -196,20 +194,15 @@ hangUpBtn.addEventListener('click', handleHangUpClick);
 localVideoContainer.addEventListener('click', toggleFullScreen);
 remoteVideo.addEventListener('click', toggleFullScreen);
 
+// Add keyUp listeners
+callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
+usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
 
-// Handle CallUsername keyUp
-function handleCallUsernameKeyUp(e){
+// Generic keyUp handler
+function handleKeyUp(e, callback) {
     if (e.keyCode === 13) {
         e.preventDefault();
-        handleCallClick();
-    }
-}
-
-// Handle Username keyUp
-function handleUsernameKeyUp(e){
-    if (e.keyCode === 13) {
-        e.preventDefault();
-        handleSignInClick();
+        callback();
     }
 }
 
