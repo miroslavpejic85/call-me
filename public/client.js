@@ -10,22 +10,22 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
-const attribution = document.querySelector('#attribution');
-const randomImage = document.querySelector('#randomImage');
-const sessionTime = document.querySelector('#sessionTime');
-const githubDiv = document.querySelector('#githubDiv');
-const signInPage = document.querySelector('#signInPage');
-const usernameIn = document.querySelector('#usernameIn');
-const signInBtn = document.querySelector('#signInBtn');
-const roomPage = document.querySelector('#roomPage');
-const callUsernameIn = document.querySelector('#callUsernameIn');
-const callBtn = document.querySelector('#callBtn');
-const hideBtn = document.querySelector('#hideBtn');
-const hangUpBtn = document.querySelector('#hangUpBtn');
-const localVideoContainer = document.querySelector('#localVideoContainer');
-const localVideo = document.querySelector('#localVideo');
-const localUsername = document.querySelector('#localUsername');
-const remoteVideo = document.querySelector('#remoteVideo');
+const attribution = document.getElementById('attribution');
+const randomImage = document.getElementById('randomImage');
+const sessionTime = document.getElementById('sessionTime');
+const githubDiv = document.getElementById('githubDiv');
+const signInPage = document.getElementById('signInPage');
+const usernameIn = document.getElementById('usernameIn');
+const signInBtn = document.getElementById('signInBtn');
+const roomPage = document.getElementById('roomPage');
+const callUsernameIn = document.getElementById('callUsernameIn');
+const callBtn = document.getElementById('callBtn');
+const hideBtn = document.getElementById('hideBtn');
+const hangUpBtn = document.getElementById('hangUpBtn');
+const localVideoContainer = document.getElementById('localVideoContainer');
+const localVideo = document.getElementById('localVideo');
+const localUsername = document.getElementById('localUsername');
+const remoteVideo = document.getElementById('remoteVideo');
 
 // User and connection information
 let userName;
