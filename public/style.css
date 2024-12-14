@@ -193,6 +193,24 @@ input {
     text-align: center;
 }
 
+/* Style the input field */
+#usernameIn {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    color: var(--text-color);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    transition:
+        border-color 0.3s,
+        background-color 0.3s;
+}
+
+#usernameIn:hover {
+    border-color: #007bff;
+}
+
 /* Text Input Styles */
 #callUsernameIn {
     background: rgba(0, 0, 0, 0.5);

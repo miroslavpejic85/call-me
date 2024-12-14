@@ -34,10 +34,11 @@ let thisConnection;
 let stream;
 
 // On html page loaded...
-document.addEventListener('DOMContentLoaded', async function () {
+document.addEventListener('DOMContentLoaded', function () {
     handleToolTip();
     handleLocalStorage();
     handleDirectJoin();
+    handleListeners();
     fetchRandomImage();
 });
 
@@ -186,17 +187,19 @@ function handleMessage(data) {
     }
 }
 
-// Event listeners
-signInBtn.addEventListener('click', handleSignInClick);
-callBtn.addEventListener('click', handleCallClick);
-hideBtn.addEventListener('click', toggleLocalVideo);
-hangUpBtn.addEventListener('click', handleHangUpClick);
-localVideoContainer.addEventListener('click', toggleFullScreen);
-remoteVideo.addEventListener('click', toggleFullScreen);
-
-// Add keyUp listeners
-callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
-usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+// Handle Listeners
+function handleListeners() {
+    // Event listeners
+    signInBtn.addEventListener('click', handleSignInClick);
+    callBtn.addEventListener('click', handleCallClick);
+    hideBtn.addEventListener('click', toggleLocalVideo);
+    hangUpBtn.addEventListener('click', handleHangUpClick);
+    localVideoContainer.addEventListener('click', toggleFullScreen);
+    remoteVideo.addEventListener('click', toggleFullScreen);
+    // Add keyUp listeners
+    callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
+    usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+}
 
 // Generic keyUp handler
 function handleKeyUp(e, callback) {
@@ -208,7 +211,7 @@ function handleKeyUp(e, callback) {
 
 // Handle sign-in button click
 function handleSignInClick() {
-    userName = usernameIn.value;
+    userName = usernameIn.value.trim();
     if (userName.length > 0) {
         sendMsg({
             type: 'signIn',
@@ -220,7 +223,7 @@ function handleSignInClick() {
 
 // Handle call button click
 function handleCallClick() {
-    const callToUsername = callUsernameIn.value;
+    const callToUsername = callUsernameIn.value.trim();
     if (callToUsername.length > 0) {
         if (callToUsername === userName) {
             callUsernameIn.value = '';
