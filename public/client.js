@@ -200,7 +200,7 @@ usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
 
 // Generic keyUp handler
 function handleKeyUp(e, callback) {
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
         e.preventDefault();
         callback();
     }
