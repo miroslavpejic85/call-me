@@ -78,4 +78,4 @@ definitions:
         properties:
             connected:
                 type: array
-                example: ['http://localhost:8000/join?user=call-me&call=miro']
+                example: ['https://your.domain/join?user=call-me&call=miro']

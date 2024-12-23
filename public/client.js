@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchRandomImage();
 });
 
+// githubDiv.style.display = 'none';
+
 // Get Random Images
 async function fetchRandomImage() {
     if (sessionStorage.cachedImage) {
