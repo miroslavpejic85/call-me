@@ -31,6 +31,8 @@ const config = {
     turnServerUrl: process.env.TURN_SERVER_URL,
     turnServerUsername: process.env.TURN_SERVER_USERNAME,
     turnServerCredential: process.env.TURN_SERVER_CREDENTIAL,
+    roomPasswordEnabled: process.env.ROOM_PASSWORD_ENABLED === 'true',
+    roomPassword: process.env.ROOM_PASSWORD || '',
     apiKeySecret: process.env.API_KEY_SECRET,
     randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     apiBasePath: '/api/v1',
@@ -90,6 +92,10 @@ server.listen(port, () => {
     console.log('Server', {
         running_at: host,
         ice: config.iceServers,
+        room: {
+            password_enabled: config.roomPasswordEnabled,
+            password: config.roomPassword,
+        },
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
         version: packageJson.version,
@@ -197,6 +203,19 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
     // Retrieve the list of connected users
     const users = getConnectedUsers();
     return res.json({ users });
+});
+
+// Check if Room password required
+app.get('/api/roomPassword', (req, res) => {
+    const isPasswordRequired = config.roomPasswordEnabled;
+    res.json({ isPasswordRequired });
+});
+
+// Check if Room password valid
+app.post('/api/roomPasswordValidate', (req, res) => {
+    const { password } = req.body;
+    const success = password === config.roomPassword;
+    res.json({ success: success });
 });
 
 // Page not found

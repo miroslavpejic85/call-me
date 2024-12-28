@@ -40,9 +40,86 @@ document.addEventListener('DOMContentLoaded', function () {
     handleDirectJoin();
     handleListeners();
     fetchRandomImage();
+    checkRoomPassword();
 });
 
 // githubDiv.style.display = 'none';
+
+async function checkRoomPassword(maxRetries = 3, attempts = 0) {
+    try {
+        // Fetch room configuration
+        const { data: config } = await axios.get('/api/roomPassword');
+
+        if (config.isPasswordRequired) {
+            // Show prompt for the password
+            const { value: password } = await Swal.fire({
+                title: 'Room Protected',
+                text: 'Please enter the room password:',
+                input: 'password',
+                inputPlaceholder: 'Enter your password',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off',
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password cannot be empty');
+                    }
+                    return password;
+                },
+            });
+
+            // If the user cancels, exit
+            if (!password) {
+                return;
+            }
+
+            // Validate the password
+            const { data: validationResult } = await axios.post('/api/roomPasswordValidate', { password });
+
+            if (validationResult.success) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Access Granted',
+                    text: 'Password validated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+                signInPage.style.display = 'block';
+            } else {
+                attempts++;
+                if (attempts < maxRetries) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Password',
+                        text: `Please try again. (${attempts}/${maxRetries} attempts)`,
+                    });
+                    // Retry the process
+                    checkRoomPassword(maxRetries, attempts);
+                } else {
+                    await Swal.fire({
+                        icon: 'warning',
+                        title: 'Too Many Attempts',
+                        text: 'You have exceeded the maximum number of attempts. Please try again later.',
+                    });
+                }
+            }
+        } else {
+            // No password required
+            signInPage.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while joining the room.',
+        });
+    }
+}
 
 // Get Random Images
 async function fetchRandomImage() {

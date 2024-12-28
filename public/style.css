@@ -106,7 +106,7 @@ button {
 /* Home Sign in */
 #signInPage {
     position: absolute;
-    display: block;
+    display: none;
 }
 
 /* General Card Styles */
