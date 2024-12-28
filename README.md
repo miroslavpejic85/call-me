@@ -84,11 +84,13 @@ docker-compose up
 
 Allows a user to `join` the room as a `user1`
 
-[http://localhost:8000/join?user=user1](http://localhost:8000/join?user=user1)
+- [http://localhost:8000/join?user=user1](http://localhost:8000/join?user=user1) (dev)
+- [https://cme.mirotalk.com/join?user=user1](https://cme.mirotalk.com/join?user=user1) (prod)
 
 Lets the `user2 join` the room and initiate a `call` to the `user1`
 
-[http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1)
+- [http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1) (dev)
+- [https://cme.mirotalk.com/join?user=user2&call=user1](https://cme.mirotalk.com/join?user=user2&call=user1) (prod)
 
 ---
 
@@ -115,12 +117,14 @@ Get all connected users
 ```shell
 # Get all connected users
 curl -X GET "http://localhost:8000/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+curl -X GET "https://cme.mirotalk.com/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 
 # Generate call links for connected users to call
 curl -X GET "http://localhost:8000/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+curl -X GET "https://cme.mirotalk.com/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 ```
 
-Docs: http://localhost:8000/api/v1/docs/ or you can check it out live [here](https://cme.mirotalk.com/api/v1/docs/).
+Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).
 
 ---
 
