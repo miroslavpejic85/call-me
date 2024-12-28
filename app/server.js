@@ -149,7 +149,7 @@ app.get('/join/', (req, res) => {
             if (config.roomPasswordEnabled && password !== config.roomPassword) {
                 // http://localhost:8000/join?user=user1&password=123456789
                 // http://localhost:8000/join?user=user2&call=user1&password=123456789
-                return notFound(res);
+                return unauthorized(res);
             }
             return res.sendFile(HOME);
         }
@@ -231,6 +231,11 @@ app.get('*', (req, res) => {
 // Page not found
 function notFound(res) {
     res.json({ data: '404 not found' });
+}
+
+// Unauthorized
+function unauthorized(res) {
+    res.json({ data: '401 Unauthorized' });
 }
 
 // Utility function to check API key authorization
