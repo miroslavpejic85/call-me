@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
     handleDirectJoin();
     handleListeners();
     fetchRandomImage();
-    checkRoomPassword();
 });
 
 // githubDiv.style.display = 'none';
@@ -170,8 +169,9 @@ function handleDirectJoin() {
     const usp = new URLSearchParams(window.location.search);
     const user = usp.get('user');
     const call = usp.get('call');
+    const password = usp.get('password');
 
-    console.log('Direct Join detected', { user, call });
+    console.log('Direct Join detected', { user, call, password });
 
     if (user) {
         // SignIn
@@ -184,6 +184,8 @@ function handleDirectJoin() {
             handleCallClick();
         }
     }
+
+    if (!password) checkRoomPassword();
 }
 
 // Session Time

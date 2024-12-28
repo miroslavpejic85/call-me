@@ -144,8 +144,13 @@ app.get('/join/', (req, res) => {
         console.log('Request query', req.query);
         // http://localhost:8000/join?user=user1
         // http://localhost:8000/join?user=user2&call=user1
-        const { user, call } = req.query;
+        const { user, call, password } = req.query;
         if (user || (user && call)) {
+            if (config.roomPasswordEnabled && password !== config.roomPassword) {
+                // http://localhost:8000/join?user=user1&password=123456789
+                // http://localhost:8000/join?user=user2&call=user1&password=123456789
+                return notFound(res);
+            }
             return res.sendFile(HOME);
         }
         return notFound(res);
