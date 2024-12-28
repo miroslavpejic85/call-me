@@ -39,6 +39,9 @@ const config = {
     swaggerDocument: yaml.load(fs.readFileSync(path.join(__dirname, '/api/swagger.yaml'), 'utf8')),
 };
 
+// If no room password is specified, a random one is generated (if room password is enabled)
+config.roomPassword = process.env.ROOM_PASSWORD || (config.roomPasswordEnabled ? generatePassword() : '');
+
 // Add STUN server if enabled and URL is provided
 if (config.stunServerEnabled && config.stunServerUrl) {
     config.iceServers.push({ urls: config.stunServerUrl });
@@ -392,4 +395,20 @@ function sendMsgTo(socket, message) {
 function sendError(socket, message) {
     console.error('Error:', message);
     sendMsgTo(socket, { type: 'error', message: message });
+}
+
+// Random password generator
+function generatePassword(length = 12) {
+    const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const allCharacters = upperCase + lowerCase + numbers;
+
+    let password = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * allCharacters.length);
+        password += allCharacters[randomIndex];
+    }
+
+    return password;
 }
