@@ -44,22 +44,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // githubDiv.style.display = 'none';
 
-async function checkRoomPassword(maxRetries = 3, attempts = 0) {
+async function checkHostPassword(maxRetries = 3, attempts = 0) {
     try {
-        // Fetch room configuration
-        const { data: config } = await axios.get('/api/roomPassword');
+        // Fetch host configuration
+        const { data: config } = await axios.get('/api/hostPassword');
 
         if (config.isPasswordRequired) {
             // Show prompt for the password
             const { value: password } = await Swal.fire({
-                title: 'Room Protected',
-                text: 'Please enter the room password:',
+                title: 'Host Protected',
+                text: 'Please enter the host password:',
                 input: 'password',
                 inputPlaceholder: 'Enter your password',
                 inputAttributes: {
                     autocapitalize: 'off',
                     autocorrect: 'off',
                 },
+                imageUrl: 'assets/locked.png',
+                imageWidth: 150,
+                imageHeight: 150,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showDenyButton: true,
@@ -79,7 +82,7 @@ async function checkRoomPassword(maxRetries = 3, attempts = 0) {
             }
 
             // Validate the password
-            const { data: validationResult } = await axios.post('/api/roomPasswordValidate', { password });
+            const { data: validationResult } = await axios.post('/api/hostPasswordValidate', { password });
 
             if (validationResult.success) {
                 await Swal.fire({
@@ -99,7 +102,7 @@ async function checkRoomPassword(maxRetries = 3, attempts = 0) {
                         text: `Please try again. (${attempts}/${maxRetries} attempts)`,
                     });
                     // Retry the process
-                    checkRoomPassword(maxRetries, attempts);
+                    checkHostPassword(maxRetries, attempts);
                 } else {
                     await Swal.fire({
                         icon: 'warning',
@@ -117,7 +120,7 @@ async function checkRoomPassword(maxRetries = 3, attempts = 0) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An error occurred while joining the room.',
+            text: 'An error occurred while joining the host.',
         });
     }
 }
@@ -187,7 +190,7 @@ function handleDirectJoin() {
         }
     }
 
-    if (!password) checkRoomPassword();
+    if (!password) checkHostPassword();
 }
 
 // Session Time

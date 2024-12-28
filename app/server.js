@@ -31,8 +31,8 @@ const config = {
     turnServerUrl: process.env.TURN_SERVER_URL,
     turnServerUsername: process.env.TURN_SERVER_USERNAME,
     turnServerCredential: process.env.TURN_SERVER_CREDENTIAL,
-    roomPasswordEnabled: process.env.ROOM_PASSWORD_ENABLED === 'true',
-    roomPassword: process.env.ROOM_PASSWORD || '',
+    hostPasswordEnabled: process.env.HOST_PASSWORD_ENABLED === 'true',
+    hostPassword: process.env.HOST_PASSWORD || '',
     apiKeySecret: process.env.API_KEY_SECRET,
     randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     apiBasePath: '/api/v1',
@@ -40,7 +40,7 @@ const config = {
 };
 
 // If no room password is specified, a random one is generated (if room password is enabled)
-config.roomPassword = process.env.ROOM_PASSWORD || (config.roomPasswordEnabled ? generatePassword() : '');
+config.hostPassword = process.env.HOST_PASSWORD || (config.hostPasswordEnabled ? generatePassword() : '');
 
 // Add STUN server if enabled and URL is provided
 if (config.stunServerEnabled && config.stunServerUrl) {
@@ -95,9 +95,9 @@ server.listen(port, () => {
     console.log('Server', {
         running_at: host,
         ice: config.iceServers,
-        room: {
-            password_enabled: config.roomPasswordEnabled,
-            password: config.roomPassword,
+        host: {
+            password_enabled: config.hostPasswordEnabled,
+            password: config.hostPassword,
         },
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
@@ -152,7 +152,7 @@ app.get('/join/', (req, res) => {
         // http://localhost:8000/join?user=user1&password=123456789
         // http://localhost:8000/join?user=user2&call=user1&password=123456789
 
-        if (config.roomPasswordEnabled && password !== config.roomPassword) {
+        if (config.hostPasswordEnabled && password !== config.hostPassword) {
             return unauthorized(res);
         }
 
@@ -217,15 +217,15 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
 });
 
 // Check if Room password required
-app.get('/api/roomPassword', (req, res) => {
-    const isPasswordRequired = config.roomPasswordEnabled;
+app.get('/api/hostPassword', (req, res) => {
+    const isPasswordRequired = config.hostPasswordEnabled;
     res.json({ isPasswordRequired });
 });
 
 // Check if Room password valid
-app.post('/api/roomPasswordValidate', (req, res) => {
+app.post('/api/hostPasswordValidate', (req, res) => {
     const { password } = req.body;
-    const success = password === config.roomPassword;
+    const success = password === config.hostPassword;
     res.json({ success: success });
 });
 
