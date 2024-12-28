@@ -60,9 +60,11 @@ async function checkRoomPassword(maxRetries = 3, attempts = 0) {
                     autocapitalize: 'off',
                     autocorrect: 'off',
                 },
-                showCancelButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showDenyButton: true,
                 confirmButtonText: 'Submit',
-                cancelButtonText: 'Cancel',
+                denyButtonText: `Cancel`,
                 preConfirm: (password) => {
                     if (!password) {
                         Swal.showValidationMessage('Password cannot be empty');

@@ -259,7 +259,7 @@ input {
 
 /* Swal2 custom theme */
 .swal2-popup {
-    background-color: #333 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
     color: var(--text-color) !important;
     border: none !important;
 }
