@@ -216,13 +216,13 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
     return res.json({ users });
 });
 
-// Check if Room password required
+// Check if Host password required
 app.get('/api/hostPassword', (req, res) => {
     const isPasswordRequired = config.hostPasswordEnabled;
     res.json({ isPasswordRequired });
 });
 
-// Check if Room password valid
+// Check if Host password valid
 app.post('/api/hostPasswordValidate', (req, res) => {
     const { password } = req.body;
     const success = password === config.hostPassword;
