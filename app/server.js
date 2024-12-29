@@ -183,6 +183,9 @@ app.get(`${config.apiBasePath}/connected`, (req, res) => {
     // Construct the base URL (simplified)
     const baseUrl = `${req.protocol}://${req.get('Host')}`;
 
+    // Generate the password part dynamically based on hostPasswordEnabled
+    const password = config.hostPasswordEnabled ? `&password=${config.hostPassword}` : '';
+
     // Retrieve the list of connected users (ensure this returns an iterable like Map or Array)
     const users = getConnectedUsers();
     if (!users || typeof users.values !== 'function') {
@@ -192,7 +195,7 @@ app.get(`${config.apiBasePath}/connected`, (req, res) => {
     // Generate a list of user-to-call links for the provided user
     const connected = Array.from(users.values()).reduce((acc, connectedUser) => {
         if (user !== connectedUser) {
-            acc.push(`${baseUrl}/join?user=${user}&call=${connectedUser}`);
+            acc.push(`${baseUrl}/join?user=${user}&call=${connectedUser}${password}`);
         }
         return acc;
     }, []);
