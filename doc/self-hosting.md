@@ -285,8 +285,8 @@ For `Docker`:
 
 cd call-me
 git pull
-docker pull mirotalk/cme:latest
-docker images |grep '<none>' |awk '{print $3}' |xargs docker rmi
+docker-compose pull
+docker image prune -f
 docker-compose up -d
 ```
 
