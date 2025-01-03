@@ -42,7 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchRandomImage();
 });
 
-// githubDiv.style.display = 'none';
+// Handle config
+if (!app.showGithub) {
+    githubDiv.style.display = 'none';
+}
 
 async function checkHostPassword(maxRetries = 3, attempts = 0) {
     try {
