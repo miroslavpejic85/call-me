@@ -397,9 +397,8 @@ function swapCamera() {
             refreshLocalVideoStream(newStream);
             refreshPeerVideoStreams(newStream);
         })
-        .catch((err) => {
-            console.error(`[Error] Camera swap failed: ${err.message}`, err);
-            handleError('Failed to swap the camera.');
+        .catch((error) => {
+            handleError('Failed to swap the camera.', error);
         });
 }
 
