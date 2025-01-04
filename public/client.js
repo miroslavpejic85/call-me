@@ -50,9 +50,14 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Handle config
-if (!app.showGithub) {
-    githubDiv.style.display = 'none';
-}
+const elementsToHide = [
+    { condition: !app.showGithub, element: githubDiv },
+    { condition: !app.attribution, element: attribution }
+];
+
+elementsToHide.forEach(({ condition, element }) => {
+    if (condition) elemDisplay(element, false);
+});
 
 async function checkHostPassword(maxRetries = 3, attempts = 0) {
     try {

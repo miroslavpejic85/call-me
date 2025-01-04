@@ -2,5 +2,6 @@
 
 const app = {
     showGithub: true,
+    attribution: true,
     //...
 };
