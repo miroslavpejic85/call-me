@@ -3,6 +3,9 @@
 // This user agent
 const userAgent = navigator.userAgent;
 
+// Check device
+const isMobileDevice = isMobile(userAgent);
+
 // WebSocket connection to the signaling server
 const socket = io();
 
@@ -21,6 +24,7 @@ const roomPage = document.getElementById('roomPage');
 const callUsernameIn = document.getElementById('callUsernameIn');
 const hideBtn = document.getElementById('hideBtn');
 const callBtn = document.getElementById('callBtn');
+const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
 const audioBtn = document.getElementById('audioBtn');
 const hangUpBtn = document.getElementById('hangUpBtn');
@@ -33,6 +37,7 @@ const remoteVideo = document.getElementById('remoteVideo');
 let userName;
 let connectedUser;
 let thisConnection;
+let camera = 'user';
 let stream;
 
 // On html page loaded...
@@ -278,20 +283,39 @@ function handleMessage(data) {
     }
 }
 
+// helpers
+function isMobile(userAgent) {
+    return !!/Android|webOS|iPhone|iPad|iPod|BB10|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(userAgent || '');
+}
+
 // Handle Listeners
 function handleListeners() {
     // Event listeners
     signInBtn.addEventListener('click', handleSignInClick);
+    hideBtn.addEventListener('click', toggleLocalVideo);
     callBtn.addEventListener('click', handleCallClick);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
-    hideBtn.addEventListener('click', toggleLocalVideo);
     hangUpBtn.addEventListener('click', handleHangUpClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
+
+    // Initialize the camera swap functionality
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+        const videoInputs = devices.filter((device) => device.kind === 'videoinput');
+        videoInputs.length > 1 && isMobileDevice
+            ? swapCameraBtn.addEventListener('click', swapCamera)
+            : elemDisplay(swapCameraBtn, false);
+    });
+
     // Add keyUp listeners
     callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+}
+
+// Handle element display
+function elemDisplay(element, display, mode = 'block') {
+    if (element) element.style.display = display ? mode : 'none';
 }
 
 // Generic keyUp handler
@@ -312,6 +336,11 @@ function handleSignInClick() {
         });
         localStorage.callMeUsername = userName;
     }
+}
+
+// Toggle local video visibility
+function toggleLocalVideo() {
+    localVideoContainer.classList.toggle('hide');
 }
 
 // Handle call button click
@@ -350,9 +379,63 @@ function handleAudioClick() {
     audioBtn.classList.toggle('btn-danger');
 }
 
-// Toggle local video visibility
-function toggleLocalVideo() {
-    localVideoContainer.classList.toggle('hide');
+// Function to swap between user-facing and environment cameras
+function swapCamera() {
+    camera = camera === 'user' ? 'environment' : 'user';
+
+    const videoConstraints = camera === 'user' ? true : { facingMode: { exact: camera } };
+
+    navigator.mediaDevices
+        .getUserMedia({ video: videoConstraints })
+        .then((newStream) => {
+            // Stop the previous video track
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.stop();
+            }
+            // Refresh video streams
+            refreshLocalVideoStream(newStream);
+            refreshPeerVideoStreams(newStream);
+        })
+        .catch((err) => {
+            console.error(`[Error] Camera swap failed: ${err.message}`, err);
+            handleError('Failed to swap the camera.');
+        });
+}
+
+// Update the local video stream
+function refreshLocalVideoStream(newStream) {
+    const videoTrack = newStream.getVideoTracks()[0];
+    if (!videoTrack) {
+        console.error('[Error] No video track available in the stream.');
+        return;
+    }
+
+    videoTrack.enabled = true;
+
+    const audioTrack = stream.getAudioTracks()[0];
+    const updatedStream = new MediaStream([videoTrack, audioTrack].filter(Boolean)); // Ensure both tracks exist
+
+    stream = updatedStream;
+    localVideo.srcObject = stream;
+}
+
+// Update the video stream for all peers
+function refreshPeerVideoStreams(newStream) {
+    if (!thisConnection) return;
+
+    const videoTrack = newStream.getVideoTracks()[0];
+    if (!videoTrack) {
+        console.error('[Error] No video track available for peer connections.');
+        return;
+    }
+
+    const videoSender = thisConnection.getSenders().find((sender) => sender.track && sender.track.kind === 'video');
+    if (videoSender) {
+        videoSender.replaceTrack(videoTrack).catch((error) => {
+            console.error(`[Error] Replacing track: ${error.message}`, error);
+        });
+    }
 }
 
 // Handle hang-up button click
