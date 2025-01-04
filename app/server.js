@@ -156,6 +156,18 @@ app.get('/join/', (req, res) => {
             return unauthorized(res);
         }
 
+        const isValidUser = isValidUsername(user);
+        console.log('isValidUser', { user: user, valid: isValidUser });
+        if (!isValidUser) {
+            return unauthorized(res);
+        }
+
+        const isValidCall = isValidUsername(user);
+        console.log('isValidCall', { call: call, valid: isValidCall });
+        if (!isValidCall) {
+            return unauthorized(res);
+        }
+
         if (user || (user && call)) {
             return res.sendFile(HOME);
         }
@@ -306,6 +318,19 @@ function handleConnection(socket) {
     // Function to handle user sign-in request
     function handleSignIn(data) {
         const { name } = data;
+
+        const isValidName = isValidUsername(name);
+        console.log('isValidName', { username: name, valid: isValidName });
+        if (!isValidName) {
+            sendMsgTo(socket, {
+                type: 'signIn',
+                success: false,
+                message:
+                    'Invalid username.<br/> Allowed letters, numbers, underscores, periods, hyphens, and @. Length: 3-36 characters.',
+            });
+            return;
+        }
+
         if (!users.has(name)) {
             users.set(name, socket);
             socket.username = name;
@@ -375,6 +400,12 @@ function handleConnection(socket) {
             console.log('Connected Users', getConnectedUsers());
         }
     }
+}
+
+// Allow letters, numbers, underscores, periods, hyphens, and @. Length: 3-36 characters
+function isValidUsername(username) {
+    const usernamePattern = /^[a-zA-Z0-9_.-@]{3,36}$/;
+    return usernamePattern.test(username);
 }
 
 // Function to get all connected users

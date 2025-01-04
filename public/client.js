@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Handle config
 const elementsToHide = [
     { condition: !app.showGithub, element: githubDiv },
-    { condition: !app.attribution, element: attribution }
+    { condition: !app.attribution, element: attribution },
 ];
 
 elementsToHide.forEach(({ condition, element }) => {
@@ -478,10 +478,12 @@ function handleNotFound(data) {
 
 // Handle sign-in response from the server
 function handleSignIn(data) {
-    const { success } = data;
+    const { success, message } = data;
     if (!success) {
-        handleError('Username already in use.<br/>Please try a different one.');
-        setTimeout(handleHangUpClick, 3000);
+        handleError(message);
+        if (!message.startsWith('Invalid username')) {
+            setTimeout(handleHangUpClick, 3000);
+        }
     } else {
         githubDiv.style.display = 'none';
         attribution.style.display = 'none';
@@ -670,7 +672,7 @@ function handleLeave() {
 }
 
 // Handle and display errors
-function handleError(message, error = false, position = 'center', timer = 4000) {
+function handleError(message, error = false, position = 'center', timer = 6000) {
     if (error) console.error(error);
     sound('notify');
     Swal.fire({
