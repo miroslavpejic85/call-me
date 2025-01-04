@@ -19,8 +19,10 @@ const usernameIn = document.getElementById('usernameIn');
 const signInBtn = document.getElementById('signInBtn');
 const roomPage = document.getElementById('roomPage');
 const callUsernameIn = document.getElementById('callUsernameIn');
-const callBtn = document.getElementById('callBtn');
 const hideBtn = document.getElementById('hideBtn');
+const callBtn = document.getElementById('callBtn');
+const videoBtn = document.getElementById('videoBtn');
+const audioBtn = document.getElementById('audioBtn');
 const hangUpBtn = document.getElementById('hangUpBtn');
 const localVideoContainer = document.getElementById('localVideoContainer');
 const localVideo = document.getElementById('localVideo');
@@ -281,6 +283,8 @@ function handleListeners() {
     // Event listeners
     signInBtn.addEventListener('click', handleSignInClick);
     callBtn.addEventListener('click', handleCallClick);
+    videoBtn.addEventListener('click', handleVideoClick);
+    audioBtn.addEventListener('click', handleAudioClick);
     hideBtn.addEventListener('click', toggleLocalVideo);
     hangUpBtn.addEventListener('click', handleHangUpClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
@@ -330,6 +334,20 @@ function handleCallClick() {
     } else {
         handleError('Please enter a username to call.');
     }
+}
+
+// Toggle video stream
+function handleVideoClick() {
+    const videoTrack = stream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    videoBtn.classList.toggle('btn-danger');
+}
+
+// Toggle audio stream
+function handleAudioClick() {
+    const audioTrack = stream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    audioBtn.classList.toggle('btn-danger');
 }
 
 // Toggle local video visibility

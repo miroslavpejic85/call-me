@@ -306,3 +306,7 @@ input {
 ::-webkit-scrollbar-track {
     background: #1a1b1f;
 }
+
+.red {
+    background: red !important;
+}
