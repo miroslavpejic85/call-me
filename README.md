@@ -12,9 +12,12 @@ This project allows you to:
 
 - `Sign in` with a username.
 - `Make video calls` by entering the recipient's username.
-- `Toggle` your video feed visibility.
-- `Hang up` the call when done.
-- `Rest API` to get all connected users.
+- `Toggle` the visibility of your video feed.
+- `Switch` between cameras.
+- `Enable/Disable` your video.
+- `Enable/Disable` your audio.
+- `Hang up` the call when finished.
+- `Use a REST API` to retrieve a list of all connected users.
 
 ---
 
