@@ -79,6 +79,7 @@ img {
 button {
     background: none;
     color: inherit;
+    touch-action: manipulation; /* Prevent zoom and other default behaviors */
 }
 
 /* Session Time */
