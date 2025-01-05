@@ -170,11 +170,19 @@ async function fetchRandomImage() {
     }
 }
 
-// Initialize tooltips
+// Initialize tooltips and handle hiding them when clicked
 function handleToolTip() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    // Add click event listener to hide all tooltips
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        tooltipTriggerEl.addEventListener('click', function () {
+            tooltipList.forEach(function (tooltip) {
+                tooltip.hide(); // Hide all tooltips
+            });
+        });
     });
 }
 
