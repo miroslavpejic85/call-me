@@ -401,6 +401,8 @@ function swapCamera() {
             // Refresh video streams
             refreshLocalVideoStream(newStream);
             refreshPeerVideoStreams(newStream);
+            // Check video/audio status
+            checkVideoAudioStatus();
         })
         .catch((error) => {
             handleError('Failed to swap the camera.', error);
@@ -439,6 +441,18 @@ function refreshPeerVideoStreams(newStream) {
         videoSender.replaceTrack(videoTrack).catch((error) => {
             console.error(`[Error] Replacing track: ${error.message}`, error);
         });
+    }
+}
+
+// Check video audio status
+function checkVideoAudioStatus() {
+    if (videoBtn.classList.contains('btn-danger')) {
+        const videoTrack = stream.getVideoTracks()[0];
+        videoTrack.enabled = false;
+    }
+    if (audioBtn.classList.contains('btn-danger')) {
+        const audioTrack = stream.getAudioTracks()[0];
+        audioTrack.enabled = false;
     }
 }
 
