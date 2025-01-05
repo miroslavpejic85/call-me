@@ -172,6 +172,8 @@ async function fetchRandomImage() {
 
 // Initialize tooltips and handle hiding them when clicked
 function handleToolTip() {
+    if (isMobileDevice) return;
+
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
