@@ -41,7 +41,7 @@ let camera = 'user';
 let stream;
 
 // On html page loaded...
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     handleToolTip();
     handleLocalStorage();
     handleDirectJoin();
@@ -293,6 +293,21 @@ function isMobile(userAgent) {
     return !!/Android|webOS|iPhone|iPad|iPod|BB10|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(userAgent || '');
 }
 
+// Enumerate Devices for camera swap functionality
+function handleEnumerateDevices() {
+    navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+            const videoInputs = devices.filter((device) => device.kind === 'videoinput');
+            videoInputs.length > 1 && isMobileDevice
+                ? swapCameraBtn.addEventListener('click', swapCamera)
+                : elemDisplay(swapCameraBtn, false);
+        })
+        .catch((error) => {
+            handleError('Error enumerating devices', error);
+        });
+}
+
 // Handle Listeners
 function handleListeners() {
     // Event listeners
@@ -304,15 +319,6 @@ function handleListeners() {
     hangUpBtn.addEventListener('click', handleHangUpClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
-
-    // Initialize the camera swap functionality
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-        const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-        videoInputs.length > 1 && isMobileDevice
-            ? swapCameraBtn.addEventListener('click', swapCamera)
-            : elemDisplay(swapCameraBtn, false);
-    });
-
     // Add keyUp listeners
     callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
@@ -413,14 +419,17 @@ function swapCamera() {
 function refreshLocalVideoStream(newStream) {
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        console.error('[Error] No video track available in the stream.');
+        handleError('No video track available in the newStream.');
         return;
     }
 
-    videoTrack.enabled = true;
-
     const audioTrack = stream.getAudioTracks()[0];
-    const updatedStream = new MediaStream([videoTrack, audioTrack].filter(Boolean)); // Ensure both tracks exist
+    if (!audioTrack) {
+        handleError('No audio track available in the stream.');
+        return;
+    }
+
+    const updatedStream = new MediaStream([videoTrack, audioTrack]); // Create a new stream only with valid tracks
 
     stream = updatedStream;
     localVideo.srcObject = stream;
@@ -432,14 +441,14 @@ function refreshPeerVideoStreams(newStream) {
 
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        console.error('[Error] No video track available for peer connections.');
+        handleError('No video track available for peer connections.');
         return;
     }
 
     const videoSender = thisConnection.getSenders().find((sender) => sender.track && sender.track.kind === 'video');
     if (videoSender) {
         videoSender.replaceTrack(videoTrack).catch((error) => {
-            console.error(`[Error] Replacing track: ${error.message}`, error);
+            handleError(`Replacing track error: ${error.message}`);
         });
     }
 }
@@ -516,6 +525,7 @@ function handleSignIn(data) {
                 localVideo.controls = false;
                 localUsername.innerText = userName;
                 initializeConnection();
+                handleEnumerateDevices();
             })
             .catch((error) => {
                 handleError('Failed to access camera and microphone.', error);
