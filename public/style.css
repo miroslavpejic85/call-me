@@ -82,6 +82,11 @@ button {
     touch-action: manipulation; /* Prevent zoom and other default behaviors */
 }
 
+/* Swap camera mobile only */
+#swapCameraBtn {
+    display: none;
+}
+
 /* Session Time */
 #sessionTime {
     display: none;

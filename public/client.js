@@ -309,9 +309,10 @@ function handleEnumerateDevices() {
         .enumerateDevices()
         .then((devices) => {
             const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-            videoInputs.length > 1 && isMobileDevice
-                ? swapCameraBtn.addEventListener('click', swapCamera)
-                : elemDisplay(swapCameraBtn, false);
+            if (videoInputs.length > 1 && isMobileDevice) {
+                swapCameraBtn.addEventListener('click', swapCamera);
+                elemDisplay(swapCameraBtn, true, 'inline');
+            }
         })
         .catch((error) => {
             handleError('Error enumerating devices', error);
