@@ -13,6 +13,8 @@ const socket = io();
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 // DOM elements
+const appTitle = document.getElementById('appTitle');
+const appName = document.getElementById('appName');
 const attribution = document.getElementById('attribution');
 const randomImage = document.getElementById('randomImage');
 const sessionTime = document.getElementById('sessionTime');
@@ -50,6 +52,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 // Handle config
+appTitle.innerText = app.title;
+appName.innerText = app.name;
+
 const elementsToHide = [
     { condition: !app.showGithub, element: githubDiv },
     { condition: !app.attribution, element: attribution },
