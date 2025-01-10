@@ -274,9 +274,8 @@ For `PM2`:
 
 cd call-me
 git pull
-pm2 stop app/server.js
 sudo npm install
-pm2 start app/server.js
+pm2 restart app/server.js
 ```
 
 ---
