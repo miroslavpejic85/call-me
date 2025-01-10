@@ -85,6 +85,9 @@ $ cd call-me
 # Copy .env.template to .env
 $ cp .env.template .env
 
+# Create your own docker-compose.yml
+$ cp docker-compose.template.yml docker-compose.yml
+
 # Pull the official Docker image
 $ docker pull mirotalk/cme:latest
 

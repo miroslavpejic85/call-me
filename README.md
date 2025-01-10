@@ -39,9 +39,6 @@ cd call-me
 # Copy .env.template to .env
 cp .env.template .env
 
-# Create your own docker-compose.yml 
-cp docker-compose.template.yml docker-compose.yml
-
 # Install dependencies
 npm install
 
@@ -66,6 +63,9 @@ cd call-me
 
 # Copy .env.template to .env
 cp .env.template .env
+
+# Create your own docker-compose.yml
+cp docker-compose.template.yml docker-compose.yml
 
 # Get official image from Docker Hub
 docker-compose pull
