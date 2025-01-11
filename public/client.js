@@ -112,7 +112,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                     timer: 1500,
                     showConfirmButton: false,
                 });
-                signInPage.style.display = 'block';
+                elemDisplay(signInPage, true);
             } else {
                 attempts++;
                 if (attempts < maxRetries) {
@@ -133,7 +133,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
             }
         } else {
             // No password required
-            signInPage.style.display = 'block';
+            elemDisplay(signInPage, true);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -226,7 +226,7 @@ function handleDirectJoin() {
 // Session Time
 function startSessionTime() {
     console.log('Start session time');
-    sessionTime.style.display = 'inline-flex';
+    elemDisplay(sessionTime, true, 'inline-flex');
     let sessionElapsedTime = 0;
     setInterval(function printTime() {
         sessionElapsedTime++;
@@ -524,10 +524,10 @@ function handleSignIn(data) {
             setTimeout(handleHangUpClick, 3000);
         }
     } else {
-        githubDiv.style.display = 'none';
-        attribution.style.display = 'none';
-        signInPage.style.display = 'none';
-        roomPage.style.display = 'block';
+        elemDisplay(githubDiv, false);
+        elemDisplay(attribution, false);
+        elemDisplay(signInPage, false);
+        elemDisplay(roomPage, true);
 
         navigator.mediaDevices
             .getUserMedia({ video: true, audio: true })
@@ -603,7 +603,7 @@ function offerCreate() {
                 type: 'offer',
                 offer,
             });
-            callUsernameIn.style.display = 'none';
+            elemDisplay(callUsernameIn, false);
         })
         .catch((error) => {
             handleError('Error when creating an offer.', error);
@@ -628,8 +628,8 @@ function offerAccept(data) {
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
         if (result.isConfirmed) {
-            callUsernameIn.style.display = 'none';
-            callBtn.style.display = 'none';
+            elemDisplay(callUsernameIn, false);
+            elemDisplay(callBtn, false);
             data.type = 'offerCreate';
             socket.recipient = data.from;
         } else {
@@ -670,10 +670,10 @@ function handleAnswer(data) {
 // Handle incoming ICE candidate
 function handleCandidate(data) {
     const { candidate } = data;
-    callBtn.style.display = 'none';
+    elemDisplay(callBtn, false);
     thisConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) => {
         handleError('Error when add ice candidate.', error);
-        callBtn.style.display = 'inline';
+        elemDisplay(callBtn, true, 'inline');
     });
 }
 
