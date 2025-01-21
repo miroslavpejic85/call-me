@@ -98,6 +98,8 @@ Lets the `user2 join` the room and initiate a `call` to the `user1`
 - [http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1) (dev)
 - [https://cme.mirotalk.com/join?user=user2&call=user1](https://cme.mirotalk.com/join?user=user2&call=user1) (prod)
 
+You can explore a `widget` example that demonstrates this functionality [here](./integration/widget.html).
+
 ---
 
 ## Fast Integration
