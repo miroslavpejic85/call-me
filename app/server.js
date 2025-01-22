@@ -13,6 +13,10 @@ const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
 const packageJson = require('../package.json');
 
+// Logs
+const logs = require('./logs');
+const log = new logs('server');
+
 // Public directory location
 const PUBLIC_DIR = path.join(__dirname, '../', 'public');
 
@@ -79,7 +83,7 @@ if (isHttps) {
         // Create HTTPS server using Express
         server = https.createServer(options, app);
     } catch (err) {
-        console.error('Error loading certificates:', err);
+        log.error('Error loading certificates:', err);
         process.exit(1); // Exit the process if certificates cannot be loaded
     }
 } else {
@@ -92,7 +96,7 @@ const io = socketIO(server);
 
 // Start the server and listen on the specified port
 server.listen(port, () => {
-    console.log('Server', {
+    log.info('Server', {
         running_at: host,
         ice: config.iceServers,
         host: {
@@ -114,7 +118,7 @@ app.use(config.apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(config.sw
 
 // Logs requests
 app.use((req, res, next) => {
-    console.log('New request', {
+    log.debug('New request', {
         //headers: req.headers,
         body: req.body,
         method: req.method,
@@ -137,14 +141,14 @@ app.get('/randomImage', async (req, res) => {
         const data = response.data;
         res.send(data);
     } catch (error) {
-        console.error('Error fetching image', error.message);
+        log.error('Error fetching image', error.message);
     }
 });
 
 // Direct Join room
 app.get('/join/', (req, res) => {
     if (Object.keys(req.query).length > 0) {
-        console.log('Request query', req.query);
+        log.debug('Request query', req.query);
 
         const { user, call, password } = req.query;
         // http://localhost:8000/join?user=user1
@@ -157,13 +161,13 @@ app.get('/join/', (req, res) => {
         }
 
         const isValidUser = isValidUsername(user);
-        console.log('isValidUser', { user: user, valid: isValidUser });
+        log.debug('isValidUser', { user: user, valid: isValidUser });
         if (!isValidUser) {
             return unauthorized(res);
         }
 
         const isValidCall = isValidUsername(user);
-        console.log('isValidCall', { call: call, valid: isValidCall });
+        log.debug('isValidCall', { call: call, valid: isValidCall });
         if (!isValidCall) {
             return unauthorized(res);
         }
@@ -179,14 +183,14 @@ app.get('/join/', (req, res) => {
 app.get(`${config.apiBasePath}/connected`, (req, res) => {
     // Check if the user is authorized for this API call
     if (!isAuthorized(req)) {
-        console.log('Unauthorized API call: Get Connected', {
+        log.debug('Unauthorized API call: Get Connected', {
             headers: req.headers,
             body: req.body,
         });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
 
-    //console.log(req.query);
+    //log.debug(req.query);
     const { user } = req.query;
     if (!user) {
         return res.status(400).json({ error: 'User not provided in request query' });
@@ -220,7 +224,7 @@ app.get(`${config.apiBasePath}/connected`, (req, res) => {
 app.get(`${config.apiBasePath}/users`, (req, res) => {
     // check if user is authorized for the API call
     if (!isAuthorized(req)) {
-        console.log('Unauthorized API call: Get Users', {
+        log.debug('Unauthorized API call: Get Users', {
             headers: req.headers,
             body: req.body,
         });
@@ -267,7 +271,7 @@ const isAuthorized = (req) => {
 
 // Function to handle individual WebSocket connections
 function handleConnection(socket) {
-    console.log('User connected:', socket.id);
+    log.debug('User connected:', socket.id);
 
     // Refresh connected users
     broadcastConnectedUsers();
@@ -283,7 +287,7 @@ function handleConnection(socket) {
     function handleMessage(data) {
         const { type } = data;
 
-        console.log('Received message', type);
+        log.debug('Received message', type);
 
         switch (type) {
             case 'signIn':
@@ -302,7 +306,7 @@ function handleConnection(socket) {
                 handleSignalingMessage(data);
                 break;
             case 'pong':
-                console.log('Client response:', data.message);
+                log.debug('Client response:', data.message);
                 break;
             default:
                 sendError(socket, `Unknown command: ${type}`);
@@ -324,7 +328,7 @@ function handleConnection(socket) {
         const { name } = data;
 
         const isValidName = isValidUsername(name);
-        console.log('isValidName', { username: name, valid: isValidName });
+        log.debug('isValidName', { username: name, valid: isValidName });
         if (!isValidName) {
             sendMsgTo(socket, {
                 type: 'signIn',
@@ -338,7 +342,7 @@ function handleConnection(socket) {
         if (!users.has(name)) {
             users.set(name, socket);
             socket.username = name;
-            console.log('User signed in:', name);
+            log.debug('User signed in:', name);
             sendMsgTo(socket, { type: 'signIn', success: true });
             broadcastConnectedUsers();
         } else {
@@ -348,13 +352,13 @@ function handleConnection(socket) {
 
     // Function to handle offer request
     function handleOffer(data) {
-        console.log('handleOffer', data);
+        log.debug('handleOffer', data);
 
         const { from, to, name, type } = data;
         const toName = type === 'offerAccept' ? to : from;
         const recipientSocket = users.get(toName);
 
-        console.log(`Handling offer for ${toName}`);
+        log.debug(`Handling offer for ${toName}`);
 
         switch (type) {
             case 'offerAccept':
@@ -362,20 +366,20 @@ function handleConnection(socket) {
                 if (recipientSocket) {
                     sendMsgTo(recipientSocket, data);
                 } else {
-                    console.warn(`Recipient (${toName}) not found`);
+                    log.warn(`Recipient (${toName}) not found`);
                     sendMsgTo(socket, { type: 'notfound', username: toName });
                 }
                 break;
             case 'offerDecline':
-                console.warn(`User ${name} declined your call`);
+                log.warn(`User ${name} declined your call`);
                 sendError(recipientSocket || socket, `User ${name} declined your call`);
                 break;
             case 'offerBusy':
-                console.warn(`User ${name} busy in another call`);
+                log.warn(`User ${name} busy in another call`);
                 sendError(recipientSocket || socket, `User ${name} busy in another call.`);
                 break;
             default:
-                console.warn(`Unknown offer type: ${type}`);
+                log.warn(`Unknown offer type: ${type}`);
                 break;
         }
     }
@@ -388,7 +392,7 @@ function handleConnection(socket) {
         switch (type) {
             case 'leave':
                 if (recipientSocket !== undefined) {
-                    console.log('Leave room', socket.username);
+                    log.debug('Leave room', socket.username);
                     sendMsgTo(recipientSocket, { type: 'leave', name: socket.username });
                 }
                 break;
@@ -404,7 +408,7 @@ function handleConnection(socket) {
     function handleClose() {
         const name = socket.username;
         if (name) {
-            console.log('User disconnected:', name);
+            log.debug('User disconnected:', name);
             users.delete(name);
             broadcastConnectedUsers();
         }
@@ -425,31 +429,31 @@ function getConnectedUsers() {
 // Function to broadcast all connected users
 function broadcastConnectedUsers() {
     const connectedUsers = getConnectedUsers();
-    console.log('Connected Users', connectedUsers);
+    log.debug('Connected Users', connectedUsers);
     broadcastMsg({ type: 'users', users: connectedUsers });
 }
 
 // Function to broadcast a message to all connected clients
 function broadcastMsg(message) {
-    console.log('Broadcast message:', message);
+    log.debug('Broadcast message:', message);
     io.emit('message', message);
 }
 
 // Function to broadcast a message to all connected clients except the sender
 function broadcastMsgExpectSender(socket, message) {
-    console.log('Broadcast message:', message);
+    log.debug('Broadcast message:', message);
     socket.broadcast.emit('message', message);
 }
 
 // Function to send a message to a specific connection
 function sendMsgTo(socket, message) {
-    console.log('Sending message:', message.type);
+    log.debug('Sending message:', message.type);
     socket.emit('message', message);
 }
 
 // Function to send an error message to a specific connection
 function sendError(socket, message) {
-    console.error('Error:', message);
+    log.error('Error:', message);
     sendMsgTo(socket, { type: 'error', message: message });
 }
 
