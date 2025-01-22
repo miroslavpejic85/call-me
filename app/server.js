@@ -269,6 +269,9 @@ const isAuthorized = (req) => {
 function handleConnection(socket) {
     console.log('User connected:', socket.id);
 
+    // Refresh connected users
+    broadcastConnectedUsers();
+
     // Send a ping message to the newly connected client
     sendPing(socket);
 
@@ -287,6 +290,7 @@ function handleConnection(socket) {
                 handleSignIn(data);
                 break;
             case 'offerAccept':
+            case 'offerBusy':
             case 'offerDecline':
             case 'offerCreate':
                 handleOffer(data);
@@ -336,7 +340,7 @@ function handleConnection(socket) {
             socket.username = name;
             console.log('User signed in:', name);
             sendMsgTo(socket, { type: 'signIn', success: true });
-            console.log('Connected Users', getConnectedUsers());
+            broadcastConnectedUsers();
         } else {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });
         }
@@ -366,6 +370,10 @@ function handleConnection(socket) {
                 console.warn(`User ${name} declined your call`);
                 sendError(recipientSocket || socket, `User ${name} declined your call`);
                 break;
+            case 'offerBusy':
+                console.warn(`User ${name} busy in another call`);
+                sendError(recipientSocket || socket, `User ${name} busy in another call.`);
+                break;
             default:
                 console.warn(`Unknown offer type: ${type}`);
                 break;
@@ -381,7 +389,7 @@ function handleConnection(socket) {
             case 'leave':
                 if (recipientSocket !== undefined) {
                     console.log('Leave room', socket.username);
-                    sendMsgTo(recipientSocket, { type: 'leave' });
+                    sendMsgTo(recipientSocket, { type: 'leave', name: socket.username });
                 }
                 break;
             default:
@@ -394,10 +402,11 @@ function handleConnection(socket) {
 
     // Function to handle the closing of a connection
     function handleClose() {
-        if (socket.username) {
-            console.log('User disconnected:', socket.username);
-            users.delete(socket.username);
-            console.log('Connected Users', getConnectedUsers());
+        const name = socket.username;
+        if (name) {
+            console.log('User disconnected:', name);
+            users.delete(name);
+            broadcastConnectedUsers();
         }
     }
 }
@@ -413,9 +422,22 @@ function getConnectedUsers() {
     return Array.from(users.keys());
 }
 
-// Function to broadcast a message to all connection
-function broadcastMsg(socket, message) {
-    console.log('Broadcast message:', message.type);
+// Function to broadcast all connected users
+function broadcastConnectedUsers() {
+    const connectedUsers = getConnectedUsers();
+    console.log('Connected Users', connectedUsers);
+    broadcastMsg({ type: 'users', users: connectedUsers });
+}
+
+// Function to broadcast a message to all connected clients
+function broadcastMsg(message) {
+    console.log('Broadcast message:', message);
+    io.emit('message', message);
+}
+
+// Function to broadcast a message to all connected clients except the sender
+function broadcastMsgExpectSender(socket, message) {
+    console.log('Broadcast message:', message);
     socket.broadcast.emit('message', message);
 }
 

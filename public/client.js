@@ -3,9 +3,6 @@
 // This user agent
 const userAgent = navigator.userAgent;
 
-// Check device
-const isMobileDevice = isMobile(userAgent);
-
 // WebSocket connection to the signaling server
 const socket = io();
 
@@ -23,7 +20,7 @@ const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
 const signInBtn = document.getElementById('signInBtn');
 const roomPage = document.getElementById('roomPage');
-const callUsernameIn = document.getElementById('callUsernameIn');
+const callUsernameSelect = document.getElementById('callUsernameSelect');
 const hideBtn = document.getElementById('hideBtn');
 const callBtn = document.getElementById('callBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
@@ -36,20 +33,47 @@ const localUsername = document.getElementById('localUsername');
 const remoteVideo = document.getElementById('remoteVideo');
 
 // User and connection information
+let userInfo;
 let userName;
 let connectedUser;
 let thisConnection;
 let camera = 'user';
 let stream;
 
+// Variable to store the interval ID
+let sessionTimerId = null;
+
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
+    userInfo = getUserInfo(userAgent);
     handleToolTip();
     handleLocalStorage();
     handleDirectJoin();
     handleListeners();
     fetchRandomImage();
 });
+
+// Get user information from User-Agent string
+function getUserInfo(userAgent) {
+    const parser = new UAParser(userAgent);
+    const { device, os, browser } = parser.getResult();
+
+    // Determine device type and specific characteristics
+    const deviceType = device.type || 'desktop';
+    const isIPad = device.model?.toLowerCase() === 'ipad';
+
+    return {
+        device: {
+            isMobile: deviceType === 'mobile',
+            isTablet: deviceType === 'tablet',
+            isDesktop: deviceType === 'desktop',
+            isIPad,
+        },
+        os: { name: os.name || 'Unknown OS', version: os.version || 'Unknown Version' },
+        browser: { name: browser.name || 'Unknown Browser', version: browser.version || 'Unknown Version' },
+        userAgent,
+    };
+}
 
 // Handle config
 appTitle.innerText = app.title;
@@ -106,6 +130,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
 
             if (validationResult.success) {
                 await Swal.fire({
+                    position: 'top',
                     icon: 'success',
                     title: 'Access Granted',
                     text: 'Password validated successfully!',
@@ -117,6 +142,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                 attempts++;
                 if (attempts < maxRetries) {
                     await Swal.fire({
+                        position: 'top',
                         icon: 'error',
                         title: 'Invalid Password',
                         text: `Please try again. (${attempts}/${maxRetries} attempts)`,
@@ -125,6 +151,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                     checkHostPassword(maxRetries, attempts);
                 } else {
                     await Swal.fire({
+                        position: 'top',
                         icon: 'warning',
                         title: 'Too Many Attempts',
                         text: 'You have exceeded the maximum number of attempts. Please try again later.',
@@ -138,6 +165,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
     } catch (error) {
         console.error('Error:', error);
         Swal.fire({
+            position: 'top',
             icon: 'error',
             title: 'Error',
             text: 'An error occurred while joining the host.',
@@ -177,7 +205,7 @@ async function fetchRandomImage() {
 
 // Initialize tooltips and handle hiding them when clicked
 function handleToolTip() {
-    if (isMobileDevice) return;
+    if (userInfo.device.isMobile) return;
 
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -196,7 +224,6 @@ function handleToolTip() {
 // Handle localStorage data
 function handleLocalStorage() {
     usernameIn.value = localStorage.callMeUsername ? localStorage.callMeUsername : '';
-    callUsernameIn.value = localStorage.callMeUsernameToCall ? localStorage.callMeUsernameToCall : '';
 }
 
 // Handle Room direct join
@@ -215,23 +242,61 @@ function handleDirectJoin() {
 
         if (call) {
             // Call user if call is provided
-            callUsernameIn.value = call;
-            handleCallClick();
+            setTimeout(() => {
+                selectIndexByValue(call);
+                handleCallClick();
+            }, 3000);
         }
     }
 
     if (!password) checkHostPassword();
 }
 
-// Session Time
+// Select index by passed value
+function selectIndexByValue(value) {
+    for (let i = 0; i < callUsernameSelect.options.length; i++) {
+        if (callUsernameSelect.options[i].value === value) {
+            callUsernameSelect.selectedIndex = i; // Select the option
+            break;
+        }
+    }
+}
+
+// Remove option by value
+function removeOptionByValue(value) {
+    for (let i = 0; i < callUsernameSelect.options.length; i++) {
+        if (callUsernameSelect.options[i].value === value) {
+            alert(value);
+            callUsernameSelect.remove(i); // Remove the matching option
+            break;
+        }
+    }
+}
+
+// Start Session Time
 function startSessionTime() {
     console.log('Start session time');
     elemDisplay(sessionTime, true, 'inline-flex');
     let sessionElapsedTime = 0;
-    setInterval(function printTime() {
+
+    if (sessionTimerId !== null) {
+        clearInterval(sessionTimerId);
+    }
+
+    sessionTimerId = setInterval(function printTime() {
         sessionElapsedTime++;
         sessionTime.innerText = secondsToHms(sessionElapsedTime);
     }, 1000);
+}
+
+// Stop Session Time
+function stopSessionTime() {
+    console.log('Stop session time');
+    if (sessionTimerId !== null) {
+        clearInterval(sessionTimerId);
+        sessionTimerId = null;
+    }
+    elemDisplay(sessionTime, false);
 }
 
 // Session Time in h/m/s
@@ -292,8 +357,11 @@ function handleMessage(data) {
         case 'candidate':
             handleCandidate(data);
             break;
+        case 'users':
+            handleUsers(data);
+            break;
         case 'leave':
-            handleLeave();
+            handleLeave(false);
             break;
         case 'error':
             handleError(data.message, data.message);
@@ -303,18 +371,13 @@ function handleMessage(data) {
     }
 }
 
-// helpers
-function isMobile(userAgent) {
-    return !!/Android|webOS|iPhone|iPad|iPod|BB10|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(userAgent || '');
-}
-
 // Enumerate Devices for camera swap functionality
 function handleEnumerateDevices() {
     navigator.mediaDevices
         .enumerateDevices()
         .then((devices) => {
             const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-            if (videoInputs.length > 1 && isMobileDevice) {
+            if (videoInputs.length > 1 && userInfo.device.isMobile) {
                 swapCameraBtn.addEventListener('click', swapCamera);
                 elemDisplay(swapCameraBtn, true, 'inline');
             }
@@ -336,7 +399,7 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     // Add keyUp listeners
-    callUsernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
+    callUsernameSelect.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
 }
 
@@ -372,10 +435,9 @@ function toggleLocalVideo() {
 
 // Handle call button click
 function handleCallClick() {
-    const callToUsername = callUsernameIn.value.trim();
+    const callToUsername = callUsernameSelect.value.trim();
     if (callToUsername.length > 0) {
         if (callToUsername === userName) {
-            callUsernameIn.value = '';
             handleError('You cannot call yourself.');
             return;
         }
@@ -385,7 +447,6 @@ function handleCallClick() {
             from: userName,
             to: callToUsername,
         });
-        localStorage.callMeUsernameToCall = callToUsername;
         popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
     } else {
         handleError('Please enter a username to call.');
@@ -423,6 +484,7 @@ function swapCamera() {
             // Refresh video streams
             refreshLocalVideoStream(newStream);
             refreshPeerVideoStreams(newStream);
+
             // Check video/audio status
             checkVideoAudioStatus();
         })
@@ -503,7 +565,7 @@ function handlePing(data) {
         type: 'pong',
         message: {
             client: 'Hello Server!',
-            agent: userAgent,
+            userInfo,
         },
     });
 }
@@ -511,8 +573,8 @@ function handlePing(data) {
 // Handle user not found from the server
 function handleNotFound(data) {
     const { username } = data;
-    callUsernameIn.value = '';
     handleError(`Username ${username} not found!`);
+    removeOptionByValue(username);
 }
 
 // Handle sign-in response from the server
@@ -603,7 +665,7 @@ function offerCreate() {
                 type: 'offer',
                 offer,
             });
-            elemDisplay(callUsernameIn, false);
+            elemDisplay(callUsernameSelect, false);
         })
         .catch((error) => {
             handleError('Error when creating an offer.', error);
@@ -612,9 +674,17 @@ function offerCreate() {
 
 // Accept incoming offer
 function offerAccept(data) {
+    // I'm already in call decline the new one!
+    if (remoteVideo.srcObject) {
+        data.type = 'offerBusy';
+        sendMsg({ ...data });
+        return;
+    }
+
     sound('ring');
+
     Swal.fire({
-        position: 'center',
+        position: 'top',
         imageUrl: 'assets/ring.png',
         imageWidth: 284,
         imageHeight: 120,
@@ -628,7 +698,7 @@ function offerAccept(data) {
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
         if (result.isConfirmed) {
-            elemDisplay(callUsernameIn, false);
+            elemDisplay(callUsernameSelect, false);
             elemDisplay(callBtn, false);
             data.type = 'offerCreate';
             socket.recipient = data.from;
@@ -677,6 +747,22 @@ function handleCandidate(data) {
     });
 }
 
+// Handle connected users
+function handleUsers(data) {
+    console.log('Connected users ------>', data.users);
+    callUsernameSelect.innerHTML = '';
+    data.users.forEach((user) => {
+        if (user === userName) return;
+        const option = document.createElement('option');
+        option.value = user;
+        option.textContent = user;
+        callUsernameSelect.appendChild(option);
+    });
+    if (callUsernameSelect.options.length === 0) {
+        callUsernameSelect.innerHTML = '<option value="" disabled selected>Select a user to call</option>';
+    }
+}
+
 // Play audio sound
 async function sound(name) {
     const sound = './assets/' + name + '.wav';
@@ -689,30 +775,53 @@ async function sound(name) {
     }
 }
 
-// Handle leaving the room
-function handleLeave() {
-    // Stop local video tracks
-    if (localVideo.srcObject != null) {
-        localVideo.srcObject.getTracks().forEach((track) => track.stop());
-        localVideo.srcObject = null;
+// Helper function to stop all tracks and clear media stream
+function stopMediaStream(videoElement) {
+    if (videoElement.srcObject) {
+        videoElement.srcObject.getTracks().forEach((track) => track.stop());
+        videoElement.srcObject = null;
     }
-    // Stop remote video tracks
-    if (remoteVideo.srcObject != null) {
-        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-        remoteVideo.srcObject = null;
-    }
-    // Disconnect from server
+}
+
+// Helper function to disconnect and clean up the connection
+function disconnectConnection() {
     if (thisConnection) {
         thisConnection.close();
         thisConnection = null;
     }
-    // GoTo homepage
-    connectedUser = null;
-    window.location.href = '/';
+}
+
+// Handle leaving the room
+function handleLeave(disconnect = true) {
+    if (disconnect) {
+        // Stop local and remote video tracks
+        stopMediaStream(localVideo);
+        stopMediaStream(remoteVideo);
+
+        // Disconnect from server and reset state
+        disconnectConnection();
+        connectedUser = null;
+
+        // Redirect to homepage
+        window.location.href = '/';
+    } else {
+        // Show UI elements
+        elemDisplay(callUsernameSelect, true);
+        elemDisplay(callBtn, true, 'inline');
+
+        // Stop remote video tracks only
+        stopMediaStream(remoteVideo);
+
+        // Stop session time
+        stopSessionTime();
+
+        // Reset state
+        connectedUser = null;
+    }
 }
 
 // Handle and display errors
-function handleError(message, error = false, position = 'center', timer = 6000) {
+function handleError(message, error = false, position = 'top', timer = 6000) {
     if (error) console.error(error);
     sound('notify');
     Swal.fire({

@@ -93,10 +93,10 @@
             <span id="sessionTime">0s</span>
             <div class="row text-center">
                 <div class="col-md-12">
-                    <div class="mb-3">
-                        <!-- Input field for entering the username to call -->
-                        <input id="callUsernameIn" type="text" class="form-control" placeholder="Username to call" />
-                    </div>
+                    <!-- Input field for selecting the username to call -->
+                    <select id="callUsernameSelect">
+                        <option value="" disabled selected>Select a user to call</option>
+                    </select>
                     <!-- Button to hide/show the local video -->
                     <button
                         id="hideBtn"
@@ -165,6 +165,9 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="config.js"></script>
         <script src="client.js"></script>
+
+        <!-- Include UaParser -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/1.0.37/ua-parser.min.js"></script>
 
         <!-- Include Axios file -->
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

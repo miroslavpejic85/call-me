@@ -217,16 +217,33 @@ input {
     border-color: #007bff;
 }
 
-/* Text Input Styles */
-#callUsernameIn {
+/* Select Input Styles */
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
     background: rgba(0, 0, 0, 0.5);
     color: var(--text-color);
     border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    text-align-last: center;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
 }
 
-#callUsernameIn::placeholder {
-    color: #525252;
-    opacity: 1;
+#callUsernameSelect option[data-icon]::before {
+    font-family: 'Font Awesome 6';
+    font-weight: 900;
+    margin-right: 8px;
+    font-size: 1rem;
+    content: attr(data-icon);
+}
+
+select::-ms-expand {
+    display: none;
 }
 
 /* Center Alignment */
