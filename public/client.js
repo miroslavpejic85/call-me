@@ -61,6 +61,10 @@ function getUserInfo(userAgent) {
     // Determine device type and specific characteristics
     const deviceType = device.type || 'desktop';
     const isIPad = device.model?.toLowerCase() === 'ipad';
+    const osName = os.name || 'Unknown OS';
+    const osVersion = os.version || 'Unknown Version';
+    const browserName = browser.name || 'Unknown Browse';
+    const browserVersion = browser.version || 'Unknown Version';
 
     return {
         device: {
@@ -69,8 +73,8 @@ function getUserInfo(userAgent) {
             isDesktop: deviceType === 'desktop',
             isIPad,
         },
-        os: { name: os.name || 'Unknown OS', version: os.version || 'Unknown Version' },
-        browser: { name: browser.name || 'Unknown Browser', version: browser.version || 'Unknown Version' },
+        os: `${osName} ${osVersion}`,
+        browser: `${browserName} ${browserVersion}`,
         userAgent,
     };
 }
