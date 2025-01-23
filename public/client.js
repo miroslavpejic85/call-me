@@ -404,6 +404,7 @@ function handleListeners() {
     remoteVideo.addEventListener('click', toggleFullScreen);
     // Add keyUp listeners
     callUsernameSelect.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
+    callUsernameSelect.addEventListener('change', (e) => handleChangeUserToCall(e));
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
 }
 
@@ -437,6 +438,15 @@ function toggleLocalVideo() {
     localVideoContainer.classList.toggle('hide');
 }
 
+// Handle Select user to call on changes
+function handleChangeUserToCall(e) {
+    const selectedValue = e.target.value;
+    if (selectedValue) {
+        console.log(`You selected: ${selectedValue}`);
+        if (!callBtn.classList.contains('pulsate')) callBtn.classList.add('pulsate');
+    }
+}
+
 // Handle call button click
 function handleCallClick() {
     const callToUsername = callUsernameSelect.value.trim();
@@ -452,6 +462,7 @@ function handleCallClick() {
             to: callToUsername,
         });
         popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
+        if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
     } else {
         handleError('Please enter a username to call.');
     }
@@ -764,6 +775,9 @@ function handleUsers(data) {
     });
     if (callUsernameSelect.options.length === 0) {
         callUsernameSelect.innerHTML = '<option value="" disabled selected>Select a user to call</option>';
+        if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
+    } else {
+        if (!callBtn.classList.contains('pulsate')) callBtn.classList.add('pulsate');
     }
 }
 
