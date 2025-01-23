@@ -76,13 +76,13 @@ docker-compose up
 
 ---
 
-1. Open your browser and visit [http://localhost:8000](http://localhost:8000).
+1. `Open` your browser and visit [http://localhost:8000](http://localhost:8000).
 
-2. Sign in with your username.
+2. `Sign in` with your username.
 
-3. Enter the recipient's username and click `Call`.
+3. `Select` the connected recipient's username and click `Call`.
 
-4. Enjoy your one-to-one video call.
+4. `Enjoy` your one-to-one video call.
 
 ---
 
