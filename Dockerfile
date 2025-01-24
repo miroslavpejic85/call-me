@@ -1,5 +1,5 @@
 # Use a lightweight Node.js image 
-FROM node:lts-alpine
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /src
