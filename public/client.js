@@ -689,14 +689,15 @@ function handleMediaStreamError(error) {
         position: 'top',
         icon: 'warning',
         html: errorMessage,
-        confirmButtonText: `Exit`,
+        denyButtonText: 'Exit',
+        showDenyButton: true,
+        showConfirmButton: false,
         allowOutsideClick: false,
         allowEscapeKey: false,
-        showDenyButton: false,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isDenied) {
             window.location.href = '/';
         }
     });
