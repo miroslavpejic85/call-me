@@ -29,6 +29,8 @@ const audioBtn = document.getElementById('audioBtn');
 const hangUpBtn = document.getElementById('hangUpBtn');
 const localVideoContainer = document.getElementById('localVideoContainer');
 const localVideo = document.getElementById('localVideo');
+const remoteAudioDisabled = document.getElementById('remoteAudioDisabled');
+const remoteVideoDisabled = document.getElementById('remoteVideoDisabled');
 const localUsername = document.getElementById('localUsername');
 const remoteVideo = document.getElementById('remoteVideo');
 
@@ -364,6 +366,12 @@ function handleMessage(data) {
         case 'users':
             handleUsers(data);
             break;
+        case 'remoteAudio':
+            handleRemoteAudio(data);
+            break;
+        case 'remoteVideo':
+            handleRemoteVideo(data);
+            break;
         case 'leave':
             handleLeave(false);
             break;
@@ -473,6 +481,10 @@ function handleVideoClick() {
     const videoTrack = stream.getVideoTracks()[0];
     videoTrack.enabled = !videoTrack.enabled;
     videoBtn.classList.toggle('btn-danger');
+    sendMsg({
+        type: 'remoteVideo',
+        enabled: videoTrack.enabled,
+    });
 }
 
 // Toggle audio stream
@@ -480,6 +492,10 @@ function handleAudioClick() {
     const audioTrack = stream.getAudioTracks()[0];
     audioTrack.enabled = !audioTrack.enabled;
     audioBtn.classList.toggle('btn-danger');
+    sendMsg({
+        type: 'remoteAudio',
+        enabled: audioTrack.enabled,
+    });
 }
 
 // Function to swap between user-facing and environment cameras
@@ -621,9 +637,69 @@ function handleSignIn(data) {
                 handleEnumerateDevices();
             })
             .catch((error) => {
-                handleError('Failed to access camera and microphone.', error);
+                handleMediaStreamError(error);
             });
     }
+}
+
+// Handle common media stream error
+function handleMediaStreamError(error) {
+    console.error('GetUserMedia error', error.message);
+
+    let errorMessage = error;
+    let shouldHandleGetUserMediaError = true;
+
+    switch (error.name) {
+        case 'NotFoundError':
+        case 'DevicesNotFoundError':
+            errorMessage = 'Required track is missing';
+            break;
+        case 'NotReadableError':
+        case 'TrackStartError':
+            errorMessage = 'Device is already in use';
+            break;
+        case 'OverconstrainedError':
+        case 'ConstraintNotSatisfiedError':
+            errorMessage = 'Constraints cannot be satisfied by available devices';
+            break;
+        case 'NotAllowedError':
+        case 'PermissionDeniedError':
+            errorMessage = 'Permission denied in browser';
+            break;
+        case 'AbortError':
+            errorMessage = 'Operation aborted unexpectedly';
+            break;
+        case 'SecurityError':
+            errorMessage = 'Security error: Check your connection or browser settings';
+            break;
+        default:
+            errorMessage = "Can't get stream, make sure you are in a secure TLS context (HTTPS) and try again";
+            shouldHandleGetUserMediaError = false;
+            break;
+    }
+
+    if (shouldHandleGetUserMediaError) {
+        errorMessage += `
+        Check the common <a href="https://blog.addpipe.com/common-getusermedia-errors" target="_blank">getUserMedia errors</a></li>`;
+    }
+
+    sound('alert');
+
+    Swal.fire({
+        position: 'top',
+        icon: 'warning',
+        html: errorMessage,
+        confirmButtonText: `Exit`,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showDenyButton: false,
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/';
+        }
+    });
 }
 
 // Initialize WebRTC connection
@@ -634,11 +710,12 @@ function initializeConnection() {
 
     thisConnection.ontrack = (e) => {
         if (e.streams && e.streams[0]) {
-            remoteVideo.srcObject = e.streams[0];
+            const remoteStream = e.streams[0];
+
+            remoteVideo.srcObject = remoteStream;
             remoteVideo.playsInline = true;
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
-            //remoteVideo.click(); // The remote video start in full screen mode if supported
 
             startSessionTime();
 
@@ -781,6 +858,16 @@ function handleUsers(data) {
     }
 }
 
+// Handle remote video status
+function handleRemoteVideo(data) {
+    data.enabled ? remoteVideoDisabled.classList.remove('show') : remoteVideoDisabled.classList.add('show');
+}
+
+// Handle remote audio status
+function handleRemoteAudio(data) {
+    data.enabled ? remoteAudioDisabled.classList.remove('show') : remoteAudioDisabled.classList.add('show');
+}
+
 // Play audio sound
 async function sound(name) {
     const sound = './assets/' + name + '.wav';
@@ -832,6 +919,10 @@ function handleLeave(disconnect = true) {
 
         // Stop session time
         stopSessionTime();
+
+        // Reset remote video & audio status
+        handleRemoteVideo({ enabled: true });
+        handleRemoteAudio({ enabled: true });
 
         // Reset state
         connectedUser = null;

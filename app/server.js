@@ -303,6 +303,8 @@ function handleConnection(socket) {
             case 'answer':
             case 'candidate':
             case 'leave':
+            case 'remoteAudio':
+            case 'remoteVideo':
                 handleSignalingMessage(data);
                 break;
             case 'pong':

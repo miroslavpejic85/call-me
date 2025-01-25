@@ -82,15 +82,24 @@
 
         <!-- Room Page -->
         <div id="roomPage" class="container text-center center">
-            <!-- Local video element (user's video) -->
+            <!-- Session time -->
+            <span id="sessionTime">0s</span>
+
+            <!-- Local video container (your video) -->
             <div id="localVideoContainer">
                 <video id="localVideo"></video>
                 <span id="localUsername"></span>
             </div>
-            <!-- Remote video element (video from the other user) -->
-            <video id="remoteVideo"></video>
-            <!-- Session time -->
-            <span id="sessionTime">0s</span>
+
+            <!-- Remote video container (video from the other user) -->
+            <div id="remoteVideoContainer">
+                <div id="streamStatusContainer">
+                    <i id="remoteAudioDisabled" class="fas fa-microphone color-red hide"></i>
+                    <i id="remoteVideoDisabled" class="fas fa-video color-red hide"></i>
+                </div>
+                <video id="remoteVideo"></video>
+            </div>
+
             <div class="row text-center">
                 <div class="col-md-12">
                     <!-- Input field for selecting the username to call -->
@@ -110,7 +119,7 @@
                     <!-- Button to initiate a video call -->
                     <button
                         id="callBtn"
-                        class="btn btn-custom btn-success btn-m"
+                        class="btn btn-custom btn-warning btn-m"
                         data-toggle="tooltip"
                         data-placement="top"
                         title="Call"

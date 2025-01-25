@@ -89,6 +89,7 @@ button {
 
 /* Session Time */
 #sessionTime {
+    z-index: 4;
     display: none;
     position: absolute;
     text-align: center;
@@ -150,7 +151,7 @@ video::-webkit-media-controls {
 
 /* Local Video Styles */
 #localVideoContainer {
-    z-index: 1;
+    z-index: 3;
     position: absolute;
     top: 10px;
     left: 20px;
@@ -172,11 +173,26 @@ video::-webkit-media-controls {
 
 /* Remote Video Styles */
 #remoteVideo {
-    z-index: 2;
+    z-index: 1;
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
     border-radius: var(--border-radius);
     border: none;
+}
+
+#streamStatusContainer {
+    z-index: 2;
+    display: inline-flex;
+    position: absolute;
+    text-align: center;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    top: 10px;
+    left: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 12px;
 }
 
 /* Hide Local Video on Mobile */
@@ -194,6 +210,11 @@ video::-webkit-media-controls {
 .hide {
     visibility: hidden;
     opacity: 0;
+}
+
+.show {
+    visibility: visible;
+    opacity: 1;
 }
 
 input {
@@ -335,6 +356,10 @@ select::-ms-expand {
     background: red !important;
 }
 
+.color-red {
+    color: red !important;
+}
+
 /*--------------------------------------------------------------
 # Pulse class effect
 --------------------------------------------------------------*/
@@ -382,3 +407,14 @@ select::-ms-expand {
         opacity: 0.5;
     }
 }
+
+/*
+z-index:
+    - 1. remoteVideo
+    - 2. streamStatusContainer
+    - 3. localVideoContainer, attribution
+    - 4. sessionTime
+
+
+
+*/
