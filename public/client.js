@@ -472,7 +472,7 @@ function handleCallClick() {
         popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
         if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
     } else {
-        handleError('Please enter a username to call.');
+        handleError('Please select the username to call.');
     }
 }
 
