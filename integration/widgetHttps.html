@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Call-me Click-to-Call Widget</title>
+        <style>
+            /* Body styling */
+            body {
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                background-color: #f0f0f0;
+                font-family: Arial, sans-serif;
+            }
+
+            /* Images styling */
+            img {
+                width: 200px;
+                cursor: pointer;
+                display: block;
+                transition: transform 0.3s ease;
+            }
+
+            img:hover {
+                transform: scale(1.05);
+            }
+
+            /* Select styling */
+            select {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+
+            /* iFrame styling */
+            iframe {
+                width: 80vw;
+                height: 80vh;
+                border: none;
+                border-radius: 10px;
+                display: none;
+            }
+
+            /* Exit call button styling */
+            #exitCallButton {
+                padding: 10px 20px;
+                background-color: #ff4d4d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: none;
+                z-index: 1001;
+            }
+            #exitCallButton:hover {
+                background-color: #e60000;
+            }
+
+            /* Modal styling */
+            .modal {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                border-radius: 8px;
+                display: none;
+                z-index: 1000;
+                max-width: 400px;
+                width: 90%;
+            }
+
+            .modal h2 {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .modal input {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .modal button {
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+
+            .modal button:hover {
+                background-color: #0056b3;
+            }
+
+            /* Overlay for dimming background */
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.5);
+                display: none;
+                z-index: 999;
+            }
+
+            /* Responsive design for smaller devices */
+            @media (max-width: 600px) {
+                iframe {
+                    width: 100%;
+                    height: 60vh;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Main widget click-to-call you can replace it with a button in case... -->
+        <img id="callImage" src="./widget.png" alt="Click to Call" />
+
+        <!-- Exit the call button -->
+        <button id="exitCallButton">Exit call</button>
+
+        <!-- Overlay for background dimming -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Modal for selecting action -->
+        <div class="modal" id="selectModal">
+            <h2>Select Action</h2>
+            <button id="joinCallOption">Join Call</button>
+            <button id="startCallOption">Start Call</button>
+        </div>
+
+        <!-- Modal for joining a call -->
+        <div class="modal" id="joinModal">
+            <h2>Enter Username to Join</h2>
+            <input type="text" id="joinUsername" placeholder="Enter username to join" />
+            <button id="joinCall">Join Call</button>
+        </div>
+
+        <!-- Modal for starting a call -->
+        <div class="modal" id="startCallModal">
+            <h2>Enter Your Display Name</h2>
+            <input type="text" id="displayUsername" placeholder="Enter your display name" />
+            <h2>Select Username to Call</h2>
+            <select id="callUsername"></select>
+            <button id="startCall">Start Call</button>
+        </div>
+
+        <!-- Video call iframe -->
+        <iframe id="callIframe" allow="camera; microphone; fullscreen; autoplay"></iframe>
+
+        <script>
+            // Replace with your domain name
+            const domain = 'cme.mirotalk.com'; //window.location.host;
+
+            // Cache DOM elements at the beginning
+            const callImage = document.getElementById('callImage');
+            const exitCallButton = document.getElementById('exitCallButton');
+            const selectModal = document.getElementById('selectModal');
+            const joinModal = document.getElementById('joinModal');
+            const startCallModal = document.getElementById('startCallModal');
+            const overlay = document.getElementById('overlay');
+            const joinCallButton = document.getElementById('joinCall');
+            const startCallButton = document.getElementById('startCall');
+            const joinCallOption = document.getElementById('joinCallOption');
+            const startCallOption = document.getElementById('startCallOption');
+            const joinUsernameInput = document.getElementById('joinUsername');
+            const displayUsernameInput = document.getElementById('displayUsername');
+            const callUsernameInput = document.getElementById('callUsername');
+            const iframe = document.getElementById('callIframe');
+
+            // Function to fetch users requires a secure TLS connection (HTTPS)
+            async function fetchUsers() {
+                try {
+                    const response = await fetch(`https://${domain}/api/v1/users`, {
+                        method: 'GET',
+                        headers: {
+                            authorization: 'call_me_api_key_secret',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    const data = await response.json();
+                    console.log('users', data.users);
+                    populateUserSelect(data.users);
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                }
+            }
+
+            // Function to populate the select element
+            function populateUserSelect(users) {
+                const select = document.getElementById('callUsername');
+                select.innerHTML = ''; // Clear existing options
+                users.forEach((user) => {
+                    const option = document.createElement('option');
+                    option.value = user;
+                    option.textContent = user;
+                    select.appendChild(option);
+                });
+            }
+
+            // Call fetchUsers when the page loads
+            document.addEventListener('DOMContentLoaded', fetchUsers);
+
+            // Event listeners
+            callImage.addEventListener('click', () => {
+                selectModal.style.display = 'block';
+                overlay.style.display = 'block';
+            });
+
+            overlay.addEventListener('click', closeModals);
+
+            joinCallOption.addEventListener('click', () => {
+                selectModal.style.display = 'none';
+                joinModal.style.display = 'block';
+                joinUsernameInput.focus();
+            });
+
+            startCallOption.addEventListener('click', () => {
+                selectModal.style.display = 'none';
+                startCallModal.style.display = 'block';
+                displayUsernameInput.focus();
+            });
+
+            joinCallButton.addEventListener('click', () => {
+                const joinUsername = joinUsernameInput.value.trim();
+                if (!joinUsername) {
+                    alert('Please enter a username to join.');
+                    return;
+                }
+                const url = `https://${domain}/join?user=${joinUsername}`;
+                startIframe(url);
+            });
+
+            startCallButton.addEventListener('click', () => {
+                const displayUsername = displayUsernameInput.value.trim();
+                const callUsername = callUsernameInput.value.trim();
+                if (!displayUsername) {
+                    alert('Please enter a display name.');
+                    return;
+                }
+                if (!callUsername) {
+                    alert('Please enter a username to call.');
+                    return;
+                }
+                const url = `https://${domain}/join?user=${displayUsername}&call=${callUsername}`;
+                startIframe(url);
+            });
+
+            exitCallButton.addEventListener('click', endCall);
+
+            // Functions
+            function startIframe(url) {
+                iframe.src = url;
+                iframe.style.display = 'block';
+                closeModals();
+                callImage.style.display = 'none';
+                exitCallButton.style.display = 'block';
+            }
+
+            function endCall() {
+                iframe.style.display = 'none';
+                iframe.src = ''; // Clear iframe source
+                callImage.style.display = 'block';
+                exitCallButton.style.display = 'none';
+            }
+
+            function closeModals() {
+                selectModal.style.display = 'none';
+                joinModal.style.display = 'none';
+                startCallModal.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+        </script>
+    </body>
+</html>

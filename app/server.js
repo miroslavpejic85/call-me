@@ -3,6 +3,7 @@
 // Import necessary modules
 const dotenv = require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -61,6 +62,35 @@ if (config.turnServerEnabled && config.turnServerUrl && config.turnServerUsernam
     });
 }
 
+// Handle Cors
+
+const cors_origin = process.env.CORS_ORIGIN;
+const cors_methods = process.env.CORS_METHODS;
+
+let corsOrigin = '*';
+let corsMethods = ['GET', 'POST'];
+
+if (cors_origin && cors_origin !== '*') {
+    try {
+        corsOrigin = JSON.parse(cors_origin);
+    } catch (error) {
+        log.error('Error parsing CORS_ORIGIN', error.message);
+    }
+}
+
+if (cors_methods && cors_methods !== '') {
+    try {
+        corsMethods = JSON.parse(cors_methods);
+    } catch (error) {
+        log.error('Error parsing CORS_METHODS', error.message);
+    }
+}
+
+const corsOptions = {
+    origin: corsOrigin,
+    methods: corsMethods,
+};
+
 // Create Express application
 const app = express();
 
@@ -113,6 +143,7 @@ server.listen(port, () => {
 // Handle WebSocket connections
 io.on('connection', handleConnection);
 
+app.use(cors(corsOptions)); // Handle cors options
 app.use(helmet.xssFilter()); // Enable XSS protection
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
