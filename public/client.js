@@ -245,9 +245,9 @@ function handleDirectJoin() {
     const call = usp.get('call');
     const password = usp.get('password');
 
-    console.log('Direct Join detected', { user, call, password });
-
     if (user) {
+        console.log('Direct Join detected', { user, call, password });
+
         // SignIn
         usernameIn.value = user;
         handleSignInClick();
