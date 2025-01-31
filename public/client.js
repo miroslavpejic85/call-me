@@ -34,6 +34,9 @@ const remoteVideoDisabled = document.getElementById('remoteVideoDisabled');
 const localUsername = document.getElementById('localUsername');
 const remoteVideo = document.getElementById('remoteVideo');
 
+// Ensure app is defined, even if config.js is not loaded
+const app = window.myAppConfig || {};
+
 // User and connection information
 let userInfo;
 let userName;
@@ -82,16 +85,19 @@ function getUserInfo(userAgent) {
 }
 
 // Handle config
-appTitle.innerText = app.title;
-appName.innerText = app.name;
+appTitle.innerText = app?.title || 'Call-me';
+appName.innerText = app?.name || 'Call-me';
 
 const elementsToHide = [
-    { condition: !app.showGithub, element: githubDiv },
-    { condition: !app.attribution, element: attribution },
+    { condition: !(app?.showGithub ?? true), element: githubDiv },
+    { condition: !(app?.attribution ?? true), element: attribution },
 ];
 
+// Hide elements based on conditions
 elementsToHide.forEach(({ condition, element }) => {
-    if (condition) elemDisplay(element, false);
+    if (condition && element) {
+        elemDisplay(element, false);
+    }
 });
 
 async function checkHostPassword(maxRetries = 3, attempts = 0) {

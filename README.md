@@ -36,6 +36,9 @@ git clone https://github.com/miroslavpejic85/call-me.git
 # Go to to dir call-me
 cd call-me
 
+# Copy the config file
+$ cp public/config.template.js public/config.js
+
 # Copy .env.template to .env
 cp .env.template .env
 

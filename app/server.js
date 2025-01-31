@@ -8,6 +8,7 @@ const http = require('http');
 const https = require('https');
 const socketIO = require('socket.io');
 const axios = require('axios');
+const helmet = require('helmet');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
@@ -112,6 +113,8 @@ server.listen(port, () => {
 // Handle WebSocket connections
 io.on('connection', handleConnection);
 
+app.use(helmet.xssFilter()); // Enable XSS protection
+app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
 app.use(express.json()); // Api parse body data as json
 app.use(config.apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(config.swaggerDocument)); // api docs
