@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.0.73",
+    "version": "1.0.74",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -31,6 +31,6 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.9",
-        "prettier": "3.4.2"
+        "prettier": "3.5.0"
     }
 }

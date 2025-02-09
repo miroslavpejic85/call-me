@@ -450,6 +450,13 @@ function handleSignInClick() {
 // Toggle local video visibility
 function toggleLocalVideo() {
     localVideoContainer.classList.toggle('hide');
+    // Stop video and audio if they are currently active
+    if (!videoBtn.classList.contains('btn-danger')) {
+        videoBtn.click();
+    }
+    if (!audioBtn.classList.contains('btn-danger')) {
+        audioBtn.click();
+    }
 }
 
 // Handle Select user to call on changes
