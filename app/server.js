@@ -144,7 +144,6 @@ server.listen(port, () => {
 io.on('connection', handleConnection);
 
 app.use(cors(corsOptions)); // Handle cors options
-app.use(helmet.xssFilter()); // Enable XSS protection
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
 app.use(express.json()); // Api parse body data as json
