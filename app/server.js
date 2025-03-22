@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const httpolyglot = require('httpolyglot');
+const ngrok = require('@ngrok/ngrok');
 const socketIO = require('socket.io');
 const axios = require('axios');
 const helmet = require('helmet');
@@ -61,6 +62,9 @@ if (config.turnServerEnabled && config.turnServerUrl && config.turnServerUsernam
     });
 }
 
+const ngrokEnabled = process.env.NGROK_ENABLED === 'true';
+const ngrokAuthToken = process.env.NGROK_AUTH_TOKEN;
+
 // Handle Cors
 
 const cors_origin = process.env.CORS_ORIGIN;
@@ -114,10 +118,10 @@ const server = httpolyglot.createServer(options, app);
 // Create WebSocket server using Socket.io on top of HTTP server
 const io = socketIO(server);
 
-// Start the server and listen on the specified port
-server.listen(port, () => {
-    log.info('Server', {
-        running_at: host,
+// Server config
+function getServerConfig(tunnelHttps = false) {
+    return {
+        running_at: tunnelHttps ? tunnelHttps : host,
         ice: config.iceServers,
         host: {
             password_enabled: config.hostPasswordEnabled,
@@ -126,7 +130,30 @@ server.listen(port, () => {
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
         version: packageJson.version,
-    });
+    };
+}
+
+// Handle Ngrok
+async function ngrokStart() {
+    try {
+        await ngrok.authtoken(ngrokAuthToken);
+        const listener = await ngrok.forward({ addr: port });
+        const tunnelUrl = listener.url();
+        log.info('Server config', getServerConfig(tunnelUrl));
+    } catch (err) {
+        log.warn('Ngrok Start error', err);
+        await ngrok.kill();
+        process.exit(1);
+    }
+}
+
+// Start the server and listen on the specified port
+server.listen(port, () => {
+    if (ngrokEnabled && ngrokAuthToken) {
+        ngrokStart();
+    } else {
+        log.info('Server', getServerConfig());
+    }
 });
 
 // Handle WebSocket connections
