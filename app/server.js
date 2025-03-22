@@ -5,8 +5,7 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const http = require('http');
-const https = require('https');
+const httpolyglot = require('httpolyglot');
 const socketIO = require('socket.io');
 const axios = require('axios');
 const helmet = require('helmet');
@@ -95,32 +94,22 @@ const corsOptions = {
 const app = express();
 
 // Server configurations
-const domain = process.env.DOMAIN || 'localhost';
-const isHttps = process.env.SSL === 'true';
 const port = process.env.PORT || 4000;
-const host = `http${isHttps ? 's' : ''}://${domain}:${port}`;
+const host = process.env.HOST || `http://localhost:${port}`;
 const apiDocs = host + config.apiBasePath + '/docs';
 
-// This server
-let server;
+// Define paths to the SSL key and certificate files
+const keyPath = path.join(__dirname, 'ssl/key.pem');
+const certPath = path.join(__dirname, 'ssl/cert.pem');
 
-// Load self-signed certificates if HTTPS is enabled
-if (isHttps) {
-    try {
-        const options = {
-            key: fs.readFileSync(path.join(__dirname, '/ssl/key.pem'), 'utf-8'),
-            cert: fs.readFileSync(path.join(__dirname, '/ssl/cert.pem'), 'utf-8'),
-        };
-        // Create HTTPS server using Express
-        server = https.createServer(options, app);
-    } catch (err) {
-        log.error('Error loading certificates:', err);
-        process.exit(1); // Exit the process if certificates cannot be loaded
-    }
-} else {
-    // Create HTTP server using Express
-    server = http.createServer(app);
-}
+// Read SSL key and certificate files securely
+const options = {
+    key: fs.readFileSync(keyPath, 'utf-8'),
+    cert: fs.readFileSync(certPath, 'utf-8'),
+};
+
+// Server both http and https
+const server = httpolyglot.createServer(options, app);
 
 // Create WebSocket server using Socket.io on top of HTTP server
 const io = socketIO(server);
