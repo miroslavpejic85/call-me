@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.0.80",
+    "version": "1.0.81",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -24,7 +24,7 @@
         "colors": "^1.4.0",
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
-        "express": "^4.21.2",
+        "express": "^5.1.0",
         "helmet": "^8.1.0",
         "httpolyglot": "0.1.2",
         "js-yaml": "4.1.0",

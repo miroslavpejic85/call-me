@@ -298,7 +298,7 @@ app.post('/api/hostPasswordValidate', (req, res) => {
 });
 
 // Page not found
-app.get('*', (req, res) => {
+app.use((req, res) => {
     return notFound(res);
 });
 
