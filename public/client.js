@@ -640,6 +640,7 @@ function handleSignIn(data) {
             .then((myStream) => {
                 stream = myStream;
                 localVideo.srcObject = stream;
+                localVideo.className = 'mirror';
                 localVideo.playsInline = true;
                 localVideo.autoplay = true;
                 localVideo.muted = true;

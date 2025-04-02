@@ -149,6 +149,12 @@ video::-webkit-media-controls {
     display: none !important;
 }
 
+.mirror {
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+}
+
 /* Local Video Styles */
 #localVideoContainer {
     z-index: 3;
