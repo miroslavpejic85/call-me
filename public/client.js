@@ -511,6 +511,19 @@ function handleAudioClick() {
     });
 }
 
+// Detect if back or front camera
+function detectCameraFacingMode(stream) {
+    if (!stream || !stream.getVideoTracks().length) {
+        console.warn("No video track found in the stream. Defaulting to 'user'.");
+        return 'user';
+    }
+    const videoTrack = stream.getVideoTracks()[0];
+    const settings = videoTrack.getSettings();
+    const capabilities = videoTrack.getCapabilities?.() || {};
+    const facingMode = settings.facingMode || capabilities.facingMode?.[0] || 'user';
+    return facingMode === 'environment' ? 'environment' : 'user';
+}
+
 // Function to swap between user-facing and environment cameras
 function swapCamera() {
     camera = camera === 'user' ? 'environment' : 'user';
@@ -555,6 +568,16 @@ function refreshLocalVideoStream(newStream) {
 
     stream = updatedStream;
     localVideo.srcObject = stream;
+
+    handleVideoMirror(localVideo, stream);
+}
+
+// handle video mirror
+function handleVideoMirror(video, stream) {
+    const cameraFacingMode = detectCameraFacingMode(stream);
+    cameraFacingMode === 'environment'
+        ? video.classList.remove('mirror') // Back camera → No mirror
+        : video.classList.add('mirror'); // Disable mirror for rear camera
 }
 
 // Update the video stream for all peers
@@ -640,7 +663,6 @@ function handleSignIn(data) {
             .then((myStream) => {
                 stream = myStream;
                 localVideo.srcObject = stream;
-                localVideo.className = 'mirror';
                 localVideo.playsInline = true;
                 localVideo.autoplay = true;
                 localVideo.muted = true;
@@ -649,6 +671,7 @@ function handleSignIn(data) {
                 localUsername.innerText = userName;
                 initializeConnection();
                 handleEnumerateDevices();
+                handleVideoMirror(localVideo, myStream);
             })
             .catch((error) => {
                 handleMediaStreamError(error);
