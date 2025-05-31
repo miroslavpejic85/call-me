@@ -31,7 +31,7 @@ module.exports = class Logs {
             console.debug(
                 '[' + this.getDateTime() + '] [' + this.appName + '] ' + msg,
                 util.inspect(op, options),
-                this.timeElapsedMs,
+                this.timeElapsedMs
             );
             this.timeStart = Date.now();
         }
@@ -44,21 +44,21 @@ module.exports = class Logs {
     info(msg, op = '') {
         console.info(
             '[' + this.getDateTime() + '] [' + this.appName + '] ' + colors.green(msg),
-            util.inspect(op, options),
+            util.inspect(op, options)
         );
     }
 
     warn(msg, op = '') {
         console.info(
             '[' + this.getDateTime() + '] [' + this.appName + '] ' + colors.yellow(msg),
-            util.inspect(op, options),
+            util.inspect(op, options)
         );
     }
 
     error(msg, op = '') {
         console.info(
             '[' + this.getDateTime() + '] [' + this.appName + '] ' + colors.red(msg),
-            util.inspect(op, options),
+            util.inspect(op, options)
         );
     }
 
