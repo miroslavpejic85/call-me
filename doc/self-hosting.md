@@ -106,7 +106,7 @@ Check if is correctly installed: [http://YOUR.DOMAIN.NAME:8000](http://YOUR.DOMA
 
 ![nginx](../assets/doc/nginx.png)
 
-In order to use it without the port number and to have encrypted communications (`mandatory to make it work correctly`), we going to install **[nginx](https://www.nginx.com)** and **[certbot](https://certbot.eff.org)**
+In order to use it without the port number and to have encrypted communications, we going to install **[nginx](https://www.nginx.com)** and **[certbot](https://certbot.eff.org)**
 
 ```bash
 # Install Nginx
