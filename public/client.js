@@ -239,7 +239,7 @@ function handleLocalStorage() {
 }
 
 // Handle Room direct join
-function handleDirectJoin() {
+async function handleDirectJoin() {
     const usp = new URLSearchParams(window.location.search);
     const user = usp.get('user');
     const call = usp.get('call');
@@ -261,7 +261,7 @@ function handleDirectJoin() {
         }
     }
 
-    if (!password) checkHostPassword();
+    if (!password) await checkHostPassword();
 }
 
 // Select index by passed value
@@ -334,12 +334,12 @@ function handleSocketConnect() {
 }
 
 // Handle WebSocket errors
-function handleSocketError(err) {
-    handleError('Socket error', err.message);
+async function handleSocketError(err) {
+    await handleError('Socket error', err.message);
 }
 
 // Handle incoming messages based on type
-function handleMessage(data) {
+async function handleMessage(data) {
     const { type } = data;
 
     console.log('Got message', type);
@@ -355,7 +355,7 @@ function handleMessage(data) {
             handleNotFound(data);
             break;
         case 'offerAccept':
-            offerAccept(data);
+            await offerAccept(data);
             break;
         case 'offerCreate':
             offerCreate();
@@ -382,7 +382,7 @@ function handleMessage(data) {
             handleLeave(false);
             break;
         case 'error':
-            handleError(data.message, data.message);
+            await handleError(data.message, data.message);
             break;
         default:
             break;
@@ -400,8 +400,8 @@ function handleEnumerateDevices() {
                 elemDisplay(swapCameraBtn, true, 'inline');
             }
         })
-        .catch((error) => {
-            handleError('Error enumerating devices', error);
+        .catch(async (error) => {
+            await handleError('Error enumerating devices', error);
         });
 }
 
@@ -469,11 +469,11 @@ function handleChangeUserToCall(e) {
 }
 
 // Handle call button click
-function handleCallClick() {
+async function handleCallClick() {
     const callToUsername = callUsernameSelect.value.trim();
     if (callToUsername.length > 0) {
         if (callToUsername === userName) {
-            handleError('You cannot call yourself.');
+            await handleError('You cannot call yourself.');
             return;
         }
         connectedUser = callToUsername;
@@ -485,7 +485,7 @@ function handleCallClick() {
         popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
         if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
     } else {
-        handleError('Please select the user to call.');
+        await handleError('Please select the user to call.');
     }
 }
 
@@ -673,14 +673,14 @@ function handleSignIn(data) {
                 handleEnumerateDevices();
                 handleVideoMirror(localVideo, myStream);
             })
-            .catch((error) => {
-                handleMediaStreamError(error);
+            .catch(async (error) => {
+                await handleMediaStreamError(error);
             });
     }
 }
 
 // Handle common media stream error
-function handleMediaStreamError(error) {
+async function handleMediaStreamError(error) {
     console.error('GetUserMedia error', error.message);
 
     let errorMessage = error;
@@ -720,7 +720,7 @@ function handleMediaStreamError(error) {
         Check the common <a href="https://blog.addpipe.com/common-getusermedia-errors" target="_blank">getUserMedia errors</a></li>`;
     }
 
-    sound('alert');
+    await sound('alert');
 
     Swal.fire({
         position: 'top',
@@ -803,7 +803,7 @@ function offerCreate() {
 }
 
 // Accept incoming offer
-function offerAccept(data) {
+async function offerAccept(data) {
     // I'm already in call decline the new one!
     if (remoteVideo.srcObject) {
         data.type = 'offerBusy';
@@ -811,7 +811,7 @@ function offerAccept(data) {
         return;
     }
 
-    sound('ring');
+    await sound('ring');
 
     Swal.fire({
         position: 'top',
@@ -868,11 +868,11 @@ function handleAnswer(data) {
 }
 
 // Handle incoming ICE candidate
-function handleCandidate(data) {
+async function handleCandidate(data) {
     const { candidate } = data;
     elemDisplay(callBtn, false);
-    thisConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) => {
-        handleError('Error when add ice candidate.', error);
+    thisConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(async (error) => {
+        await handleError('Error when add ice candidate.', error);
         elemDisplay(callBtn, true, 'inline');
     });
 }
@@ -968,9 +968,9 @@ function handleLeave(disconnect = true) {
 }
 
 // Handle and display errors
-function handleError(message, error = false, position = 'top', timer = 6000) {
+async function handleError(message, error = false, position = 'top', timer = 6000) {
     if (error) console.error(error);
-    sound('notify');
+    await sound('notify');
     Swal.fire({
         position,
         icon: 'warning',
