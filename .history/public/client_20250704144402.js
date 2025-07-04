@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     userInfo = getUserInfo(userAgent);
     handleToolTip();
     handleLocalStorage();
-    await handleDirectJoin();
+    handleDirectJoin();
     handleListeners();
-    await fetchRandomImage();
+    fetchRandomImage();
 });
 
 // Get user information from User-Agent string
@@ -160,7 +160,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                         text: `Please try again. (${attempts}/${maxRetries} attempts)`,
                     });
                     // Retry the process
-                    await checkHostPassword(maxRetries, attempts);
+                    checkHostPassword(maxRetries, attempts);
                 } else {
                     await Swal.fire({
                         position: 'top',
@@ -256,7 +256,7 @@ async function handleDirectJoin() {
             // Call user if call is provided
             setTimeout(() => {
                 selectIndexByValue(call);
-                await handleCallClick();
+                handleCallClick();
             }, 3000);
         }
     }
@@ -361,13 +361,13 @@ async function handleMessage(data) {
             offerCreate();
             break;
         case 'offer':
-            await handleOffer(data);
+            handleOffer(data);
             break;
         case 'answer':
-            await handleAnswer(data);
+            handleAnswer(data);
             break;
         case 'candidate':
-            await handleCandidate(data);
+            handleCandidate(data);
             break;
         case 'users':
             handleUsers(data);
@@ -546,7 +546,7 @@ function swapCamera() {
             checkVideoAudioStatus();
         })
         .catch((error) => {
-            await handleError('Failed to swap the camera.', error);
+            handleError('Failed to swap the camera.', error);
         });
 }
 
@@ -554,13 +554,13 @@ function swapCamera() {
 function refreshLocalVideoStream(newStream) {
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        await handleError('No video track available in the newStream.');
+        handleError('No video track available in the newStream.');
         return;
     }
 
     const audioTrack = stream.getAudioTracks()[0];
     if (!audioTrack) {
-        await handleError('No audio track available in the stream.');
+        handleError('No audio track available in the stream.');
         return;
     }
 
@@ -586,14 +586,14 @@ function refreshPeerVideoStreams(newStream) {
 
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        await handleError('No video track available for peer connections.');
+        handleError('No video track available for peer connections.');
         return;
     }
 
     const videoSender = thisConnection.getSenders().find((sender) => sender.track && sender.track.kind === 'video');
     if (videoSender) {
         videoSender.replaceTrack(videoTrack).catch((error) => {
-            await handleError(`Replacing track error: ${error.message}`);
+            handleError(`Replacing track error: ${error.message}`);
         });
     }
 }
@@ -640,7 +640,7 @@ function handlePing(data) {
 // Handle user not found from the server
 function handleNotFound(data) {
     const { username } = data;
-    await handleError(`Username ${username} not found!`);
+    handleError(`Username ${username} not found!`);
     removeOptionByValue(username);
 }
 
@@ -648,7 +648,7 @@ function handleNotFound(data) {
 function handleSignIn(data) {
     const { success, message } = data;
     if (!success) {
-        await handleError(message);
+        handleError(message);
         if (!message.startsWith('Invalid username')) {
             setTimeout(handleHangUpClick, 3000);
         }
@@ -759,7 +759,7 @@ function initializeConnection() {
 
             console.log('Remote stream set to video element');
         } else {
-            await handleError('No stream available in the ontrack event.');
+            handleError('No stream available in the ontrack event.');
         }
     };
 
@@ -798,7 +798,7 @@ function offerCreate() {
             elemDisplay(callUsernameSelect, false);
         })
         .catch((error) => {
-            await handleError('Error when creating an offer.', error);
+            handleError('Error when creating an offer.', error);
         });
 }
 
@@ -840,7 +840,7 @@ async function offerAccept(data) {
 }
 
 // Handle incoming offer
-async function handleOffer(data) {
+function handleOffer(data) {
     const { offer, name } = data;
     connectedUser = name;
     initializeConnection();
@@ -855,15 +855,15 @@ async function handleOffer(data) {
             });
         })
         .catch((error) => {
-            await handleError('Error when creating an answer.', error);
+            handleError('Error when creating an answer.', error);
         });
 }
 
 // Handle incoming answer
-async function handleAnswer(data) {
+function handleAnswer(data) {
     const { answer } = data;
     thisConnection.setRemoteDescription(new RTCSessionDescription(answer)).catch((error) => {
-        await handleError('Error when set remote description.', error);
+        handleError('Error when set remote description.', error);
     });
 }
 
