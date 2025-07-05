@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     userInfo = getUserInfo(userAgent);
     handleToolTip();
     handleLocalStorage();
-    handleDirectJoin();
+    await handleDirectJoin();
     handleListeners();
-    fetchRandomImage();
+    await fetchRandomImage();
 });
 
 // Get user information from User-Agent string
@@ -160,7 +160,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                         text: `Please try again. (${attempts}/${maxRetries} attempts)`,
                     });
                     // Retry the process
-                    checkHostPassword(maxRetries, attempts);
+                    await checkHostPassword(maxRetries, attempts);
                 } else {
                     await Swal.fire({
                         position: 'top',
@@ -239,7 +239,7 @@ function handleLocalStorage() {
 }
 
 // Handle Room direct join
-function handleDirectJoin() {
+async function handleDirectJoin() {
     const usp = new URLSearchParams(window.location.search);
     const user = usp.get('user');
     const call = usp.get('call');
@@ -261,7 +261,7 @@ function handleDirectJoin() {
         }
     }
 
-    if (!password) checkHostPassword();
+    if (!password) await checkHostPassword();
 }
 
 // Select index by passed value
@@ -390,19 +390,17 @@ function handleMessage(data) {
 }
 
 // Enumerate Devices for camera swap functionality
-function handleEnumerateDevices() {
-    navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => {
-            const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-            if (videoInputs.length > 1 && userInfo.device.isMobile) {
-                swapCameraBtn.addEventListener('click', swapCamera);
-                elemDisplay(swapCameraBtn, true, 'inline');
-            }
-        })
-        .catch((error) => {
-            handleError('Error enumerating devices', error);
-        });
+async function handleEnumerateDevices() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter((device) => device.kind === 'videoinput');
+        if (videoInputs.length > 1 && userInfo.device.isMobile) {
+            swapCameraBtn.addEventListener('click', swapCamera);
+            elemDisplay(swapCameraBtn, true, 'inline');
+        }
+    } catch (error) {
+        handleError('Error enumerating devices', error);
+    }
 }
 
 // Handle Listeners
@@ -525,29 +523,27 @@ function detectCameraFacingMode(stream) {
 }
 
 // Function to swap between user-facing and environment cameras
-function swapCamera() {
+async function swapCamera() {
     camera = camera === 'user' ? 'environment' : 'user';
 
     const videoConstraints = camera === 'user' ? true : { facingMode: { exact: camera } };
 
-    navigator.mediaDevices
-        .getUserMedia({ video: videoConstraints })
-        .then((newStream) => {
-            // Stop the previous video track
-            const videoTrack = stream.getVideoTracks()[0];
-            if (videoTrack) {
-                videoTrack.stop();
-            }
-            // Refresh video streams
-            refreshLocalVideoStream(newStream);
-            refreshPeerVideoStreams(newStream);
+    try {
+        const newStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+        // Stop the previous video track
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+            videoTrack.stop();
+        }
+        // Refresh video streams
+        refreshLocalVideoStream(newStream);
+        await refreshPeerVideoStreams(newStream);
 
-            // Check video/audio status
-            checkVideoAudioStatus();
-        })
-        .catch((error) => {
-            handleError('Failed to swap the camera.', error);
-        });
+        // Check video/audio status
+        checkVideoAudioStatus();
+    } catch (error) {
+        handleError('Failed to swap the camera.', error);
+    }
 }
 
 // Update the local video stream
@@ -581,7 +577,7 @@ function handleVideoMirror(video, stream) {
 }
 
 // Update the video stream for all peers
-function refreshPeerVideoStreams(newStream) {
+async function refreshPeerVideoStreams(newStream) {
     if (!thisConnection) return;
 
     const videoTrack = newStream.getVideoTracks()[0];
@@ -592,9 +588,11 @@ function refreshPeerVideoStreams(newStream) {
 
     const videoSender = thisConnection.getSenders().find((sender) => sender.track && sender.track.kind === 'video');
     if (videoSender) {
-        videoSender.replaceTrack(videoTrack).catch((error) => {
+        try {
+            await videoSender.replaceTrack(videoTrack);
+        } catch (error) {
             handleError(`Replacing track error: ${error.message}`);
-        });
+        }
     }
 }
 
@@ -645,7 +643,7 @@ function handleNotFound(data) {
 }
 
 // Handle sign-in response from the server
-function handleSignIn(data) {
+async function handleSignIn(data) {
     const { success, message } = data;
     if (!success) {
         handleError(message);
@@ -658,24 +656,22 @@ function handleSignIn(data) {
         elemDisplay(signInPage, false);
         elemDisplay(roomPage, true);
 
-        navigator.mediaDevices
-            .getUserMedia({ video: true, audio: true })
-            .then((myStream) => {
-                stream = myStream;
-                localVideo.srcObject = stream;
-                localVideo.playsInline = true;
-                localVideo.autoplay = true;
-                localVideo.muted = true;
-                localVideo.volume = 0;
-                localVideo.controls = false;
-                localUsername.innerText = userName;
-                initializeConnection();
-                handleEnumerateDevices();
-                handleVideoMirror(localVideo, myStream);
-            })
-            .catch((error) => {
-                handleMediaStreamError(error);
-            });
+        try {
+            const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            stream = myStream;
+            localVideo.srcObject = stream;
+            localVideo.playsInline = true;
+            localVideo.autoplay = true;
+            localVideo.muted = true;
+            localVideo.volume = 0;
+            localVideo.controls = false;
+            localUsername.innerText = userName;
+            initializeConnection();
+            await handleEnumerateDevices();
+            handleVideoMirror(localVideo, myStream);
+        } catch (error) {
+            handleMediaStreamError(error);
+        }
     }
 }
 
@@ -720,8 +716,6 @@ function handleMediaStreamError(error) {
         Check the common <a href="https://blog.addpipe.com/common-getusermedia-errors" target="_blank">getUserMedia errors</a></li>`;
     }
 
-    sound('alert');
-
     Swal.fire({
         position: 'top',
         icon: 'warning',
@@ -738,6 +732,8 @@ function handleMediaStreamError(error) {
             window.location.href = '/';
         }
     });
+
+    sound('alert');
 }
 
 // Initialize WebRTC connection
@@ -783,23 +779,21 @@ function initializeConnection() {
 }
 
 // Create and send an offer
-function offerCreate() {
+async function offerCreate() {
     if (!thisConnection) {
         initializeConnection();
     }
-    thisConnection
-        .createOffer()
-        .then((offer) => {
-            thisConnection.setLocalDescription(offer);
-            sendMsg({
-                type: 'offer',
-                offer,
-            });
-            elemDisplay(callUsernameSelect, false);
-        })
-        .catch((error) => {
-            handleError('Error when creating an offer.', error);
+    try {
+        const offer = await thisConnection.createOffer();
+        await thisConnection.setLocalDescription(offer);
+        sendMsg({
+            type: 'offer',
+            offer,
         });
+        elemDisplay(callUsernameSelect, false);
+    } catch (error) {
+        handleError('Error when creating an offer.', error);
+    }
 }
 
 // Accept incoming offer
@@ -810,8 +804,6 @@ function offerAccept(data) {
         sendMsg({ ...data });
         return;
     }
-
-    sound('ring');
 
     Swal.fire({
         position: 'top',
@@ -837,44 +829,48 @@ function offerAccept(data) {
         }
         sendMsg({ ...data });
     });
+
+    sound('ring');
 }
 
 // Handle incoming offer
-function handleOffer(data) {
+async function handleOffer(data) {
     const { offer, name } = data;
     connectedUser = name;
     initializeConnection();
-    thisConnection.setRemoteDescription(new RTCSessionDescription(offer));
-    thisConnection
-        .createAnswer()
-        .then((answer) => {
-            thisConnection.setLocalDescription(answer);
-            sendMsg({
-                type: 'answer',
-                answer,
-            });
-        })
-        .catch((error) => {
-            handleError('Error when creating an answer.', error);
+    await thisConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    try {
+        const answer = await thisConnection.createAnswer();
+        await thisConnection.setLocalDescription(answer);
+        sendMsg({
+            type: 'answer',
+            answer,
         });
+    } catch (error) {
+        handleError('Error when creating an answer.', error);
+    }
 }
 
 // Handle incoming answer
-function handleAnswer(data) {
+async function handleAnswer(data) {
     const { answer } = data;
-    thisConnection.setRemoteDescription(new RTCSessionDescription(answer)).catch((error) => {
+    try {
+        await thisConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    } catch (error) {
         handleError('Error when set remote description.', error);
-    });
+    }
 }
 
 // Handle incoming ICE candidate
-function handleCandidate(data) {
+async function handleCandidate(data) {
     const { candidate } = data;
     elemDisplay(callBtn, false);
-    thisConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) => {
+    try {
+        await thisConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    } catch (error) {
         handleError('Error when add ice candidate.', error);
         elemDisplay(callBtn, true, 'inline');
-    });
+    }
 }
 
 // Handle connected users
@@ -970,7 +966,7 @@ function handleLeave(disconnect = true) {
 // Handle and display errors
 function handleError(message, error = false, position = 'top', timer = 6000) {
     if (error) console.error(error);
-    sound('notify');
+
     Swal.fire({
         position,
         icon: 'warning',
@@ -980,6 +976,8 @@ function handleError(message, error = false, position = 'top', timer = 6000) {
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     });
+
+    sound('notify');
 }
 
 // Display Message to user
