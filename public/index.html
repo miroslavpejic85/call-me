@@ -58,6 +58,20 @@
             </a>
         </div>
 
+        <!-- Sidebar for user list -->
+        <div id="userSidebar" class="user-sidebar">
+            <div class="user-sidebar-header">
+                <span class="user-sidebar-title">Connected Users</span>
+                <button id="exitSidebarBtn" class="btn btn-exit-sidebar" title="Close sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="user-search-bar">
+                <input type="text" id="userSearchInput" placeholder="Search users..." autocomplete="off" />
+            </div>
+            <ul id="userList" class="user-list"></ul>
+        </div>
+
         <!-- Sign-in Page -->
         <div id="signInPage" class="container text-center center">
             <div class="container mt-5">
@@ -102,10 +116,6 @@
 
             <div class="row text-center">
                 <div class="col-md-12">
-                    <!-- Input field for selecting the username to call -->
-                    <select id="callUsernameSelect">
-                        <option value="" disabled selected>Select a user to call</option>
-                    </select>
                     <!-- Button to hide/show the local video -->
                     <button
                         id="hideBtn"
@@ -165,6 +175,17 @@
                         title="Hang up"
                     >
                         <i class="fas fa-phone-slash"></i>
+                    </button>
+
+                    <!-- Toggle user sidebar button -->
+                    <button
+                        id="sidebarBtn"
+                        class="btn btn-custom btn-primary btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Show users"
+                    >
+                        <i class="fas fa-users"></i>
                     </button>
                 </div>
             </div>

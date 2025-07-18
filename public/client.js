@@ -20,7 +20,11 @@ const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
 const signInBtn = document.getElementById('signInBtn');
 const roomPage = document.getElementById('roomPage');
-const callUsernameSelect = document.getElementById('callUsernameSelect');
+const exitSidebarBtn = document.getElementById('exitSidebarBtn');
+const userSidebar = document.getElementById('userSidebar');
+const userSearchInput = document.getElementById('userSearchInput');
+const userList = document.getElementById('userList');
+const sidebarBtn = document.getElementById('sidebarBtn');
 const hideBtn = document.getElementById('hideBtn');
 const callBtn = document.getElementById('callBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
@@ -44,6 +48,12 @@ let connectedUser;
 let thisConnection;
 let camera = 'user';
 let stream;
+
+// User list state
+let userSignedIn = false;
+let allConnectedUsers = [];
+let filteredUsers = [];
+let selectedUser = null;
 
 // Variable to store the interval ID
 let sessionTimerId = null;
@@ -255,34 +265,12 @@ async function handleDirectJoin() {
         if (call) {
             // Call user if call is provided
             setTimeout(() => {
-                selectIndexByValue(call);
-                handleCallClick();
+                handleUserClickToCall(call);
             }, 3000);
         }
     }
 
     if (!password) await checkHostPassword();
-}
-
-// Select index by passed value
-function selectIndexByValue(value) {
-    for (let i = 0; i < callUsernameSelect.options.length; i++) {
-        if (callUsernameSelect.options[i].value === value) {
-            callUsernameSelect.selectedIndex = i; // Select the option
-            break;
-        }
-    }
-}
-
-// Remove option by value
-function removeOptionByValue(value) {
-    for (let i = 0; i < callUsernameSelect.options.length; i++) {
-        if (callUsernameSelect.options[i].value === value) {
-            alert(value);
-            callUsernameSelect.remove(i); // Remove the matching option
-            break;
-        }
-    }
 }
 
 // Start Session Time
@@ -405,19 +393,64 @@ async function handleEnumerateDevices() {
 
 // Handle Listeners
 function handleListeners() {
-    // Event listeners
     signInBtn.addEventListener('click', handleSignInClick);
     hideBtn.addEventListener('click', toggleLocalVideo);
-    callBtn.addEventListener('click', handleCallClick);
+    callBtn.addEventListener('click', handleCallBtnClick);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
     hangUpBtn.addEventListener('click', handleHangUpClick);
+    exitSidebarBtn.addEventListener('click', handleExitSidebarClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
-    // Add keyUp listeners
-    callUsernameSelect.addEventListener('keyup', (e) => handleKeyUp(e, handleCallClick));
-    callUsernameSelect.addEventListener('change', (e) => handleChangeUserToCall(e));
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+
+    // Sidebar toggle
+    if (sidebarBtn && userSidebar) {
+        sidebarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userSidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth > 768) return; // Ignore clicks on desktop
+            let el = e.target;
+            let shouldExclude = false;
+            while (el) {
+                if (el instanceof HTMLElement && (el.id === 'userSidebar' || el.id === 'sidebarBtn')) {
+                    shouldExclude = true;
+                    break;
+                }
+                el = el.parentElement;
+            }
+            if (!shouldExclude && userSidebar.classList.contains('active')) {
+                userSidebar.classList.remove('active');
+            }
+        });
+    }
+}
+
+// Hide sidebar after user selection (on mobile)
+function handleUserClickToCall(user) {
+    if (!user) {
+        handleError('No user selected.');
+        return;
+    }
+    if (user === userName) {
+        handleError('You cannot call yourself.');
+        return;
+    }
+    selectedUser = user;
+    renderUserList();
+    connectedUser = user;
+    sendMsg({
+        type: 'offerAccept',
+        from: userName,
+        to: user,
+    });
+    popupMsg(`You are calling ${user}.<br/>Please wait for them to answer.`);
+    if (userSidebar.classList.contains('active')) {
+        userSidebar.classList.remove('active');
+    }
 }
 
 // Handle element display
@@ -457,34 +490,9 @@ function toggleLocalVideo() {
     }
 }
 
-// Handle Select user to call on changes
-function handleChangeUserToCall(e) {
-    const selectedValue = e.target.value;
-    if (selectedValue) {
-        console.log(`You selected: ${selectedValue}`);
-        if (!callBtn.classList.contains('pulsate')) callBtn.classList.add('pulsate');
-    }
-}
-
 // Handle call button click
-function handleCallClick() {
-    const callToUsername = callUsernameSelect.value.trim();
-    if (callToUsername.length > 0) {
-        if (callToUsername === userName) {
-            handleError('You cannot call yourself.');
-            return;
-        }
-        connectedUser = callToUsername;
-        sendMsg({
-            type: 'offerAccept',
-            from: userName,
-            to: callToUsername,
-        });
-        popupMsg(`You are calling ${callToUsername}.<br/>Please wait for them to answer.`);
-        if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
-    } else {
-        handleError('Please select the user to call.');
-    }
+function handleCallBtnClick() {
+    handleUserClickToCall(selectedUser);
 }
 
 // Toggle video stream
@@ -614,6 +622,13 @@ function handleHangUpClick() {
     handleLeave();
 }
 
+// Handle leaving the call
+function handleExitSidebarClick() {
+    if (userSidebar.classList.contains('active')) {
+        userSidebar.classList.remove('active');
+    }
+}
+
 // Toggle video full screen mode
 function toggleFullScreen(e) {
     if (!e.target.srcObject) return;
@@ -639,7 +654,9 @@ function handlePing(data) {
 function handleNotFound(data) {
     const { username } = data;
     handleError(`Username ${username} not found!`);
-    removeOptionByValue(username);
+    // Remove from user list if present
+    allConnectedUsers = allConnectedUsers.filter((u) => u !== username);
+    filterUserList(userSearchInput.value || '');
 }
 
 // Handle sign-in response from the server
@@ -651,6 +668,11 @@ async function handleSignIn(data) {
             setTimeout(handleHangUpClick, 3000);
         }
     } else {
+        userSignedIn = true;
+
+        if (userInfo.device.isDesktop) userSidebar.classList.toggle('active');
+        if (userInfo.device.isMobile) userSidebar.style.width = '100%';
+
         elemDisplay(githubDiv, false);
         elemDisplay(attribution, false);
         elemDisplay(signInPage, false);
@@ -875,21 +897,9 @@ async function handleCandidate(data) {
 
 // Handle connected users
 function handleUsers(data) {
-    console.log('Connected users ------>', data.users);
-    callUsernameSelect.innerHTML = '';
-    data.users.forEach((user) => {
-        if (user === userName) return;
-        const option = document.createElement('option');
-        option.value = user;
-        option.textContent = user;
-        callUsernameSelect.appendChild(option);
-    });
-    if (callUsernameSelect.options.length === 0) {
-        callUsernameSelect.innerHTML = '<option value="" disabled selected>Select a user to call</option>';
-        if (callBtn.classList.contains('pulsate')) callBtn.classList.remove('pulsate');
-    } else {
-        if (!callBtn.classList.contains('pulsate')) callBtn.classList.add('pulsate');
-    }
+    allConnectedUsers = data.users.filter((u) => u !== userName);
+    filterUserList(userSearchInput.value || '');
+    callBtn.classList.toggle('pulsate', allConnectedUsers.length > 0);
 }
 
 // Handle remote video status
@@ -999,6 +1009,44 @@ function sendMsg(message) {
     }
     socket.emit('message', message);
 }
+
+// Select user by value in the user list
+function renderUserList() {
+    userList.innerHTML = '';
+    filteredUsers.forEach((user) => {
+        const li = document.createElement('li');
+        li.textContent = user;
+        li.tabIndex = 0;
+        if (user === selectedUser) li.classList.add('selected');
+        li.addEventListener('click', () => {
+            if (!userSignedIn) return;
+            selectedUser = user;
+            renderUserList();
+        });
+        li.addEventListener('dblclick', () => {
+            if (!userSignedIn) return;
+            handleUserClickToCall(user);
+        });
+        li.addEventListener('keydown', (e) => {
+            if (!userSignedIn) return;
+            if (e.key === 'Enter') handleUserClickToCall(user);
+        });
+        userList.appendChild(li);
+    });
+}
+
+// Filter user list based on search input
+function filterUserList(query) {
+    filteredUsers = allConnectedUsers.filter((u) => u.toLowerCase().includes(query.toLowerCase()));
+    // If selected user is filtered out, deselect
+    if (!filteredUsers.includes(selectedUser)) selectedUser = null;
+    renderUserList();
+}
+
+// Handle user search input
+userSearchInput?.addEventListener('input', (e) => {
+    filterUserList(e.target.value);
+});
 
 // Clean up before window close or reload
 window.onbeforeunload = () => {

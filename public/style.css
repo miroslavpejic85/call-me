@@ -308,6 +308,124 @@ select::-ms-expand {
     right: 10px;
 }
 
+/* User Sidebar Styles */
+.user-sidebar {
+    position: fixed;
+    display: flex;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100vh;
+    background: rgba(30, 32, 36, 0.98);
+    border-left: 2px solid #333;
+    flex-direction: column;
+    z-index: 1002;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.user-sidebar.active {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
+    animation: sidebarFadeIn 0.5s ease;
+}
+
+@media (max-width: 768px) {
+    .user-sidebar.active {
+        animation: none !important;
+    }
+}
+
+@keyframes sidebarFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* User Sidebar Header */
+.user-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid #333;
+    background: rgba(30, 32, 36, 0.98);
+}
+.user-sidebar-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #fff;
+}
+.btn-exit-sidebar {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.3rem;
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.btn-exit-sidebar:hover {
+    color: #d9534f;
+}
+
+/* User Search Bar */
+.user-search-bar {
+    padding: 16px 16px 8px 16px;
+    background: #23242a;
+    border-bottom: 1px solid #333;
+}
+
+#userSearchInput {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #18191c;
+    color: #fff;
+    font-size: 1em;
+}
+
+/* User List Styles */
+.user-list {
+    flex: 1;
+    margin: 0;
+    padding: 0 0 16px 0;
+    list-style: none;
+    overflow-y: auto;
+}
+
+.user-list li {
+    padding: 12px 20px;
+    border-bottom: 1px solid #292a2e;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    font-size: 1.05em;
+}
+.user-list li:hover {
+    background: #2a2b31;
+    color: #ffd700;
+}
+.user-list li.selected {
+    background: #444;
+    color: #ffd700;
+}
+
 /* Swal2 custom theme */
 .swal2-popup {
     background: rgba(0, 0, 0, 0.5) !important;
