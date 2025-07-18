@@ -26,7 +26,6 @@ const userSearchInput = document.getElementById('userSearchInput');
 const userList = document.getElementById('userList');
 const sidebarBtn = document.getElementById('sidebarBtn');
 const hideBtn = document.getElementById('hideBtn');
-const callBtn = document.getElementById('callBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -395,7 +394,6 @@ async function handleEnumerateDevices() {
 function handleListeners() {
     signInBtn.addEventListener('click', handleSignInClick);
     hideBtn.addEventListener('click', toggleLocalVideo);
-    callBtn.addEventListener('click', handleCallBtnClick);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
     hangUpBtn.addEventListener('click', handleHangUpClick);
@@ -843,7 +841,6 @@ function offerAccept(data) {
     }).then((result) => {
         if (result.isConfirmed) {
             elemDisplay(callUsernameSelect, false);
-            elemDisplay(callBtn, false);
             data.type = 'offerCreate';
             socket.recipient = data.from;
         } else {
@@ -886,12 +883,10 @@ async function handleAnswer(data) {
 // Handle incoming ICE candidate
 async function handleCandidate(data) {
     const { candidate } = data;
-    elemDisplay(callBtn, false);
     try {
         await thisConnection.addIceCandidate(new RTCIceCandidate(candidate));
     } catch (error) {
         handleError('Error when add ice candidate.', error);
-        elemDisplay(callBtn, true, 'inline');
     }
 }
 
@@ -899,7 +894,6 @@ async function handleCandidate(data) {
 function handleUsers(data) {
     allConnectedUsers = data.users.filter((u) => u !== userName);
     filterUserList(userSearchInput.value || '');
-    callBtn.classList.toggle('pulsate', allConnectedUsers.length > 0);
 }
 
 // Handle remote video status
@@ -956,7 +950,6 @@ function handleLeave(disconnect = true) {
     } else {
         // Show UI elements
         elemDisplay(callUsernameSelect, true);
-        elemDisplay(callBtn, true, 'inline');
 
         // Stop remote video tracks only
         stopMediaStream(remoteVideo);
@@ -1015,17 +1008,34 @@ function renderUserList() {
     userList.innerHTML = '';
     filteredUsers.forEach((user) => {
         const li = document.createElement('li');
-        li.textContent = user;
         li.tabIndex = 0;
         if (user === selectedUser) li.classList.add('selected');
+
+        // Create call button
+        const callBtnEl = document.createElement('button');
+        callBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn fas fa-phone';
+        callBtnEl.title = `Call ${user}`;
+        callBtnEl.setAttribute('data-toggle', 'tooltip');
+        callBtnEl.setAttribute('data-placement', 'top');
+        callBtnEl.style.marginRight = '10px';
+        callBtnEl.style.cursor = 'pointer';
+        callBtnEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!userSignedIn) return;
+            handleUserClickToCall(user);
+        });
+
+        // Username span
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = user;
+
+        li.appendChild(callBtnEl);
+        li.appendChild(nameSpan);
+
         li.addEventListener('click', () => {
             if (!userSignedIn) return;
             selectedUser = user;
             renderUserList();
-        });
-        li.addEventListener('dblclick', () => {
-            if (!userSignedIn) return;
-            handleUserClickToCall(user);
         });
         li.addEventListener('keydown', (e) => {
             if (!userSignedIn) return;
