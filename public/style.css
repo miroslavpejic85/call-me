@@ -245,35 +245,6 @@ input {
     border-color: #007bff;
 }
 
-/* Select Input Styles */
-select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    color: var(--text-color);
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    text-align: center;
-    text-align-last: center;
-    appearance: none;
-    outline: none;
-    cursor: pointer;
-}
-
-#callUsernameSelect option[data-icon]::before {
-    font-family: 'Font Awesome 6';
-    font-weight: 900;
-    margin-right: 8px;
-    font-size: 1rem;
-    content: attr(data-icon);
-}
-
-select::-ms-expand {
-    display: none;
-}
-
 /* Center Alignment */
 .center {
     position: fixed;
@@ -310,6 +281,7 @@ select::-ms-expand {
 
 /* User Sidebar Styles */
 .user-sidebar {
+    z-index: 5;
     position: fixed;
     display: flex;
     top: 0;
@@ -319,7 +291,6 @@ select::-ms-expand {
     background: rgba(30, 32, 36, 0.98);
     border-left: 2px solid #333;
     flex-direction: column;
-    z-index: 1002;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
     transition:
         transform 0.3s ease,
@@ -538,4 +509,5 @@ z-index:
     - 2. streamStatusContainer
     - 3. localVideoContainer, attribution
     - 4. sessionTime
+    - 5. userSidebar
 */

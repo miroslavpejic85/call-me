@@ -810,7 +810,6 @@ async function offerCreate() {
             type: 'offer',
             offer,
         });
-        elemDisplay(callUsernameSelect, false);
     } catch (error) {
         handleError('Error when creating an offer.', error);
     }
@@ -840,7 +839,6 @@ function offerAccept(data) {
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
         if (result.isConfirmed) {
-            elemDisplay(callUsernameSelect, false);
             data.type = 'offerCreate';
             socket.recipient = data.from;
         } else {
@@ -948,9 +946,6 @@ function handleLeave(disconnect = true) {
         // Redirect to homepage
         window.location.href = '/';
     } else {
-        // Show UI elements
-        elemDisplay(callUsernameSelect, true);
-
         // Stop remote video tracks only
         stopMediaStream(remoteVideo);
 
