@@ -289,9 +289,8 @@ input {
     width: 320px;
     height: 100vh;
     background: rgba(30, 32, 36, 0.98);
-    border-left: 2px solid #333;
     flex-direction: column;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.25);
     transition:
         transform 0.3s ease,
         opacity 0.3s;
@@ -302,27 +301,10 @@ input {
 
 .user-sidebar.active {
     transform: translateX(0);
-    opacity: 1;
+    opacity: 0.95;
     pointer-events: auto;
-    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
-    animation: sidebarFadeIn 0.5s ease;
-}
-
-@media (max-width: 768px) {
-    .user-sidebar.active {
-        animation: none !important;
-    }
-}
-
-@keyframes sidebarFadeIn {
-    from {
-        opacity: 0;
-        transform: translateX(40px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    animation: none !important;
 }
 
 /* User Sidebar Header */
@@ -331,7 +313,6 @@ input {
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 1rem 0.5rem 1rem;
-    border-bottom: 1px solid #333;
     background: rgba(30, 32, 36, 0.98);
 }
 .user-sidebar-title {
@@ -354,19 +335,20 @@ input {
 
 /* User Search Bar */
 .user-search-bar {
-    padding: 16px 16px 8px 16px;
+    padding: 16px 16px 16px 16px;
     background: #23242a;
-    border-bottom: 1px solid #333;
 }
 
 #userSearchInput {
     width: 100%;
     padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid #444;
+    border: none;
     background: #18191c;
     color: #fff;
     font-size: 1em;
+    outline: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 /* User List Styles */
@@ -380,10 +362,11 @@ input {
 
 .user-list li {
     padding: 12px 20px;
-    border-bottom: 1px solid #292a2e;
     color: #fff;
     cursor: pointer;
-    transition: background 0.15s;
+    transition:
+        background 0.15s,
+        color 0.15s;
     display: flex;
     align-items: center;
     font-size: 1.05em;
