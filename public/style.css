@@ -301,7 +301,7 @@ input {
 
 .user-sidebar.active {
     transform: translateX(0);
-    opacity: 0.95;
+    opacity: 1;
     pointer-events: auto;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
     animation: none !important;
