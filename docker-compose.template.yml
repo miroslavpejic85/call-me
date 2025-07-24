@@ -3,10 +3,10 @@ services:
         image: mirotalk/cme:latest
         container_name: callme
         hostname: callme
+        restart: unless-stopped
+        ports:
+            - '${PORT}:${PORT}'
         volumes:
             - .env:/src/.env:ro
             - ./app/:/src/app/:ro
             - ./public/:/src/public/:ro
-        restart: unless-stopped
-        ports:
-            - '${PORT}:${PORT}'
