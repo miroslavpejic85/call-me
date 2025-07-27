@@ -394,7 +394,9 @@ async function handleEnumerateDevices() {
 // Handle Listeners
 function handleListeners() {
     signInBtn.addEventListener('click', handleSignInClick);
-    shareRoomBtn.addEventListener('click', handleShareRoomClick);
+    shareRoomBtn.addEventListener('click', async () => {
+        await handleShareRoomClick();
+    });
     hideBtn.addEventListener('click', toggleLocalVideo);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
@@ -479,33 +481,31 @@ function handleSignInClick() {
 }
 
 // Share Room click handler
-function handleShareRoomClick() {
+async function handleShareRoomClick() {
     const roomUrl = window.location.origin;
     if (navigator.share) {
-        navigator
-            .share({
+        try {
+            await navigator.share({
                 title: document.title,
                 text: 'Join my Call-me room!',
                 url: roomUrl,
-            })
-            .catch((error) => {
-                copyToClipboard(roomUrl);
             });
+        } catch (error) {
+            await copyToClipboard(roomUrl);
+        }
     } else {
-        copyToClipboard(roomUrl);
+        await copyToClipboard(roomUrl);
     }
 }
 
 // Copy text to clipboard
-function copyToClipboard(text) {
-    navigator.clipboard
-        .writeText(text)
-        .then(() => {
-            popupMsg(`Copied to clipboard: ${text}`);
-        })
-        .catch((error) => {
-            handleError('Failed to copy to clipboard', error);
-        });
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        popupMsg(`Copied to clipboard: ${text}`);
+    } catch (error) {
+        handleError('Failed to copy to clipboard', error);
+    }
 }
 
 // Toggle local video visibility
