@@ -25,6 +25,7 @@ const userSidebar = document.getElementById('userSidebar');
 const userSearchInput = document.getElementById('userSearchInput');
 const userList = document.getElementById('userList');
 const sidebarBtn = document.getElementById('sidebarBtn');
+const shareRoomBtn = document.getElementById('shareRoomBtn');
 const hideBtn = document.getElementById('hideBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
@@ -393,6 +394,7 @@ async function handleEnumerateDevices() {
 // Handle Listeners
 function handleListeners() {
     signInBtn.addEventListener('click', handleSignInClick);
+    shareRoomBtn.addEventListener('click', handleShareRoomClick);
     hideBtn.addEventListener('click', toggleLocalVideo);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
@@ -474,6 +476,36 @@ function handleSignInClick() {
         });
         localStorage.callMeUsername = userName;
     }
+}
+
+// Share Room click handler
+function handleShareRoomClick() {
+    const roomUrl = window.location.origin;
+    if (navigator.share) {
+        navigator
+            .share({
+                title: document.title,
+                text: 'Join my Call-me room!',
+                url: roomUrl,
+            })
+            .catch((error) => {
+                copyToClipboard(roomUrl);
+            });
+    } else {
+        copyToClipboard(roomUrl);
+    }
+}
+
+// Copy text to clipboard
+function copyToClipboard(text) {
+    navigator.clipboard
+        .writeText(text)
+        .then(() => {
+            popupMsg(`Copied to clipboard: ${text}`);
+        })
+        .catch((error) => {
+            handleError('Failed to copy to clipboard', error);
+        });
 }
 
 // Toggle local video visibility
