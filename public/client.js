@@ -499,12 +499,14 @@ async function handleShareRoomClick() {
 }
 
 // Copy text to clipboard
-async function copyToClipboard(text) {
+async function copyToClipboard(text, showError = true) {
     try {
         await navigator.clipboard.writeText(text);
-        popupMsg(`Copied to clipboard: ${text}`);
+        toast(`Room Copied to clipboard ${text}`, 'success', 'top', 3000);
     } catch (error) {
-        handleError('Failed to copy to clipboard', error);
+        showError
+            ? handleError('Failed to copy to clipboard', error.message)
+            : console.error('Failed to copy to clipboard', error);
     }
 }
 
