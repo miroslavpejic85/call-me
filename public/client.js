@@ -922,8 +922,18 @@ async function handleCandidate(data) {
 
 // Handle connected users
 function handleUsers(data) {
-    allConnectedUsers = data.users.filter((u) => u !== userName);
+    // Show toast for new users
+    const prevUsers = new Set(allConnectedUsers);
+    const currentUsers = data.users.filter((u) => u !== userName);
+    allConnectedUsers = currentUsers;
     filterUserList(userSearchInput.value || '');
+    if (userSignedIn) {
+        currentUsers.forEach((u) => {
+            if (!prevUsers.has(u)) {
+                toast(`<b>${u}</b> joined`, 'success');
+            }
+        });
+    }
 }
 
 // Handle remote video status
@@ -991,6 +1001,24 @@ function handleLeave(disconnect = true) {
         // Reset state
         connectedUser = null;
     }
+}
+
+// Display toast messages
+function toast(message, icon = 'info', position = 'top', timer = 3000) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: position,
+        icon: icon,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: timer,
+    });
+    Toast.fire({
+        icon: icon,
+        title: message,
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+    });
 }
 
 // Handle and display errors
