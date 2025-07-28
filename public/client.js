@@ -491,7 +491,7 @@ async function handleShareRoomClick() {
                 url: roomUrl,
             });
         } catch (error) {
-            await copyToClipboard(roomUrl);
+            await copyToClipboard(roomUrl, false);
         }
     } else {
         await copyToClipboard(roomUrl);
