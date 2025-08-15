@@ -247,7 +247,7 @@ function handleToolTip() {
 function handleLocalStorage() {
     usernameIn.value = localStorage.callMeUsername
         ? localStorage.callMeUsername
-        : 'Guest-' + Math.floor(Math.random() * 10000);
+        : 'Guest' + Math.floor(Math.random() * 10000);
 }
 
 // Handle Room direct join
