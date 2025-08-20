@@ -356,6 +356,11 @@ function handleConnection(socket) {
             case 'remoteVideo':
                 handleSignalingMessage(data);
                 break;
+            case 'chat':
+                data.from = socket.username || 'Anonymous';
+                handleChatMessage(data);
+                log.debug('Chat message:', data);
+                break;
             case 'pong':
                 log.debug('Client response:', data.message);
                 break;
@@ -453,6 +458,20 @@ function handleConnection(socket) {
                 }
                 break;
         }
+    }
+
+    // Function to handle chat messages
+    function handleChatMessage(data) {
+        const { text, from } = data;
+        log.debug('Chat message from', from, ':', text);
+
+        // Broadcast the chat message to all connected clients
+        broadcastMsgExpectSender(socket, {
+            type: 'chat',
+            from: from || 'Anonymous',
+            text: text,
+            timestamp: Date.now(),
+        });
     }
 
     // Function to handle the closing of a connection

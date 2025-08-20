@@ -58,18 +58,41 @@
             </a>
         </div>
 
-        <!-- Sidebar for user list -->
+        <!-- Sidebar with tabs for users and chat -->
         <div id="userSidebar" class="user-sidebar">
             <div class="user-sidebar-header">
-                <span class="user-sidebar-title"> <i class="fas fa-users"></i> Users</span>
+                <div class="sidebar-tabs">
+                    <button id="usersTab" class="sidebar-tab active" data-tab="users">
+                        <i class="fas fa-users"></i> Users
+                    </button>
+                    <button id="chatTab" class="sidebar-tab" data-tab="chat">
+                        <i class="fas fa-comments"></i> Chat
+                        <span id="chatNotification" class="chat-notification hidden">0</span>
+                    </button>
+                </div>
                 <button id="exitSidebarBtn" class="btn btn-exit-sidebar" title="Close sidebar">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="user-search-bar">
-                <input type="text" id="userSearchInput" placeholder="Search users..." autocomplete="off" />
+
+            <!-- Users Tab Content -->
+            <div id="usersContent" class="tab-content active">
+                <div class="user-search-bar">
+                    <input type="text" id="userSearchInput" placeholder="Search users..." autocomplete="off" />
+                </div>
+                <ul id="userList" class="user-list"></ul>
             </div>
-            <ul id="userList" class="user-list"></ul>
+
+            <!-- Chat Tab Content -->
+            <div id="chatContent" class="tab-content">
+                <div id="chatMessages" class="chat-messages"></div>
+                <form id="chatForm" class="chat-form" autocomplete="off">
+                    <input id="chatInput" type="text" placeholder="Type a message..." autocomplete="off" />
+                    <button type="submit" class="btn btn-primary btn-send-chat">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- Sign-in Page -->

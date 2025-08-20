@@ -25,6 +25,14 @@ const userSidebar = document.getElementById('userSidebar');
 const userSearchInput = document.getElementById('userSearchInput');
 const userList = document.getElementById('userList');
 const sidebarBtn = document.getElementById('sidebarBtn');
+const usersTab = document.getElementById('usersTab');
+const chatTab = document.getElementById('chatTab');
+const usersContent = document.getElementById('usersContent');
+const chatContent = document.getElementById('chatContent');
+const chatNotification = document.getElementById('chatNotification');
+const chatMessages = document.getElementById('chatMessages');
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
 const shareRoomBtn = document.getElementById('shareRoomBtn');
 const hideBtn = document.getElementById('hideBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
@@ -54,6 +62,10 @@ let userSignedIn = false;
 let allConnectedUsers = [];
 let filteredUsers = [];
 let selectedUser = null;
+
+// Chat state
+let unreadMessages = 0;
+let currentTab = 'users';
 
 // Variable to store the interval ID
 let sessionTimerId = null;
@@ -368,6 +380,9 @@ function handleMessage(data) {
         case 'remoteVideo':
             handleRemoteVideo(data);
             break;
+        case 'chat':
+            addChatMessage(data, false);
+            break;
         case 'leave':
             handleLeave(false);
             break;
@@ -407,6 +422,8 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    usersTab.addEventListener('click', () => switchTab('users'));
+    chatTab.addEventListener('click', () => switchTab('chat'));
 
     // Sidebar toggle
     if (sidebarBtn && userSidebar) {
@@ -1116,6 +1133,100 @@ function filterUserList(query) {
 userSearchInput?.addEventListener('input', (e) => {
     filterUserList(e.target.value);
 });
+
+// Tab switching function
+function switchTab(tabName) {
+    currentTab = tabName;
+
+    // Update tab buttons
+    if (usersTab && chatTab) {
+        usersTab.classList.remove('active');
+        chatTab.classList.remove('active');
+
+        if (tabName === 'users') {
+            usersTab.classList.add('active');
+        } else {
+            chatTab.classList.add('active');
+            // Clear unread messages when switching to chat
+            unreadMessages = 0;
+            updateChatNotification();
+        }
+    }
+
+    // Update tab content
+    if (usersContent && chatContent) {
+        usersContent.classList.remove('active');
+        chatContent.classList.remove('active');
+        tabName === 'users' ? usersContent.classList.add('active') : chatContent.classList.add('active');
+    }
+}
+
+// Update chat notification badge
+function updateChatNotification() {
+    if (chatNotification) {
+        if (unreadMessages > 0) {
+            chatNotification.textContent = unreadMessages > 99 ? '99+' : unreadMessages.toString();
+            chatNotification.classList.remove('hidden');
+        } else {
+            chatNotification.classList.add('hidden');
+        }
+    }
+}
+
+// Chat form handler
+if (chatForm && chatInput) {
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (text.length > 0) {
+            socket.emit('message', { type: 'chat', text });
+            addChatMessage({ from: userName || 'Me', text, timestamp: Date.now() }, true);
+            chatInput.value = '';
+        }
+    });
+}
+
+function addChatMessage(msg, isSelf = false) {
+    const div = document.createElement('div');
+    div.className = 'chat-message';
+    if (isSelf) {
+        div.classList.add('own-message');
+    }
+
+    const userSpan = document.createElement('span');
+    userSpan.className = 'chat-user';
+    userSpan.textContent = isSelf ? 'Me' : msg.from;
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'chat-text';
+    textSpan.textContent = ': ' + msg.text;
+
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'chat-time';
+    timeSpan.textContent = formatChatTime(msg.timestamp);
+
+    div.appendChild(userSpan);
+    div.appendChild(textSpan);
+    div.appendChild(timeSpan);
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Handle unread message counter
+    if (!isSelf && currentTab !== 'chat') {
+        unreadMessages++;
+        updateChatNotification();
+
+        // Show toast notification for new messages only if sidebar is not opened
+        if (!userSidebar.classList.contains('active')) {
+            toast(`New message from ${msg.from}`, 'info', 'top-end', 2000);
+        }
+    }
+}
+
+function formatChatTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
 // Clean up before window close or reload
 window.onbeforeunload = () => {
