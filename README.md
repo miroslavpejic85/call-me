@@ -12,11 +12,11 @@ This project allows you to:
 
 - `Sign in` with a username.
 - `Initiate video calls` by clicking the call button next to a recipient's username.
+- `Switch cameras, microphone, speaker` during a call.
 - `Chat` with all participants in real time.
-- `Toggle` your video feed as needed.
-- `Switch cameras` during a call.
-- `Enable/Disable` your video.
-- `Enable/Disable` your audio.
+- `Hide` your video feed as needed.
+- `Toggle` your video.
+- `Toggle` your audio.
 - `Hang up` the call when finished.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
 
