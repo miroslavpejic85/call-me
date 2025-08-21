@@ -145,3 +145,5 @@ Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [h
 To install this on your VPS, VDS, or personal server, please follow the instructions in **[the self-hosting documentation](./doc/self-hosting.md)**.
 
 ---
+
+![Star History Chart](https://app.repohistory.com/api/svg?repo=miroslavpejic85/call-me&type=Date&background=0D1117&color=62C3F8)
