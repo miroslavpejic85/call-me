@@ -45,7 +45,7 @@ const hideBtn = document.getElementById('hideBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
 const audioBtn = document.getElementById('audioBtn');
-const hangUpBtn = document.getElementById('hangUpBtn');
+const leaveBtn = document.getElementById('leaveBtn');
 const localVideoContainer = document.getElementById('localVideoContainer');
 const localVideo = document.getElementById('localVideo');
 const remoteAudioDisabled = document.getElementById('remoteAudioDisabled');
@@ -436,7 +436,7 @@ function handleListeners() {
     hideBtn.addEventListener('click', toggleLocalVideo);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
-    hangUpBtn.addEventListener('click', handleHangUpClick);
+    leaveBtn.addEventListener('click', handleLeaveClick);
     exitSidebarBtn.addEventListener('click', handleExitSidebarClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
@@ -487,8 +487,8 @@ function handleUserClickToCall(user) {
         return;
     }
     selectedUser = user;
-    renderUserList();
     connectedUser = user;
+    renderUserList();
     sendMsg({
         type: 'offerAccept',
         from: userName,
@@ -693,8 +693,8 @@ function checkVideoAudioStatus() {
     }
 }
 
-// Handle hang-up button click
-function handleHangUpClick() {
+// Handle leave button click
+function handleLeaveClick() {
     sendMsg({ type: 'leave', name: socket.recipient });
     handleLeave();
 }
@@ -742,7 +742,7 @@ async function handleSignIn(data) {
     if (!success) {
         handleError(message);
         if (!message.startsWith('Invalid username')) {
-            setTimeout(handleHangUpClick, 3000);
+            setTimeout(handleLeaveClick, 3000);
         }
     } else {
         userSignedIn = true;
@@ -853,6 +853,7 @@ function initializeConnection() {
             remoteVideo.controls = false;
 
             startSessionTime();
+            renderUserList(); // Update UI to show hang-up button
 
             console.log('Remote stream set to video element');
         } else {
@@ -1062,6 +1063,7 @@ function handleLeave(disconnect = true) {
 
         // Reset state
         connectedUser = null;
+        renderUserList();
 
         console.log('Remote user cleanup completed - ready for new connections');
     }
@@ -1130,25 +1132,46 @@ function renderUserList() {
         li.tabIndex = 0;
         if (user === selectedUser) li.classList.add('selected');
 
-        // Create call button
-        const callBtnEl = document.createElement('button');
-        callBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn fas fa-phone';
-        callBtnEl.title = `Call ${user}`;
-        callBtnEl.setAttribute('data-toggle', 'tooltip');
-        callBtnEl.setAttribute('data-placement', 'top');
-        callBtnEl.style.marginRight = '10px';
-        callBtnEl.style.cursor = 'pointer';
-        callBtnEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (!userSignedIn) return;
-            handleUserClickToCall(user);
-        });
+        // Check if this user is currently in an active call (has answered)
+        const isInActiveCall =
+            connectedUser === user && remoteVideo.srcObject && remoteVideo.srcObject.getTracks().length > 0;
+
+        // Create call/hangup button based on active call state
+        const actionBtnEl = document.createElement('button');
+        actionBtnEl.style.marginRight = '10px';
+        actionBtnEl.style.cursor = 'pointer';
+        actionBtnEl.setAttribute('data-toggle', 'tooltip');
+        actionBtnEl.setAttribute('data-placement', 'top');
+
+        if (isInActiveCall) {
+            // Show hang-up button only if in active call (user has answered)
+            actionBtnEl.className = 'btn btn-custom btn-danger btn-s hangup-user-btn fas fa-phone-slash';
+            actionBtnEl.title = `Hang up call with ${user}`;
+            actionBtnEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!userSignedIn) return;
+                console.log(`Hanging up call with ${user}`);
+                // Send leave message to notify the other user
+                sendMsg({ type: 'leave', name: connectedUser });
+                handleLeave(false); // End call but stay in room
+                renderUserList(); // Refresh the list to show call button again
+            });
+        } else {
+            // Show call button if not in active call
+            actionBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn fas fa-phone';
+            actionBtnEl.title = `Call ${user}`;
+            actionBtnEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!userSignedIn) return;
+                handleUserClickToCall(user);
+            });
+        }
 
         // Username span
         const nameSpan = document.createElement('span');
         nameSpan.textContent = user;
 
-        li.appendChild(callBtnEl);
+        li.appendChild(actionBtnEl);
         li.appendChild(nameSpan);
 
         li.addEventListener('click', () => {
@@ -1158,7 +1181,18 @@ function renderUserList() {
         });
         li.addEventListener('keydown', (e) => {
             if (!userSignedIn) return;
-            if (e.key === 'Enter') handleUserClickToCall(user);
+            if (e.key === 'Enter') {
+                const isInActiveCall =
+                    connectedUser === user && remoteVideo.srcObject && remoteVideo.srcObject.getTracks().length > 0;
+                if (isInActiveCall) {
+                    // Send leave message to notify the other user
+                    sendMsg({ type: 'leave', name: connectedUser });
+                    handleLeave(false);
+                    renderUserList();
+                } else {
+                    handleUserClickToCall(user);
+                }
+            }
         });
         userList.appendChild(li);
     });
@@ -1613,5 +1647,5 @@ function debugStreamState() {
 
 // Clean up before window close or reload
 window.onbeforeunload = () => {
-    handleHangUpClick();
+    handleLeaveClick();
 };
