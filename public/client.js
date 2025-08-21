@@ -696,7 +696,7 @@ function checkVideoAudioStatus() {
 // Handle hang-up button click
 function handleHangUpClick() {
     sendMsg({ type: 'leave', name: socket.recipient });
-    thisConnection ? handleLeave(false) : handleLeave(true);
+    handleLeave();
 }
 
 // Handle leaving the call
