@@ -12,8 +12,8 @@ This project allows you to:
 
 - `Sign in` with a username.
 - `Initiate video calls` by clicking the call button next to a recipient's username.
-- `Switch cameras, microphone, speaker` during a call.
-- `Chat` with all participants in real time.
+- `Switch` between cameras, microphones, or speakers seamlessly during a call.
+- `Chat` in real time with all participants.
 - `Hide` your video feed as needed.
 - `Toggle` your video.
 - `Toggle` your audio.
