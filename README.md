@@ -11,13 +11,14 @@ This project enables easy one-to-one video calls directly from your web browser 
 This project allows you to:
 
 - `Sign in` with a username.
-- `Make video calls` by entering the recipient's username.
-- `Toggle` the visibility of your video feed.
-- `Switch` between cameras.
+- `Initiate video calls` by clicking the call button next to a recipient's username.
+- `Chat` with all participants in real time.
+- `Toggle` your video feed as needed.
+- `Switch cameras` during a call.
 - `Enable/Disable` your video.
 - `Enable/Disable` your audio.
 - `Hang up` the call when finished.
-- `Use a REST API` to retrieve a list of all connected users.
+- `Use the REST API` to retrieve the list of connected users or initiate a call.
 
 ---
 
