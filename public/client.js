@@ -27,12 +27,19 @@ const userList = document.getElementById('userList');
 const sidebarBtn = document.getElementById('sidebarBtn');
 const usersTab = document.getElementById('usersTab');
 const chatTab = document.getElementById('chatTab');
+const settingsTab = document.getElementById('settingsTab');
 const usersContent = document.getElementById('usersContent');
 const chatContent = document.getElementById('chatContent');
+const settingsContent = document.getElementById('settingsContent');
 const chatNotification = document.getElementById('chatNotification');
 const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
+const videoSelect = document.getElementById('videoSelect');
+const audioSelect = document.getElementById('audioSelect');
+const audioOutputSelect = document.getElementById('audioOutputSelect');
+const testDevicesBtn = document.getElementById('testDevicesBtn');
+const refreshDevicesBtn = document.getElementById('refreshDevicesBtn');
 const shareRoomBtn = document.getElementById('shareRoomBtn');
 const hideBtn = document.getElementById('hideBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
@@ -66,6 +73,18 @@ let selectedUser = null;
 // Chat state
 let unreadMessages = 0;
 let currentTab = 'users';
+
+// Device state
+let availableDevices = {
+    videoInputs: [],
+    audioInputs: [],
+    audioOutputs: [],
+};
+let selectedDevices = {
+    videoInput: null,
+    audioInput: null,
+    audioOutput: null,
+};
 
 // Variable to store the interval ID
 let sessionTimerId = null;
@@ -424,6 +443,13 @@ function handleListeners() {
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
     usersTab.addEventListener('click', () => switchTab('users'));
     chatTab.addEventListener('click', () => switchTab('chat'));
+    settingsTab.addEventListener('click', () => switchTab('settings'));
+    // Settings event listeners
+    videoSelect.addEventListener('change', handleVideoDeviceChange);
+    audioSelect.addEventListener('change', handleAudioDeviceChange);
+    audioOutputSelect.addEventListener('change', handleAudioOutputDeviceChange);
+    testDevicesBtn.addEventListener('click', testDevices);
+    refreshDevicesBtn.addEventListener('click', refreshDevices);
 
     // Sidebar toggle
     if (sidebarBtn && userSidebar) {
@@ -741,6 +767,8 @@ async function handleSignIn(data) {
             localUsername.innerText = userName;
             initializeConnection();
             await handleEnumerateDevices();
+            // Initialize device settings after getting media
+            await initializeDeviceSettings();
             handleVideoMirror(localVideo, myStream);
         } catch (error) {
             handleMediaStreamError(error);
@@ -853,9 +881,10 @@ function initializeConnection() {
 
 // Create and send an offer
 async function offerCreate() {
-    if (!thisConnection) {
-        initializeConnection();
-    }
+    // Always initialize a fresh connection for new calls
+    console.log('Creating new offer - initializing fresh connection');
+    initializeConnection();
+
     try {
         const offer = await thisConnection.createOffer();
         await thisConnection.setLocalDescription(offer);
@@ -863,6 +892,7 @@ async function offerCreate() {
             type: 'offer',
             offer,
         });
+        console.log('Offer created and sent successfully');
     } catch (error) {
         handleError('Error when creating an offer.', error);
     }
@@ -906,8 +936,12 @@ function offerAccept(data) {
 // Handle incoming offer
 async function handleOffer(data) {
     const { offer, name } = data;
+    console.log('Handling offer from:', name);
     connectedUser = name;
+
+    // Initialize fresh connection for incoming call
     initializeConnection();
+
     await thisConnection.setRemoteDescription(new RTCSessionDescription(offer));
     try {
         const answer = await thisConnection.createAnswer();
@@ -916,6 +950,7 @@ async function handleOffer(data) {
             type: 'answer',
             answer,
         });
+        console.log('Answer sent successfully to:', name);
     } catch (error) {
         handleError('Error when creating an answer.', error);
     }
@@ -1009,18 +1044,26 @@ function handleLeave(disconnect = true) {
         // Redirect to homepage
         window.location.href = '/';
     } else {
+        // Remote user left - clean up properly for new connections
+        console.log('Remote user left - cleaning up connection');
+
         // Stop remote video tracks only
         stopMediaStream(remoteVideo);
+
+        // Clean up the peer connection so new connections work properly
+        disconnectConnection();
 
         // Stop session time
         stopSessionTime();
 
-        // Reset remote video & audio status
+        // Reset remote video & audio status indicators
         handleRemoteVideo({ enabled: true });
         handleRemoteAudio({ enabled: true });
 
         // Reset state
         connectedUser = null;
+
+        console.log('Remote user cleanup completed - ready for new connections');
     }
 }
 
@@ -1139,25 +1182,38 @@ function switchTab(tabName) {
     currentTab = tabName;
 
     // Update tab buttons
-    if (usersTab && chatTab) {
+    if (usersTab && chatTab && settingsTab) {
         usersTab.classList.remove('active');
         chatTab.classList.remove('active');
+        settingsTab.classList.remove('active');
 
         if (tabName === 'users') {
             usersTab.classList.add('active');
-        } else {
+        } else if (tabName === 'chat') {
             chatTab.classList.add('active');
             // Clear unread messages when switching to chat
             unreadMessages = 0;
             updateChatNotification();
+        } else if (tabName === 'settings') {
+            settingsTab.classList.add('active');
+            // Refresh devices when switching to settings
+            refreshDevices(false);
         }
     }
 
     // Update tab content
-    if (usersContent && chatContent) {
+    if (usersContent && chatContent && settingsContent) {
         usersContent.classList.remove('active');
         chatContent.classList.remove('active');
-        tabName === 'users' ? usersContent.classList.add('active') : chatContent.classList.add('active');
+        settingsContent.classList.remove('active');
+
+        if (tabName === 'users') {
+            usersContent.classList.add('active');
+        } else if (tabName === 'chat') {
+            chatContent.classList.add('active');
+        } else if (tabName === 'settings') {
+            settingsContent.classList.add('active');
+        }
     }
 }
 
@@ -1227,6 +1283,333 @@ function formatChatTime(ts) {
     const d = new Date(ts);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
+
+// Device Management Functions
+async function initializeDeviceSettings() {
+    try {
+        // Set initial device IDs from current stream
+        if (stream) {
+            const videoTrack = stream.getVideoTracks()[0];
+            const audioTrack = stream.getAudioTracks()[0];
+
+            if (videoTrack) {
+                const videoSettings = videoTrack.getSettings();
+                selectedDevices.videoInput = videoSettings.deviceId;
+            }
+
+            if (audioTrack) {
+                const audioSettings = audioTrack.getSettings();
+                selectedDevices.audioInput = audioSettings.deviceId;
+            }
+        }
+
+        // Enumerate and populate device lists
+        await enumerateDevices();
+    } catch (error) {
+        console.error('Error initializing device settings:', error);
+    }
+}
+
+async function enumerateDevices() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+
+        availableDevices = {
+            videoInputs: devices.filter((device) => device.kind === 'videoinput'),
+            audioInputs: devices.filter((device) => device.kind === 'audioinput'),
+            audioOutputs: devices.filter((device) => device.kind === 'audiooutput'),
+        };
+
+        populateDeviceSelects();
+    } catch (error) {
+        console.error('Error enumerating devices:', error);
+        handleError('Failed to load media devices');
+    }
+}
+
+function populateDeviceSelects() {
+    // Populate video select
+    if (videoSelect) {
+        videoSelect.innerHTML = '';
+        if (availableDevices.videoInputs.length === 0) {
+            videoSelect.innerHTML = '<option value="">No cameras found</option>';
+        } else {
+            availableDevices.videoInputs.forEach((device) => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.textContent = device.label || `Camera ${device.deviceId.slice(0, 8)}`;
+                if (device.deviceId === selectedDevices.videoInput) {
+                    option.selected = true;
+                }
+                videoSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Populate audio input select
+    if (audioSelect) {
+        audioSelect.innerHTML = '';
+        if (availableDevices.audioInputs.length === 0) {
+            audioSelect.innerHTML = '<option value="">No microphones found</option>';
+        } else {
+            availableDevices.audioInputs.forEach((device) => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.textContent = device.label || `Microphone ${device.deviceId.slice(0, 8)}`;
+                if (device.deviceId === selectedDevices.audioInput) {
+                    option.selected = true;
+                }
+                audioSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Populate audio output select
+    if (audioOutputSelect) {
+        audioOutputSelect.innerHTML = '';
+        if (availableDevices.audioOutputs.length === 0) {
+            audioOutputSelect.innerHTML = '<option value="">No speakers found</option>';
+        } else {
+            availableDevices.audioOutputs.forEach((device) => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.textContent = device.label || `Speaker ${device.deviceId.slice(0, 8)}`;
+                if (device.deviceId === selectedDevices.audioOutput) {
+                    option.selected = true;
+                }
+                audioOutputSelect.appendChild(option);
+            });
+        }
+    }
+}
+
+async function refreshDevices(showToast = true) {
+    if (refreshDevicesBtn) {
+        refreshDevicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshDevicesBtn.disabled = true;
+    }
+
+    try {
+        // Request permissions first to get device labels
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        await enumerateDevices();
+        if (showToast) {
+            toast('Devices refreshed successfully', 'success', 'top-end', 2000);
+        }
+    } catch (error) {
+        console.error('Error refreshing devices:', error);
+        handleError('Failed to refresh devices');
+    } finally {
+        if (refreshDevicesBtn) {
+            refreshDevicesBtn.innerHTML = '<i class="fas fa-sync"></i> Refresh';
+            refreshDevicesBtn.disabled = false;
+        }
+    }
+}
+
+async function handleVideoDeviceChange() {
+    const newDeviceId = videoSelect.value;
+    if (newDeviceId && newDeviceId !== selectedDevices.videoInput) {
+        selectedDevices.videoInput = newDeviceId;
+        await updateVideoStream();
+        toast('Camera changed successfully', 'success', 'top-end', 2000);
+    }
+}
+
+async function handleAudioDeviceChange() {
+    const newDeviceId = audioSelect.value;
+    if (newDeviceId && newDeviceId !== selectedDevices.audioInput) {
+        selectedDevices.audioInput = newDeviceId;
+        await updateAudioStream();
+        toast('Microphone changed successfully', 'success', 'top-end', 2000);
+    }
+}
+
+async function handleAudioOutputDeviceChange() {
+    const newDeviceId = audioOutputSelect.value;
+    if (newDeviceId && newDeviceId !== selectedDevices.audioOutput) {
+        selectedDevices.audioOutput = newDeviceId;
+        await setAudioOutputDevice(newDeviceId);
+        toast('Speaker changed successfully', 'success', 'top-end', 2000);
+    }
+}
+
+async function updateVideoStream() {
+    try {
+        const constraints = {
+            video: { deviceId: selectedDevices.videoInput ? { exact: selectedDevices.videoInput } : true },
+            audio: false,
+        };
+
+        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const videoTrack = newStream.getVideoTracks()[0];
+
+        if (!videoTrack) {
+            throw new Error('No video track found in new stream');
+        }
+
+        // Update peer connection if it exists
+        if (thisConnection) {
+            const sender = thisConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
+            if (sender) {
+                await sender.replaceTrack(videoTrack);
+            } else {
+                // If no sender exists, add the track
+                thisConnection.addTrack(videoTrack, stream);
+            }
+        }
+
+        // Update local video and stream
+        if (stream) {
+            const oldVideoTrack = stream.getVideoTracks()[0];
+            if (oldVideoTrack) {
+                stream.removeTrack(oldVideoTrack);
+                oldVideoTrack.stop();
+            }
+            stream.addTrack(videoTrack);
+
+            // Update local video element
+            if (localVideo) {
+                localVideo.srcObject = stream;
+                handleVideoMirror(localVideo, stream);
+            }
+        }
+
+        // Stop other tracks from the temporary stream
+        newStream.getAudioTracks().forEach((track) => track.stop());
+    } catch (error) {
+        console.error('Error updating video stream:', error);
+        handleError('Failed to change camera');
+    }
+}
+
+async function updateAudioStream() {
+    try {
+        const constraints = {
+            video: false,
+            audio: { deviceId: selectedDevices.audioInput ? { exact: selectedDevices.audioInput } : true },
+        };
+
+        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const audioTrack = newStream.getAudioTracks()[0];
+
+        if (!audioTrack) {
+            throw new Error('No audio track found in new stream');
+        }
+
+        // Update peer connection if it exists
+        if (thisConnection) {
+            const sender = thisConnection.getSenders().find((s) => s.track && s.track.kind === 'audio');
+            if (sender) {
+                await sender.replaceTrack(audioTrack);
+            } else {
+                // If no sender exists, add the track
+                thisConnection.addTrack(audioTrack, stream);
+            }
+        }
+
+        // Update local stream
+        if (stream) {
+            const oldAudioTrack = stream.getAudioTracks()[0];
+            if (oldAudioTrack) {
+                stream.removeTrack(oldAudioTrack);
+                oldAudioTrack.stop();
+            }
+            stream.addTrack(audioTrack);
+        }
+
+        // Stop other tracks from the temporary stream
+        newStream.getVideoTracks().forEach((track) => track.stop());
+    } catch (error) {
+        console.error('Error updating audio stream:', error);
+        handleError('Failed to change microphone');
+    }
+}
+
+async function setAudioOutputDevice(deviceId) {
+    try {
+        if (remoteVideo && typeof remoteVideo.setSinkId === 'function') {
+            await remoteVideo.setSinkId(deviceId);
+            selectedDevices.audioOutput = deviceId;
+        } else {
+            console.warn('Browser does not support audio output device selection');
+            toast('Audio output selection not supported in this browser', 'warning', 'top-end', 3000);
+        }
+    } catch (error) {
+        console.error('Error setting audio output device:', error);
+        handleError('Failed to change speaker');
+    }
+}
+
+async function testDevices() {
+    if (testDevicesBtn) {
+        testDevicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+        testDevicesBtn.disabled = true;
+    }
+
+    try {
+        const constraints = {
+            video: selectedDevices.videoInput ? { deviceId: { exact: selectedDevices.videoInput } } : true,
+            audio: selectedDevices.audioInput ? { deviceId: { exact: selectedDevices.audioInput } } : true,
+        };
+
+        const testStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        // Log stream info for debugging
+        console.log('Test stream tracks:', {
+            video: testStream.getVideoTracks().length,
+            audio: testStream.getAudioTracks().length,
+            videoSettings: testStream.getVideoTracks()[0]?.getSettings(),
+            audioSettings: testStream.getAudioTracks()[0]?.getSettings(),
+        });
+
+        // Test for 2 seconds then stop
+        setTimeout(() => {
+            testStream.getTracks().forEach((track) => track.stop());
+            toast('Device test completed successfully', 'success', 'top-end', 2000);
+        }, 2000);
+    } catch (error) {
+        console.error('Error testing devices:', error);
+        handleError('Device test failed: ' + error.message);
+    } finally {
+        if (testDevicesBtn) {
+            testDevicesBtn.innerHTML = '<i class="fas fa-play"></i> Test Devices';
+            testDevicesBtn.disabled = false;
+        }
+    }
+}
+
+// Debug function to check current stream state
+function debugStreamState() {
+    if (stream) {
+        const videoTracks = stream.getVideoTracks();
+        const audioTracks = stream.getAudioTracks();
+
+        console.log('Current stream state:', {
+            videoTracks: videoTracks.length,
+            audioTracks: audioTracks.length,
+            videoEnabled: videoTracks[0]?.enabled,
+            audioEnabled: audioTracks[0]?.enabled,
+            videoSettings: videoTracks[0]?.getSettings(),
+            audioSettings: audioTracks[0]?.getSettings(),
+        });
+
+        if (thisConnection) {
+            console.log(
+                'Peer connection senders:',
+                thisConnection.getSenders().map((sender) => ({
+                    track: sender.track?.kind,
+                    enabled: sender.track?.enabled,
+                }))
+            );
+        }
+    } else {
+        console.log('No stream available');
+    }
+}
+
+// Initialize devices when settings tab is accessed (not on page load)
+// This prevents conflicts with initial stream setup
 
 // Clean up before window close or reload
 window.onbeforeunload = () => {

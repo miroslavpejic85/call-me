@@ -69,7 +69,11 @@
                         <i class="fas fa-comments"></i> Chat
                         <span id="chatNotification" class="chat-notification hidden">0</span>
                     </button>
+                    <button id="settingsTab" class="sidebar-tab" data-tab="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
                 </div>
+
                 <button id="exitSidebarBtn" class="btn btn-exit-sidebar" title="Close sidebar">
                     <i class="fas fa-times"></i>
                 </button>
@@ -93,8 +97,48 @@
                     </button>
                 </form>
             </div>
-        </div>
 
+            <!-- Settings Tab Content -->
+            <div id="settingsContent" class="tab-content">
+                <div class="settings-section">
+                    <h3 class="settings-title"><i class="fas fa-video"></i> Media Devices</h3>
+
+                    <div class="setting-group">
+                        <label for="videoSelect" class="setting-label"> <i class="fas fa-camera"></i> Camera </label>
+                        <select id="videoSelect" class="setting-select">
+                            <option value="">Loading cameras...</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="audioSelect" class="setting-label">
+                            <i class="fas fa-microphone"></i> Microphone
+                        </label>
+                        <select id="audioSelect" class="setting-select">
+                            <option value="">Loading microphones...</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="audioOutputSelect" class="setting-label">
+                            <i class="fas fa-volume-up"></i> Speaker
+                        </label>
+                        <select id="audioOutputSelect" class="setting-select">
+                            <option value="">Loading speakers...</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button id="testDevicesBtn" class="btn btn-test-devices">
+                            <i class="fas fa-play"></i> Test Devices
+                        </button>
+                        <button id="refreshDevicesBtn" class="btn btn-refresh-devices">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Sign-in Page -->
         <div id="signInPage" class="container text-center center">
             <div class="container mt-5">
