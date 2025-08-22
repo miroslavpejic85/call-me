@@ -1896,53 +1896,6 @@ async function testDevices() {
     }
 }
 
-// Debug function to check current stream state
-function debugStreamState() {
-    if (stream) {
-        const videoTracks = stream.getVideoTracks();
-        const audioTracks = stream.getAudioTracks();
-
-        console.log('Current stream state:', {
-            videoTracks: videoTracks.length,
-            audioTracks: audioTracks.length,
-            videoEnabled: videoTracks[0]?.enabled,
-            audioEnabled: audioTracks[0]?.enabled,
-            videoSettings: videoTracks[0]?.getSettings(),
-            audioSettings: audioTracks[0]?.getSettings(),
-        });
-
-        if (thisConnection) {
-            console.log(
-                'Peer connection senders:',
-                thisConnection.getSenders().map((sender) => ({
-                    track: sender.track?.kind,
-                    enabled: sender.track?.enabled,
-                }))
-            );
-        }
-    } else {
-        console.log('No stream available');
-    }
-}
-
-// Test function to manually toggle remote video object-fit
-function testRemoteVideoObjectFit() {
-    if (remoteVideo.classList.contains('screen-share')) {
-        remoteVideo.classList.remove('screen-share');
-        remoteVideo.classList.add('camera-feed');
-        console.log('Switched to camera-feed mode');
-    } else {
-        remoteVideo.classList.remove('camera-feed');
-        remoteVideo.classList.add('screen-share');
-        console.log('Switched to screen-share mode');
-    }
-    console.log('Remote video classes:', remoteVideo.className);
-}
-
-// Make test function globally available
-window.testRemoteVideoObjectFit = testRemoteVideoObjectFit;
-window.debugStreamState = debugStreamState;
-
 // Initialize devices when settings tab is accessed (not on page load)
 // This prevents conflicts with initial stream setup
 
