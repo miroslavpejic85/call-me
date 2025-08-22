@@ -622,6 +622,36 @@ async function handleScreenShareClick() {
     }
 }
 
+// Update remote video styling based on screen sharing state
+function updateRemoteVideoStyling(isScreenSharing) {
+    if (isScreenSharing) {
+        remoteVideo.classList.add('screen-share');
+        remoteVideo.classList.remove('camera-feed');
+        console.log('Remote screen share detected via data channel, classes:', remoteVideo.className);
+    } else {
+        remoteVideo.classList.add('camera-feed');
+        remoteVideo.classList.remove('screen-share');
+        console.log('Remote camera feed detected via data channel, classes:', remoteVideo.className);
+    }
+}
+
+// Send screen sharing state to remote peer
+function sendScreenShareState(isSharing) {
+    if (thisConnection && thisConnection.dataChannel && thisConnection.dataChannel.readyState === 'open') {
+        try {
+            thisConnection.dataChannel.send(
+                JSON.stringify({
+                    type: 'screenShareState',
+                    isScreenSharing: isSharing,
+                })
+            );
+            console.log('Sent screen share state:', isSharing);
+        } catch (error) {
+            console.error('Error sending screen share state:', error);
+        }
+    }
+}
+
 // Start screen sharing
 async function startScreenSharing() {
     try {
@@ -668,6 +698,9 @@ async function startScreenSharing() {
         screenShareBtn.classList.remove('btn-success');
         screenShareBtn.title = 'Stop screen sharing';
         screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
+
+        // Send screen sharing state to remote peer
+        sendScreenShareState(true);
 
         // Listen for screen share end (user clicks browser's stop sharing)
         screenStream.getVideoTracks()[0].onended = () => {
@@ -730,6 +763,9 @@ async function stopScreenSharing() {
         screenShareBtn.classList.add('btn-success');
         screenShareBtn.title = 'Start screen sharing';
         screenShareBtn.innerHTML = '<i class="fas fa-desktop"></i>';
+
+        // Send screen sharing state to remote peer
+        sendScreenShareState(false);
 
         // Reset original stream reference
         originalStream = null;
@@ -996,6 +1032,50 @@ function initializeConnection() {
 
     stream.getTracks().forEach((track) => thisConnection.addTrack(track, stream));
 
+    // Create data channel for screen sharing state communication
+    thisConnection.dataChannel = thisConnection.createDataChannel('screenShareState', {
+        ordered: true,
+    });
+
+    thisConnection.dataChannel.onopen = () => {
+        console.log('Data channel opened');
+        // Send current screen sharing state
+        thisConnection.dataChannel.send(
+            JSON.stringify({
+                type: 'screenShareState',
+                isScreenSharing: isScreenSharing,
+            })
+        );
+    };
+
+    thisConnection.dataChannel.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'screenShareState') {
+                console.log('Received screen share state:', data.isScreenSharing);
+                updateRemoteVideoStyling(data.isScreenSharing);
+            }
+        } catch (error) {
+            console.error('Error parsing data channel message:', error);
+        }
+    };
+
+    // Handle incoming data channels
+    thisConnection.ondatachannel = (event) => {
+        const channel = event.channel;
+        channel.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'screenShareState') {
+                    console.log('Received screen share state via incoming channel:', data.isScreenSharing);
+                    updateRemoteVideoStyling(data.isScreenSharing);
+                }
+            } catch (error) {
+                console.error('Error parsing incoming data channel message:', error);
+            }
+        };
+    };
+
     thisConnection.ontrack = (e) => {
         if (e.streams && e.streams[0]) {
             const remoteStream = e.streams[0];
@@ -1005,77 +1085,12 @@ function initializeConnection() {
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
 
-            // Detect if remote stream is screen share based on video track settings
-            const videoTrack = remoteStream.getVideoTracks()[0];
-            if (videoTrack) {
-                const settings = videoTrack.getSettings();
-                console.log('Remote video track settings:', settings);
-
-                // Enhanced screen share detection
-                const isScreenShare =
-                    // Direct indicators
-                    settings.displaySurface === 'monitor' ||
-                    settings.displaySurface === 'window' ||
-                    settings.displaySurface === 'application' ||
-                    // Resolution-based detection (common screen resolutions)
-                    settings.width >= 1920 ||
-                    settings.height >= 1080 ||
-                    // Aspect ratio detection (wider than typical cameras)
-                    (settings.width && settings.height && settings.width / settings.height > 1.7) ||
-                    // Frame rate detection (screens often use lower frame rates)
-                    (settings.frameRate && settings.frameRate <= 15);
-
-                console.log('Screen share detection result:', isScreenShare);
-                console.log('Detection factors:', {
-                    displaySurface: settings.displaySurface,
-                    width: settings.width,
-                    height: settings.height,
-                    aspectRatio:
-                        settings.width && settings.height ? (settings.width / settings.height).toFixed(2) : 'unknown',
-                    frameRate: settings.frameRate,
-                });
-
-                if (isScreenShare) {
-                    remoteVideo.classList.add('screen-share');
-                    remoteVideo.classList.remove('camera-feed');
-                    console.log('Remote screen share detected, classes:', remoteVideo.className);
-                } else {
-                    remoteVideo.classList.add('camera-feed');
-                    remoteVideo.classList.remove('screen-share');
-                    console.log('Remote camera feed detected, classes:', remoteVideo.className);
-                }
-
-                // Force a style refresh
-                remoteVideo.style.display = 'none';
-                remoteVideo.offsetHeight; // Trigger reflow
-                remoteVideo.style.display = 'block';
-            }
+            // Initial styling - will be updated via data channel
+            remoteVideo.classList.add('camera-feed');
+            remoteVideo.classList.remove('screen-share');
 
             startSessionTime();
             renderUserList(); // Update UI to show hang-up button
-
-            // Retry screen share detection after video loads
-            setTimeout(() => {
-                const videoTrack = remoteStream.getVideoTracks()[0];
-                if (videoTrack) {
-                    const settings = videoTrack.getSettings();
-                    console.log('Delayed remote video track settings:', settings);
-
-                    const isScreenShare =
-                        settings.displaySurface === 'monitor' ||
-                        settings.displaySurface === 'window' ||
-                        settings.displaySurface === 'application' ||
-                        settings.width >= 1920 ||
-                        settings.height >= 1080 ||
-                        (settings.width && settings.height && settings.width / settings.height > 1.7);
-
-                    if (isScreenShare && !remoteVideo.classList.contains('screen-share')) {
-                        remoteVideo.classList.add('screen-share');
-                        remoteVideo.classList.remove('camera-feed');
-                        console.log('Delayed detection: Remote screen share detected, classes:', remoteVideo.className);
-                    }
-                }
-            }, 1000);
 
             console.log('Remote stream set to video element');
         } else {
