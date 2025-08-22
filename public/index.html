@@ -58,6 +58,124 @@
             </a>
         </div>
 
+        <!-- Sign-in Page -->
+        <div id="signInPage" class="container text-center center">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header"><h1 id="appName">Call-me</h1></div>
+                            <div class="card-body">
+                                <!-- Sign-in Form -->
+                                <div class="mb-3">
+                                    <!-- Input field for entering the username -->
+                                    <input id="usernameIn" type="text" placeholder="Enter username" required />
+                                </div>
+                                <!-- Sign-in button -->
+                                <button id="signInBtn" class="btn btn-primary">Sign In</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Page -->
+        <div id="roomPage" class="container text-center center">
+            <!-- Session time -->
+            <span id="sessionTime">0s</span>
+
+            <!-- Local video container (your video) -->
+            <div id="localVideoContainer">
+                <video id="localVideo"></video>
+                <span id="localUsername"></span>
+            </div>
+
+            <!-- Remote video container (video from the other user) -->
+            <div id="remoteVideoContainer">
+                <div id="streamStatusContainer">
+                    <i id="remoteAudioDisabled" class="fas fa-microphone color-red hide"></i>
+                    <i id="remoteVideoDisabled" class="fas fa-video color-red hide"></i>
+                </div>
+                <video id="remoteVideo"></video>
+            </div>
+
+            <div class="row text-center">
+                <div class="col-md-12">
+                    <!-- Button share Room -->
+                    <button
+                        id="shareRoomBtn"
+                        class="btn btn-custom btn-primary btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Share room"
+                    >
+                        <i class="fas fa-share-nodes"></i>
+                    </button>
+                    <!-- Button to hide/show the local video -->
+                    <button
+                        id="hideBtn"
+                        class="btn btn-custom btn-primary btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Toggle hide me"
+                    >
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                    <!-- Button to swap camera -->
+                    <button
+                        id="swapCameraBtn"
+                        class="btn btn-custom btn-success btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Swap camera"
+                    >
+                        <i class="fas fa-camera-rotate"></i>
+                    </button>
+                    <!-- Button to toggle video stream -->
+                    <button
+                        id="videoBtn"
+                        class="btn btn-custom btn-success btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Toggle video"
+                    >
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <!-- Button to toggle audio stream -->
+                    <button
+                        id="audioBtn"
+                        class="btn btn-custom btn-success btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Toggle audio"
+                    >
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <!-- Button to leave the call -->
+                    <button
+                        id="leaveBtn"
+                        class="btn btn-custom btn-danger btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Leave"
+                    >
+                        <i class="fas fa-door-open"></i>
+                    </button>
+                    <!-- Toggle user sidebar button -->
+                    <button
+                        id="sidebarBtn"
+                        class="btn btn-custom btn-primary btn-m"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="Toggle users"
+                    >
+                        <i class="fas fa-users"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Sidebar with tabs for users and chat -->
         <div id="userSidebar" class="user-sidebar">
             <div class="user-sidebar-header">
@@ -136,123 +254,6 @@
                             <i class="fas fa-sync"></i> Refresh
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Sign-in Page -->
-        <div id="signInPage" class="container text-center center">
-            <div class="container mt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header"><h1 id="appName">Call-me</h1></div>
-                            <div class="card-body">
-                                <!-- Sign-in Form -->
-                                <div class="mb-3">
-                                    <!-- Input field for entering the username -->
-                                    <input id="usernameIn" type="text" placeholder="Enter username" required />
-                                </div>
-                                <!-- Sign-in button -->
-                                <button id="signInBtn" class="btn btn-primary">Sign In</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Room Page -->
-        <div id="roomPage" class="container text-center center">
-            <!-- Session time -->
-            <span id="sessionTime">0s</span>
-
-            <!-- Local video container (your video) -->
-            <div id="localVideoContainer">
-                <video id="localVideo"></video>
-                <span id="localUsername"></span>
-            </div>
-
-            <!-- Remote video container (video from the other user) -->
-            <div id="remoteVideoContainer">
-                <div id="streamStatusContainer">
-                    <i id="remoteAudioDisabled" class="fas fa-microphone color-red hide"></i>
-                    <i id="remoteVideoDisabled" class="fas fa-video color-red hide"></i>
-                </div>
-                <video id="remoteVideo"></video>
-            </div>
-
-            <div class="row text-center">
-                <div class="col-md-12">
-                    <!-- Button share Room -->
-                    <button
-                        id="shareRoomBtn"
-                        class="btn btn-custom btn-primary btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Share room"
-                    >
-                        <i class="fas fa-share-nodes"></i>
-                    </button>
-                    <!-- Button to hide/show the local video -->
-                    <button
-                        id="hideBtn"
-                        class="btn btn-custom btn-primary btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Toggle hide me"
-                    >
-                        <i class="fas fa-eye-slash"></i>
-                    </button>
-                    <!-- Button to swap camera -->
-                    <button
-                        id="swapCameraBtn"
-                        class="btn btn-custom btn-success btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Swap camera"
-                    >
-                        <i class="fas fa-camera-rotate"></i>
-                    </button>
-                    <!-- Button to toggle audio stream -->
-                    <button
-                        id="audioBtn"
-                        class="btn btn-custom btn-success btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Toggle audio"
-                    >
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <!-- Button to toggle video stream -->
-                    <button
-                        id="videoBtn"
-                        class="btn btn-custom btn-success btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Toggle video"
-                    >
-                        <i class="fas fa-video"></i>
-                    </button>
-                    <!-- Button to leave the call -->
-                    <button
-                        id="leaveBtn"
-                        class="btn btn-custom btn-danger btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Leave"
-                    >
-                        <i class="fas fa-door-open"></i>
-                    </button>
-                    <!-- Toggle user sidebar button -->
-                    <button
-                        id="sidebarBtn"
-                        class="btn btn-custom btn-primary btn-m"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title="Toggle users"
-                    >
-                        <i class="fas fa-users"></i>
-                    </button>
                 </div>
             </div>
         </div>
