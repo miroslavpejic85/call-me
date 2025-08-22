@@ -87,6 +87,11 @@ button {
     display: none;
 }
 
+/* Screen share button - hidden by default, shown when supported */
+#screenShareBtn {
+    display: none;
+}
+
 /* Session Time */
 #sessionTime {
     z-index: 4;
@@ -137,10 +142,26 @@ video {
     height: auto;
     border: none;
     border-radius: var(--border-radius);
-    object-fit: cover;
+    object-fit: cover; /* Default for camera feeds */
     cursor: pointer;
     display: block;
     max-width: 100%;
+}
+
+/* Screen sharing specific video styling */
+video.screen-share,
+#localVideo.screen-share,
+#remoteVideo.screen-share {
+    object-fit: contain !important; /* Show entire screen content without cropping */
+    background: #000 !important; /* Black background for letterboxing */
+}
+
+/* Camera feed specific styling (default) */
+video.camera-feed,
+#localVideo.camera-feed,
+#remoteVideo.camera-feed {
+    object-fit: cover !important; /* Fill container, may crop edges */
+    background: transparent !important;
 }
 
 video:hover {
@@ -166,7 +187,7 @@ video::-webkit-media-controls {
     width: 200px;
     height: 150px;
     border-radius: var(--border-radius);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
     background: rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
@@ -182,6 +203,13 @@ video::-webkit-media-controls {
     height: 100%;
     object-fit: cover;
     border-radius: calc(var(--border-radius) - 2px);
+}
+
+/* Override for screen sharing */
+#localVideo.screen-share {
+    object-fit: contain !important;
+    background: #000 !important;
+    border: 2px solid #ff6b35 !important; /* Orange border to indicate screen sharing */
 }
 
 #localUsername {
@@ -222,6 +250,13 @@ video::-webkit-media-controls {
     border-radius: var(--border-radius);
     border: none;
     transition: transform 0.3s ease;
+}
+
+/* Override for screen sharing */
+#remoteVideo.screen-share {
+    object-fit: contain !important;
+    background: #000 !important;
+    border: 2px solid #ff6b35 !important; /* Orange border to indicate screen sharing */
 }
 
 #remoteVideo:hover {

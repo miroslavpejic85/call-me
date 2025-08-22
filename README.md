@@ -15,8 +15,9 @@ This project allows you to:
 - `Switch` between cameras, microphones, or speakers seamlessly during a call.
 - `Chat` in real time with all participants.
 - `Hide` your video feed as needed.
-- `Toggle` your video.
 - `Toggle` your audio.
+- `Toggle` your video.
+- `Toggle` your screen.
 - `Hang up` the call when finished.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
 

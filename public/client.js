@@ -45,6 +45,7 @@ const hideBtn = document.getElementById('hideBtn');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
 const audioBtn = document.getElementById('audioBtn');
+const screenShareBtn = document.getElementById('screenShareBtn');
 const leaveBtn = document.getElementById('leaveBtn');
 const localVideoContainer = document.getElementById('localVideoContainer');
 const localVideo = document.getElementById('localVideo');
@@ -63,6 +64,8 @@ let connectedUser;
 let thisConnection;
 let camera = 'user';
 let stream;
+let isScreenSharing = false;
+let originalStream = null; // Store original camera stream
 
 // User list state
 let userSignedIn = false;
@@ -422,6 +425,14 @@ async function handleEnumerateDevices() {
             swapCameraBtn.addEventListener('click', swapCamera);
             elemDisplay(swapCameraBtn, true, 'inline');
         }
+
+        // Check if screen sharing is supported
+        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+            elemDisplay(screenShareBtn, true, 'inline');
+        } else {
+            elemDisplay(screenShareBtn, false);
+            console.log('Screen sharing not supported in this browser');
+        }
     } catch (error) {
         handleError('Error enumerating devices', error);
     }
@@ -436,6 +447,7 @@ function handleListeners() {
     hideBtn.addEventListener('click', toggleLocalVideo);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
+    screenShareBtn.addEventListener('click', handleScreenShareClick);
     leaveBtn.addEventListener('click', handleLeaveClick);
     exitSidebarBtn.addEventListener('click', handleExitSidebarClick);
     localVideoContainer.addEventListener('click', toggleFullScreen);
@@ -594,6 +606,142 @@ function handleAudioClick() {
     });
 }
 
+// Handle screen sharing toggle
+async function handleScreenShareClick() {
+    try {
+        if (isScreenSharing) {
+            // Stop screen sharing and return to camera
+            await stopScreenSharing();
+        } else {
+            // Start screen sharing
+            await startScreenSharing();
+        }
+    } catch (error) {
+        handleError('Screen sharing failed', error.message);
+        console.error('Screen sharing error:', error);
+    }
+}
+
+// Start screen sharing
+async function startScreenSharing() {
+    try {
+        // Store original camera stream
+        originalStream = stream;
+
+        // Get screen share stream
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: {
+                cursor: 'always',
+                displaySurface: 'monitor',
+            },
+            audio: true,
+        });
+
+        // Keep original audio track if available
+        const audioTrack = originalStream.getAudioTracks()[0];
+        if (audioTrack) {
+            screenStream.addTrack(audioTrack);
+        }
+
+        // Update stream and local video
+        stream = screenStream;
+        localVideo.srcObject = stream;
+        localVideo.classList.remove('mirror'); // Remove mirror for screen share
+        localVideo.classList.add('screen-share'); // Apply screen share styling
+        localVideo.classList.remove('camera-feed');
+
+        console.log('Local video classes after screen share start:', localVideo.className);
+
+        // Update peer connection if it exists
+        if (thisConnection) {
+            const videoSender = thisConnection
+                .getSenders()
+                .find((sender) => sender.track && sender.track.kind === 'video');
+            if (videoSender) {
+                await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+            }
+        }
+
+        // Update UI
+        isScreenSharing = true;
+        screenShareBtn.classList.add('btn-danger');
+        screenShareBtn.classList.remove('btn-success');
+        screenShareBtn.title = 'Stop screen sharing';
+        screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
+
+        // Listen for screen share end (user clicks browser's stop sharing)
+        screenStream.getVideoTracks()[0].onended = () => {
+            stopScreenSharing();
+        };
+
+        toast('Screen sharing started', 'success', 'top-end', 2000);
+        console.log('Screen sharing started');
+    } catch (error) {
+        if (error.name === 'NotAllowedError') {
+            handleError('Screen sharing permission denied');
+        } else if (error.name === 'NotSupportedError') {
+            handleError('Screen sharing not supported in this browser');
+        } else {
+            handleError('Failed to start screen sharing', error.message);
+        }
+        throw error;
+    }
+}
+
+// Stop screen sharing
+async function stopScreenSharing() {
+    try {
+        if (!originalStream) {
+            handleError('No original stream available');
+            return;
+        }
+
+        // Stop screen share tracks
+        if (stream) {
+            stream.getTracks().forEach((track) => {
+                if (track.kind === 'video' || (track.kind === 'audio' && track.label.includes('monitor'))) {
+                    track.stop();
+                }
+            });
+        }
+
+        // Restore original camera stream
+        stream = originalStream;
+        localVideo.srcObject = stream;
+        handleVideoMirror(localVideo, stream); // Restore mirror for camera
+        localVideo.classList.remove('screen-share'); // Remove screen share styling
+        localVideo.classList.add('camera-feed'); // Apply camera feed styling
+
+        console.log('Local video classes after screen share stop:', localVideo.className);
+
+        // Update peer connection if it exists
+        if (thisConnection) {
+            const videoSender = thisConnection
+                .getSenders()
+                .find((sender) => sender.track && sender.track.kind === 'video');
+            if (videoSender && originalStream.getVideoTracks()[0]) {
+                await videoSender.replaceTrack(originalStream.getVideoTracks()[0]);
+            }
+        }
+
+        // Update UI
+        isScreenSharing = false;
+        screenShareBtn.classList.remove('btn-danger');
+        screenShareBtn.classList.add('btn-success');
+        screenShareBtn.title = 'Start screen sharing';
+        screenShareBtn.innerHTML = '<i class="fas fa-desktop"></i>';
+
+        // Reset original stream reference
+        originalStream = null;
+
+        toast('Screen sharing stopped', 'success', 'top-end', 2000);
+        console.log('Screen sharing stopped');
+    } catch (error) {
+        handleError('Failed to stop screen sharing', error.message);
+        console.error('Stop screen sharing error:', error);
+    }
+}
+
 // Detect if back or front camera
 function detectCameraFacingMode(stream) {
     if (!stream || !stream.getVideoTracks().length) {
@@ -649,6 +797,10 @@ function refreshLocalVideoStream(newStream) {
 
     stream = updatedStream;
     localVideo.srcObject = stream;
+
+    // Ensure camera feed styling is maintained during swap
+    localVideo.classList.add('camera-feed');
+    localVideo.classList.remove('screen-share');
 
     handleVideoMirror(localVideo, stream);
 }
@@ -764,6 +916,7 @@ async function handleSignIn(data) {
             localVideo.muted = true;
             localVideo.volume = 0;
             localVideo.controls = false;
+            localVideo.classList.add('camera-feed'); // Set default styling for camera
             localUsername.innerText = userName;
             initializeConnection();
             await handleEnumerateDevices();
@@ -852,8 +1005,77 @@ function initializeConnection() {
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
 
+            // Detect if remote stream is screen share based on video track settings
+            const videoTrack = remoteStream.getVideoTracks()[0];
+            if (videoTrack) {
+                const settings = videoTrack.getSettings();
+                console.log('Remote video track settings:', settings);
+
+                // Enhanced screen share detection
+                const isScreenShare =
+                    // Direct indicators
+                    settings.displaySurface === 'monitor' ||
+                    settings.displaySurface === 'window' ||
+                    settings.displaySurface === 'application' ||
+                    // Resolution-based detection (common screen resolutions)
+                    settings.width >= 1920 ||
+                    settings.height >= 1080 ||
+                    // Aspect ratio detection (wider than typical cameras)
+                    (settings.width && settings.height && settings.width / settings.height > 1.7) ||
+                    // Frame rate detection (screens often use lower frame rates)
+                    (settings.frameRate && settings.frameRate <= 15);
+
+                console.log('Screen share detection result:', isScreenShare);
+                console.log('Detection factors:', {
+                    displaySurface: settings.displaySurface,
+                    width: settings.width,
+                    height: settings.height,
+                    aspectRatio:
+                        settings.width && settings.height ? (settings.width / settings.height).toFixed(2) : 'unknown',
+                    frameRate: settings.frameRate,
+                });
+
+                if (isScreenShare) {
+                    remoteVideo.classList.add('screen-share');
+                    remoteVideo.classList.remove('camera-feed');
+                    console.log('Remote screen share detected, classes:', remoteVideo.className);
+                } else {
+                    remoteVideo.classList.add('camera-feed');
+                    remoteVideo.classList.remove('screen-share');
+                    console.log('Remote camera feed detected, classes:', remoteVideo.className);
+                }
+
+                // Force a style refresh
+                remoteVideo.style.display = 'none';
+                remoteVideo.offsetHeight; // Trigger reflow
+                remoteVideo.style.display = 'block';
+            }
+
             startSessionTime();
             renderUserList(); // Update UI to show hang-up button
+
+            // Retry screen share detection after video loads
+            setTimeout(() => {
+                const videoTrack = remoteStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    const settings = videoTrack.getSettings();
+                    console.log('Delayed remote video track settings:', settings);
+
+                    const isScreenShare =
+                        settings.displaySurface === 'monitor' ||
+                        settings.displaySurface === 'window' ||
+                        settings.displaySurface === 'application' ||
+                        settings.width >= 1920 ||
+                        settings.height >= 1080 ||
+                        (settings.width && settings.height && settings.width / settings.height > 1.7);
+
+                    if (isScreenShare && !remoteVideo.classList.contains('screen-share')) {
+                        remoteVideo.classList.add('screen-share');
+                        remoteVideo.classList.remove('camera-feed');
+                        console.log('Delayed detection: Remote screen share detected, classes:', remoteVideo.className);
+                    }
+                }
+            }, 1000);
 
             console.log('Remote stream set to video element');
         } else {
@@ -1034,6 +1256,11 @@ function disconnectConnection() {
 // Handle leaving the room
 function handleLeave(disconnect = true) {
     if (disconnect) {
+        // Stop screen sharing if active
+        if (isScreenSharing) {
+            stopScreenSharing();
+        }
+
         // Stop local and remote video tracks
         stopMediaStream(localVideo);
         stopMediaStream(remoteVideo);
@@ -1048,8 +1275,16 @@ function handleLeave(disconnect = true) {
         // Remote user left - clean up properly for new connections
         console.log('Remote user left - cleaning up connection');
 
+        // Stop screen sharing if active
+        if (isScreenSharing) {
+            stopScreenSharing();
+        }
+
         // Stop remote video tracks only
         stopMediaStream(remoteVideo);
+
+        // Reset remote video styling
+        remoteVideo.classList.remove('screen-share', 'camera-feed');
 
         // Clean up the peer connection so new connections work properly
         disconnectConnection();
@@ -1641,6 +1876,24 @@ function debugStreamState() {
         console.log('No stream available');
     }
 }
+
+// Test function to manually toggle remote video object-fit
+function testRemoteVideoObjectFit() {
+    if (remoteVideo.classList.contains('screen-share')) {
+        remoteVideo.classList.remove('screen-share');
+        remoteVideo.classList.add('camera-feed');
+        console.log('Switched to camera-feed mode');
+    } else {
+        remoteVideo.classList.remove('camera-feed');
+        remoteVideo.classList.add('screen-share');
+        console.log('Switched to screen-share mode');
+    }
+    console.log('Remote video classes:', remoteVideo.className);
+}
+
+// Make test function globally available
+window.testRemoteVideoObjectFit = testRemoteVideoObjectFit;
+window.debugStreamState = debugStreamState;
 
 // Initialize devices when settings tab is accessed (not on page load)
 // This prevents conflicts with initial stream setup
