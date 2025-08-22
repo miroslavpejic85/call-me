@@ -589,6 +589,10 @@ function handleVideoClick() {
     const videoTrack = stream.getVideoTracks()[0];
     videoTrack.enabled = !videoTrack.enabled;
     videoBtn.classList.toggle('btn-danger');
+
+    // Show/hide camera off overlay for local video
+    showCameraOffOverlay('local', !videoTrack.enabled);
+
     sendMsg({
         type: 'remoteVideo',
         enabled: videoTrack.enabled,
@@ -874,6 +878,11 @@ function checkVideoAudioStatus() {
     if (videoBtn.classList.contains('btn-danger')) {
         const videoTrack = stream.getVideoTracks()[0];
         videoTrack.enabled = false;
+        // Show camera off overlay for local video
+        showCameraOffOverlay('local', true);
+    } else {
+        // Hide camera off overlay for local video
+        showCameraOffOverlay('local', false);
     }
     if (audioBtn.classList.contains('btn-danger')) {
         const audioTrack = stream.getAudioTracks()[0];
@@ -1233,11 +1242,35 @@ function handleUsers(data) {
 // Handle remote video status
 function handleRemoteVideo(data) {
     data.enabled ? remoteVideoDisabled.classList.remove('show') : remoteVideoDisabled.classList.add('show');
+
+    // Show/hide camera off overlay for remote video
+    showCameraOffOverlay('remote', !data.enabled);
 }
 
 // Handle remote audio status
 function handleRemoteAudio(data) {
     data.enabled ? remoteAudioDisabled.classList.remove('show') : remoteAudioDisabled.classList.add('show');
+}
+
+// Show/hide camera off overlay (minimal implementation)
+function showCameraOffOverlay(type, show) {
+    const container =
+        type === 'local'
+            ? document.getElementById('localVideoContainer')
+            : document.getElementById('remoteVideoContainer');
+    let overlay = container.querySelector('.camera-off-overlay');
+
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'camera-off-overlay';
+        overlay.innerHTML = `
+            <img src="./assets/camOff.png" alt="Video Off" />
+            <span>${type === 'local' ? 'Video Off' : 'Video Disabled'}</span>
+        `;
+        container.appendChild(overlay);
+    }
+
+    overlay.classList.toggle('show', show);
 }
 
 // Play audio sound

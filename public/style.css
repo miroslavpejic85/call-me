@@ -178,9 +178,56 @@ video::-webkit-media-controls {
     transform: rotateY(180deg);
 }
 
+/* Camera Off Overlay */
+.camera-off-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(24, 26, 32, 0.92); /* Consistent with UI dark theme */
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+/* Local video overlay has higher priority */
+#localVideoContainer .camera-off-overlay {
+    z-index: 105; /* Always above everything including remote overlays */
+}
+
+.camera-off-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.camera-off-overlay img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+    max-width: 25%; /* Ensure it doesn't exceed 25% of container width */
+    max-height: 25%; /* Ensure it doesn't exceed 25% of container height */
+    object-fit: contain; /* Maintain aspect ratio */
+}
+
+.camera-off-overlay span {
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 /* Local Video Styles */
 #localVideoContainer {
-    z-index: 3;
+    z-index: 100; /* Ensure local video is always on top */
     position: absolute;
     top: 10px;
     left: 20px;
@@ -203,6 +250,8 @@ video::-webkit-media-controls {
     height: 100%;
     object-fit: cover;
     border-radius: calc(var(--border-radius) - 2px);
+    position: relative;
+    z-index: 101; /* Ensure local video element is above remote video */
 }
 
 /* Override for screen sharing */
@@ -239,6 +288,7 @@ video::-webkit-media-controls {
     overflow: hidden;
     margin: 10px auto;
     max-width: 100%;
+    z-index: 1; /* Keep remote video container below local video */
 }
 
 #remoteVideo {
@@ -285,6 +335,7 @@ video::-webkit-media-controls {
         height: 90px;
         top: 15px;
         left: 15px;
+        z-index: 100 !important; /* Ensure local video stays on top on mobile */
     }
 
     #localVideoContainer:hover {
@@ -307,6 +358,17 @@ video::-webkit-media-controls {
         height: 100%;
         object-fit: cover;
     }
+
+    /* Responsive camera off overlay for mobile */
+    .camera-off-overlay img {
+        width: 32px !important;
+        height: 32px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .camera-off-overlay span {
+        font-size: 10px !important;
+    }
 }
 
 /* Tablet responsive */
@@ -314,10 +376,22 @@ video::-webkit-media-controls {
     #localVideoContainer {
         width: 160px;
         height: 120px;
+        z-index: 100 !important; /* Ensure local video stays on top on tablet */
     }
 
     #remoteVideoContainer {
         height: 75vh;
+    }
+
+    /* Responsive camera off overlay for tablet */
+    .camera-off-overlay img {
+        width: 48px !important;
+        height: 48px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .camera-off-overlay span {
+        font-size: 12px !important;
     }
 }
 
@@ -326,6 +400,7 @@ video::-webkit-media-controls {
     #localVideoContainer {
         width: 200px;
         height: 150px;
+        z-index: 100 !important; /* Ensure local video stays on top on desktop */
     }
 
     #remoteVideoContainer {
@@ -338,10 +413,22 @@ video::-webkit-media-controls {
     #localVideoContainer {
         width: 240px;
         height: 180px;
+        z-index: 100 !important; /* Ensure local video stays on top on large screens */
     }
 
     #remoteVideoContainer {
         height: 85vh;
+    }
+
+    /* Responsive camera off overlay for large screens */
+    .camera-off-overlay img {
+        width: 80px !important;
+        height: 80px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .camera-off-overlay span {
+        font-size: 16px !important;
     }
 }
 
@@ -352,10 +439,22 @@ video::-webkit-media-controls {
         height: 75px;
         top: 10px;
         left: 10px;
+        z-index: 100 !important; /* Ensure local video stays on top in landscape */
     }
 
     #remoteVideoContainer {
         height: 90vh;
+    }
+
+    /* Responsive camera off overlay for mobile landscape */
+    .camera-off-overlay img {
+        width: 24px !important;
+        height: 24px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .camera-off-overlay span {
+        font-size: 8px !important;
     }
 }
 
@@ -365,6 +464,7 @@ video::-webkit-media-controls {
         width: 100px;
         height: 75px;
         top: 10px;
+        z-index: 100 !important; /* Ensure local video stays on top on small screens */
         left: 10px;
     }
 
@@ -376,6 +476,17 @@ video::-webkit-media-controls {
     #remoteVideoContainer {
         height: 70vh;
         margin: 5px auto;
+    }
+
+    /* Responsive camera off overlay for very small screens */
+    .camera-off-overlay img {
+        width: 28px !important;
+        height: 28px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .camera-off-overlay span {
+        font-size: 9px !important;
     }
 }
 
