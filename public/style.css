@@ -565,7 +565,7 @@ input {
     top: 0;
     right: 0;
     width: 350px;
-    height: 100vh;
+    height: 100%;
     background: rgba(30, 32, 36, 0.98);
     flex-direction: column;
     box-shadow: -2px 0 16px rgba(0, 0, 0, 0.25);
