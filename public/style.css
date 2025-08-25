@@ -115,7 +115,6 @@ button {
     backdrop-filter: blur(6px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     transition: all 0.2s ease;
-    display: flex;
     align-items: center;
     gap: 3px;
     min-width: 50px;
