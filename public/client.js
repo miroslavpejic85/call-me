@@ -694,6 +694,10 @@ async function startScreenSharing() {
         // Store original camera stream
         originalStream = stream;
 
+        // Store original video enabled state
+        const originalVideoTrack = originalStream.getVideoTracks()[0];
+        const wasVideoEnabled = originalVideoTrack ? originalVideoTrack.enabled : true;
+
         // Get screen share stream
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
@@ -709,6 +713,12 @@ async function startScreenSharing() {
             screenStream.addTrack(audioTrack);
         }
 
+        // Apply original video enabled state to screen share track
+        const screenVideoTrack = screenStream.getVideoTracks()[0];
+        if (screenVideoTrack) {
+            screenVideoTrack.enabled = wasVideoEnabled;
+        }
+
         // Update stream and local video
         stream = screenStream;
         localVideo.srcObject = stream;
@@ -716,7 +726,11 @@ async function startScreenSharing() {
         localVideo.classList.add('screen-share'); // Apply screen share styling
         localVideo.classList.remove('camera-feed');
 
+        // Show/hide camera off overlay based on video state
+        showCameraOffOverlay('local', !wasVideoEnabled);
+
         console.log('Local video classes after screen share start:', localVideo.className);
+        console.log('Screen share video enabled state:', wasVideoEnabled);
 
         // Update peer connection if it exists
         if (thisConnection) {
@@ -737,6 +751,14 @@ async function startScreenSharing() {
 
         // Send screen sharing status to server
         sendMediaStatusToServer();
+
+        // Ensure UI button state matches actual video state
+        if (!wasVideoEnabled) {
+            // If video was disabled before screen sharing, keep the video button in disabled state
+            if (!videoBtn.classList.contains('btn-danger')) {
+                videoBtn.classList.add('btn-danger');
+            }
+        }
 
         // Listen for screen share end (user clicks browser's stop sharing)
         screenStream.getVideoTracks()[0].onended = () => {
@@ -765,6 +787,10 @@ async function stopScreenSharing() {
             return;
         }
 
+        // Store screen share video enabled state to restore to camera
+        const screenVideoTrack = stream.getVideoTracks()[0];
+        const currentVideoEnabled = screenVideoTrack ? screenVideoTrack.enabled : true;
+
         // Stop screen share tracks
         if (stream) {
             stream.getTracks().forEach((track) => {
@@ -776,12 +802,23 @@ async function stopScreenSharing() {
 
         // Restore original camera stream
         stream = originalStream;
+
+        // Apply the video enabled state from screen share to camera
+        const cameraVideoTrack = stream.getVideoTracks()[0];
+        if (cameraVideoTrack) {
+            cameraVideoTrack.enabled = currentVideoEnabled;
+        }
+
         localVideo.srcObject = stream;
         handleVideoMirror(localVideo, stream); // Restore mirror for camera
         localVideo.classList.remove('screen-share'); // Remove screen share styling
         localVideo.classList.add('camera-feed'); // Apply camera feed styling
 
+        // Show/hide camera off overlay based on video state
+        showCameraOffOverlay('local', !currentVideoEnabled);
+
         console.log('Local video classes after screen share stop:', localVideo.className);
+        console.log('Restored camera video enabled state:', currentVideoEnabled);
 
         // Update peer connection if it exists
         if (thisConnection) {
@@ -805,6 +842,9 @@ async function stopScreenSharing() {
 
         // Reset original stream reference
         originalStream = null;
+
+        // Ensure UI button state matches actual video state
+        checkVideoAudioStatus();
 
         toast('Screen sharing stopped', 'success', 'top-end', 2000);
         console.log('Screen sharing stopped');
