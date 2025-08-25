@@ -987,45 +987,6 @@ input {
     gap: 6px;
 }
 
-.btn-test-devices {
-    background: #28a745;
-    color: white;
-}
-
-.btn-test-devices:hover {
-    background: #218838;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-}
-
-.btn-refresh-devices {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-refresh-devices:hover {
-    background: #5a6268;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
-}
-
-.btn-clear-chat {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-clear-chat:hover {
-    background: #c82333;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-}
-
-.btn-test-devices:active,
-.btn-refresh-devices:active,
-.btn-clear-chat:active {
-    transform: translateY(0);
-}
-
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
     .user-sidebar {

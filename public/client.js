@@ -37,6 +37,7 @@ const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const emojiBtn = document.getElementById('emojiBtn');
 const emojiPicker = document.getElementById('emojiPicker');
+const saveChatBtn = document.getElementById('saveChatBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
 const videoSelect = document.getElementById('videoSelect');
 const audioSelect = document.getElementById('audioSelect');
@@ -467,6 +468,7 @@ function handleListeners() {
     refreshDevicesBtn.addEventListener('click', refreshDevices);
     // Chat event listeners
     emojiBtn.addEventListener('click', handleEmojiClick);
+    saveChatBtn.addEventListener('click', handleSaveChatClick);
     clearChatBtn.addEventListener('click', handleClearChatClick);
 
     // Sidebar toggle
@@ -1686,8 +1688,82 @@ function toggleChatEmoji() {
     console.log('Emoji picker hidden via toggle');
 }
 
+// Generate chat export text
+function generateChatExportText() {
+    const messages = chatMessages.children;
+
+    if (messages.length === 0) {
+        return null;
+    }
+
+    let chatText = '';
+    const currentDate = new Date();
+    const dateString = currentDate.toLocaleDateString();
+    const timeString = currentDate.toLocaleTimeString();
+
+    // Add header to the file
+    chatText += `Call-me Chat Export\n`;
+    chatText += `Exported on: ${dateString} at ${timeString}\n`;
+    chatText += `Session participants: ${userName || 'Unknown'}, ${connectedUser || 'Unknown'}\n`;
+    chatText += `${'='.repeat(50)}\n\n`;
+
+    // Extract messages
+    for (let i = 0; i < messages.length; i++) {
+        const message = messages[i];
+        const userSpan = message.querySelector('.chat-user');
+        const textSpan = message.querySelector('.chat-text');
+        const timeSpan = message.querySelector('.chat-time');
+
+        if (userSpan && textSpan && timeSpan) {
+            const user = userSpan.textContent;
+            const text = textSpan.textContent.replace(': ', ''); // Remove the ': ' prefix
+            const time = timeSpan.textContent;
+
+            chatText += `[${time}] ${user}: ${text}\n`;
+        }
+    }
+
+    return chatText;
+}
+
+// Download text as file
+function downloadTextAsFile(text, filename) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Handle save chat button click
+function handleSaveChatClick() {
+    const chatText = generateChatExportText();
+
+    if (!chatText) {
+        toast('No chat messages to save', 'info', 'top-end', 2000);
+        return;
+    }
+
+    const currentDate = new Date();
+    const fileName = `call-me-chat-${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getHours()).padStart(2, '0')}${String(currentDate.getMinutes()).padStart(2, '0')}.txt`;
+
+    downloadTextAsFile(chatText, fileName);
+
+    toast(`Chat messages saved as ${fileName}`, 'success', 'top-end', 3000);
+}
+
 // Handle clear chat button click
 function handleClearChatClick() {
+    if (!thereAreChatMessages()) {
+        toast('No chat messages to clear', 'info', 'top-end', 2000);
+        return;
+    }
+
     Swal.fire({
         position: 'center',
         icon: 'question',
@@ -1711,6 +1787,10 @@ function handleClearChatClick() {
             toast('Chat messages cleared successfully', 'success', 'top-end', 2000);
         }
     });
+}
+
+function thereAreChatMessages() {
+    return chatMessages.children.length > 0;
 }
 
 // Device Management Functions
