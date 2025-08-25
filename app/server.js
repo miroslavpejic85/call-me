@@ -28,6 +28,9 @@ const HOME = path.join(PUBLIC_DIR, '/index.html');
 // Map to store connected users
 const users = new Map();
 
+// Map to store user media status (video/audio enabled/disabled)
+const userMediaStatus = new Map();
+
 // Configuration settings
 const config = {
     iceServers: [],
@@ -356,6 +359,9 @@ function handleConnection(socket) {
             case 'remoteVideo':
                 handleSignalingMessage(data);
                 break;
+            case 'mediaStatus':
+                handleMediaStatus(data);
+                break;
             case 'chat':
                 data.from = socket.username || 'Anonymous';
                 handleChatMessage(data);
@@ -398,6 +404,13 @@ function handleConnection(socket) {
         if (!users.has(name)) {
             users.set(name, socket);
             socket.username = name;
+            
+            // Initialize user media status (default: both enabled)
+            userMediaStatus.set(name, {
+                video: true,
+                audio: true
+            });
+            
             log.debug('User signed in:', name);
             sendMsgTo(socket, { type: 'signIn', success: true });
             broadcastConnectedUsers();
@@ -420,7 +433,13 @@ function handleConnection(socket) {
             case 'offerAccept':
             case 'offerCreate':
                 if (recipientSocket) {
-                    sendMsgTo(recipientSocket, data);
+                    // Include caller's media status when sending offer
+                    const callerMediaStatus = userMediaStatus.get(socket.username);
+                    const offerData = {
+                        ...data,
+                        callerMediaStatus: callerMediaStatus
+                    };
+                    sendMsgTo(recipientSocket, offerData);
                 } else {
                     log.warn(`Recipient (${toName}) not found`);
                     sendMsgTo(socket, { type: 'notfound', username: toName });
@@ -437,6 +456,23 @@ function handleConnection(socket) {
             default:
                 log.warn(`Unknown offer type: ${type}`);
                 break;
+        }
+    }
+
+    // Function to handle media status updates
+    function handleMediaStatus(data) {
+        const { video, audio } = data;
+        const username = socket.username;
+        
+        if (username && userMediaStatus.has(username)) {
+            const currentStatus = userMediaStatus.get(username);
+            const newStatus = {
+                video: video !== undefined ? video : currentStatus.video,
+                audio: audio !== undefined ? audio : currentStatus.audio
+            };
+            
+            userMediaStatus.set(username, newStatus);
+            log.debug('Updated media status for', username, newStatus);
         }
     }
 
@@ -480,6 +516,7 @@ function handleConnection(socket) {
         if (name) {
             log.debug('User disconnected:', name);
             users.delete(name);
+            userMediaStatus.delete(name); // Clean up media status
             broadcastConnectedUsers();
         }
     }

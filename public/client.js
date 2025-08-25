@@ -386,6 +386,10 @@ function handleMessage(data) {
             offerAccept(data);
             break;
         case 'offerCreate':
+            // Apply caller's media status when receiving offerCreate
+            if (data.callerMediaStatus) {
+                applyCallerMediaStatus(data.callerMediaStatus);
+            }
             offerCreate();
             break;
         case 'offer':
@@ -621,6 +625,9 @@ function handleVideoClick() {
     // Show/hide camera off overlay for local video
     showCameraOffOverlay('local', !videoTrack.enabled);
 
+    // Send media status to server
+    sendMediaStatusToServer();
+
     sendMsg({
         type: 'remoteVideo',
         enabled: videoTrack.enabled,
@@ -632,6 +639,10 @@ function handleAudioClick() {
     const audioTrack = stream.getAudioTracks()[0];
     audioTrack.enabled = !audioTrack.enabled;
     audioBtn.classList.toggle('btn-danger');
+    
+    // Send media status to server
+    sendMediaStatusToServer();
+    
     sendMsg({
         type: 'remoteAudio',
         enabled: audioTrack.enabled,
@@ -996,6 +1007,9 @@ async function handleSignIn(data) {
             // Initialize device settings after getting media
             await initializeDeviceSettings();
             handleVideoMirror(localVideo, myStream);
+            
+            // Send initial media status to server
+            sendMediaStatusToServer();
         } catch (error) {
             handleMediaStreamError(error);
         }
@@ -1197,6 +1211,11 @@ function offerAccept(data) {
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     }).then((result) => {
         if (result.isConfirmed) {
+            // Apply caller's media status before accepting the call
+            if (data.callerMediaStatus) {
+                applyCallerMediaStatus(data.callerMediaStatus);
+            }
+            
             data.type = 'offerCreate';
             socket.recipient = data.from;
         } else {
@@ -1425,6 +1444,46 @@ function popupMsg(message, position = 'top', timer = 4000) {
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     });
+}
+
+// Send current media status to server
+function sendMediaStatusToServer() {
+    if (!stream) return;
+    
+    const videoTrack = stream.getVideoTracks()[0];
+    const audioTrack = stream.getAudioTracks()[0];
+    
+    const mediaStatus = {
+        type: 'mediaStatus',
+        video: videoTrack ? videoTrack.enabled : false,
+        audio: audioTrack ? audioTrack.enabled : false
+    };
+    
+    socket.emit('message', mediaStatus);
+    console.log('Sent media status to server:', mediaStatus);
+}
+
+// Apply caller's media status to remote video/audio indicators
+function applyCallerMediaStatus(callerMediaStatus) {
+    if (!callerMediaStatus) return;
+    
+    console.log('Applying caller media status:', callerMediaStatus);
+    
+    // Apply video status
+    if (!callerMediaStatus.video) {
+        remoteVideoDisabled.classList.add('show');
+        showCameraOffOverlay('remote', true);
+    } else {
+        remoteVideoDisabled.classList.remove('show');
+        showCameraOffOverlay('remote', false);
+    }
+    
+    // Apply audio status
+    if (!callerMediaStatus.audio) {
+        remoteAudioDisabled.classList.add('show');
+    } else {
+        remoteAudioDisabled.classList.remove('show');
+    }
 }
 
 // Send messages to the server
