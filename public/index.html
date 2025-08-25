@@ -218,14 +218,18 @@
             </div>
 
             <!-- Chat Tab Content -->
-            <div id="chatContent" class="tab-content">
+            <div id="chatContent" class="tab-content mt-5">
                 <div id="chatMessages" class="chat-messages"></div>
                 <form id="chatForm" class="chat-form" autocomplete="off">
+                    <button type="button" id="emojiBtn" class="btn btn-emoji" title="Add emoji">
+                        <i class="fas fa-smile"></i>
+                    </button>
                     <input id="chatInput" type="text" placeholder="Type a message..." autocomplete="off" />
                     <button type="submit" class="btn btn-primary btn-send-chat">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </form>
+                <div id="emojiPicker" class="emoji-picker-container"></div>
             </div>
 
             <!-- Settings Tab Content -->
@@ -266,6 +270,13 @@
                             <i class="fas fa-sync"></i> Refresh
                         </button>
                     </div>
+
+                    <h3 class="settings-title"><i class="fas fa-comments"></i> Chat Settings</h3>
+                    <div class="settings-actions">
+                        <button id="clearChatBtn" class="btn btn-clear-chat">
+                            <i class="fas fa-trash"></i> Clear All Messages
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,5 +300,8 @@
 
         <!-- Include GitHub buttons -->
         <script src="https://buttons.github.io/buttons.js"></script>
+
+        <!-- Include Emoji Mart for emoji picker -->
+        <script defer src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
     </body>
 </html>

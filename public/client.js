@@ -35,6 +35,9 @@ const chatNotification = document.getElementById('chatNotification');
 const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
+const emojiBtn = document.getElementById('emojiBtn');
+const emojiPicker = document.getElementById('emojiPicker');
+const clearChatBtn = document.getElementById('clearChatBtn');
 const videoSelect = document.getElementById('videoSelect');
 const audioSelect = document.getElementById('audioSelect');
 const audioOutputSelect = document.getElementById('audioOutputSelect');
@@ -462,6 +465,9 @@ function handleListeners() {
     audioOutputSelect.addEventListener('change', handleAudioOutputDeviceChange);
     testDevicesBtn.addEventListener('click', testDevices);
     refreshDevicesBtn.addEventListener('click', refreshDevices);
+    // Chat event listeners
+    emojiBtn.addEventListener('click', handleEmojiClick);
+    clearChatBtn.addEventListener('click', handleClearChatClick);
 
     // Sidebar toggle
     if (sidebarBtn && userSidebar) {
@@ -470,19 +476,39 @@ function handleListeners() {
             userSidebar.classList.toggle('active');
         });
 
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth > 768) return; // Ignore clicks on desktop
-            let el = e.target;
-            let shouldExclude = false;
-            while (el) {
-                if (el instanceof HTMLElement && (el.id === 'userSidebar' || el.id === 'sidebarBtn')) {
-                    shouldExclude = true;
-                    break;
+        // Utility to handle click outside for any element
+        function handleClickOutside(targetElement, triggerElement, callback, minWidth = 0) {
+            document.addEventListener('click', (e) => {
+                if (minWidth && window.innerWidth > minWidth) return;
+                let el = e.target;
+                let shouldExclude = false;
+                while (el) {
+                    if (el instanceof HTMLElement && (el === targetElement || el === triggerElement)) {
+                        shouldExclude = true;
+                        break;
+                    }
+                    el = el.parentElement;
                 }
-                el = el.parentElement;
-            }
-            if (!shouldExclude && userSidebar.classList.contains('active')) {
-                userSidebar.classList.remove('active');
+                if (!shouldExclude) callback();
+            });
+        }
+
+        // Hide sidebar on mobile when clicking outside
+        handleClickOutside(
+            userSidebar,
+            sidebarBtn,
+            () => {
+                if (userSidebar.classList.contains('active')) {
+                    userSidebar.classList.remove('active');
+                }
+            },
+            768
+        );
+
+        // Hide emoji picker when clicking outside
+        handleClickOutside(emojiPicker, emojiBtn, () => {
+            if (emojiPicker && emojiPicker.classList.contains('show')) {
+                emojiPicker.classList.remove('show');
             }
         });
     }
@@ -1599,6 +1625,92 @@ function addChatMessage(msg, isSelf = false) {
 function formatChatTime(ts) {
     const d = new Date(ts);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Handle emoji button click
+function handleEmojiClick() {
+    console.log('Emoji button clicked, current show state:', emojiPicker.classList.contains('show'));
+
+    if (!emojiPicker.classList.contains('show')) {
+        handleChatEmojiPicker();
+        emojiPicker.classList.add('show');
+        console.log('Emoji picker shown');
+    } else {
+        emojiPicker.classList.remove('show');
+        console.log('Emoji picker hidden');
+    }
+}
+
+// Initialize and handle chat emoji picker
+function handleChatEmojiPicker() {
+    // Clear any existing picker
+    emojiPicker.innerHTML = '';
+
+    console.log('Initializing EmojiMart picker...');
+
+    const pickerOptions = {
+        theme: 'dark',
+        perLine: 8,
+        onEmojiSelect: addEmojiToMsg,
+    };
+
+    const picker = new EmojiMart.Picker(pickerOptions);
+    emojiPicker.appendChild(picker);
+
+    console.log('EmojiMart picker initialized and appended');
+
+    function addEmojiToMsg(data) {
+        console.log('Emoji selected:', data.native);
+
+        // Insert emoji at cursor position or at the end
+        const cursorPosition = chatInput.selectionStart;
+        const currentValue = chatInput.value;
+        const newValue = currentValue.slice(0, cursorPosition) + data.native + currentValue.slice(cursorPosition);
+        chatInput.value = newValue;
+
+        // Set cursor position after the emoji
+        const newCursorPosition = cursorPosition + data.native.length;
+        chatInput.setSelectionRange(newCursorPosition, newCursorPosition);
+        chatInput.focus();
+
+        console.log('Emoji inserted into chat input at position:', cursorPosition);
+
+        // Hide emoji picker after selection
+        toggleChatEmoji();
+    }
+}
+
+// Toggle chat emoji picker visibility
+function toggleChatEmoji() {
+    emojiPicker.classList.remove('show');
+    console.log('Emoji picker hidden via toggle');
+}
+
+// Handle clear chat button click
+function handleClearChatClick() {
+    Swal.fire({
+        position: 'center',
+        icon: 'question',
+        title: 'Clear Chat Messages',
+        text: 'Are you sure you want to clear all chat messages? This action cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Clear All',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Clear all chat messages
+            chatMessages.innerHTML = '';
+
+            // Reset unread messages counter
+            unreadMessages = 0;
+            updateChatNotification();
+
+            // Show success message
+            toast('Chat messages cleared successfully', 'success', 'top-end', 2000);
+        }
+    });
 }
 
 // Device Management Functions

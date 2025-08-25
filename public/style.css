@@ -804,6 +804,58 @@ input {
     gap: 10px;
 }
 
+/* Emoji Button */
+.btn-emoji {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-emoji:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-emoji:active {
+    transform: scale(0.95);
+}
+
+/* Emoji Picker Container */
+.emoji-picker-container {
+    position: absolute;
+    bottom: 80px;
+    left: 16px;
+    z-index: 1001;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    max-width: 320px;
+    display: none; /* Hidden by default */
+}
+
+.emoji-picker-container.show {
+    display: block;
+}
+
+.emoji-picker-container em-emoji-picker {
+    --rgb-background: 30, 32, 36;
+    --rgb-accent: 0, 123, 255;
+    --rgb-border: 255, 255, 255, 0.1;
+    --rgb-color: 255, 255, 255;
+    --border-radius: 8px;
+    width: 320px;
+    height: 400px;
+}
+
 #chatInput {
     flex: 1;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -866,6 +918,11 @@ input {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Add top margin for Chat Settings section */
+.settings-title:not(:first-child) {
+    margin-top: 30px;
+}
+
 .setting-group {
     margin-bottom: 20px;
 }
@@ -909,13 +966,13 @@ input {
 .settings-actions {
     display: flex;
     gap: 10px;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 15px;
+    padding-top: 15px;
 }
 
 .btn-test-devices,
-.btn-refresh-devices {
+.btn-refresh-devices,
+.btn-clear-chat {
     flex: 1;
     padding: 10px 16px;
     border: none;
@@ -952,8 +1009,20 @@ input {
     box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
 }
 
+.btn-clear-chat {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-clear-chat:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
 .btn-test-devices:active,
-.btn-refresh-devices:active {
+.btn-refresh-devices:active,
+.btn-clear-chat:active {
     transform: translateY(0);
 }
 
@@ -988,6 +1057,23 @@ input {
 
     .chat-form {
         padding: 12px;
+    }
+
+    .btn-emoji {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    .emoji-picker-container {
+        bottom: 70px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+    }
+
+    .emoji-picker-container em-emoji-picker {
+        width: 100%;
+        height: 280px;
     }
 
     #chatInput {
