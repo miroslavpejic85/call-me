@@ -404,13 +404,14 @@ function handleConnection(socket) {
         if (!users.has(name)) {
             users.set(name, socket);
             socket.username = name;
-            
-            // Initialize user media status (default: both enabled)
+
+            // Initialize user media status (default: both enabled, no screen sharing)
             userMediaStatus.set(name, {
                 video: true,
-                audio: true
+                audio: true,
+                screenSharing: false,
             });
-            
+
             log.debug('User signed in:', name);
             sendMsgTo(socket, { type: 'signIn', success: true });
             broadcastConnectedUsers();
@@ -437,7 +438,7 @@ function handleConnection(socket) {
                     const callerMediaStatus = userMediaStatus.get(socket.username);
                     const offerData = {
                         ...data,
-                        callerMediaStatus: callerMediaStatus
+                        callerMediaStatus: callerMediaStatus,
                     };
                     sendMsgTo(recipientSocket, offerData);
                 } else {
@@ -461,19 +462,43 @@ function handleConnection(socket) {
 
     // Function to handle media status updates
     function handleMediaStatus(data) {
-        const { video, audio } = data;
+        const { video, audio, screenSharing } = data;
         const username = socket.username;
-        
+
         if (username && userMediaStatus.has(username)) {
             const currentStatus = userMediaStatus.get(username);
             const newStatus = {
                 video: video !== undefined ? video : currentStatus.video,
-                audio: audio !== undefined ? audio : currentStatus.audio
+                audio: audio !== undefined ? audio : currentStatus.audio,
+                screenSharing: screenSharing !== undefined ? screenSharing : currentStatus.screenSharing,
             };
-            
+
             userMediaStatus.set(username, newStatus);
             log.debug('Updated media status for', username, newStatus);
+
+            // Broadcast screen sharing status change to other connected users if it changed
+            if (screenSharing !== undefined && screenSharing !== currentStatus.screenSharing) {
+                broadcastScreenSharingStatus(username, screenSharing);
+            }
         }
+    }
+
+    // Function to broadcast screen sharing status to connected users
+    function broadcastScreenSharingStatus(username, isScreenSharing) {
+        const message = {
+            type: 'remoteScreenShare',
+            from: username,
+            screenSharing: isScreenSharing,
+        };
+
+        log.debug('Broadcasting screen sharing status:', message);
+
+        // Send to all other connected users
+        users.forEach((userSocket, userName) => {
+            if (userName !== username) {
+                sendMsgTo(userSocket, message);
+            }
+        });
     }
 
     // Function to handle signaling messages (offer, answer, candidate, leave)

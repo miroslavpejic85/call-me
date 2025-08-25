@@ -81,6 +81,9 @@ let selectedUser = null;
 let unreadMessages = 0;
 let currentTab = 'users';
 
+// Store last applied media status for reapplication after stream connection
+let lastAppliedMediaStatus = null;
+
 // Device state
 let availableDevices = {
     videoInputs: [],
@@ -410,6 +413,9 @@ function handleMessage(data) {
         case 'remoteVideo':
             handleRemoteVideo(data);
             break;
+        case 'remoteScreenShare':
+            handleRemoteScreenShare(data);
+            break;
         case 'chat':
             addChatMessage(data, false);
             break;
@@ -639,10 +645,10 @@ function handleAudioClick() {
     const audioTrack = stream.getAudioTracks()[0];
     audioTrack.enabled = !audioTrack.enabled;
     audioBtn.classList.toggle('btn-danger');
-    
+
     // Send media status to server
     sendMediaStatusToServer();
-    
+
     sendMsg({
         type: 'remoteAudio',
         enabled: audioTrack.enabled,
@@ -667,31 +673,18 @@ async function handleScreenShareClick() {
 
 // Update remote video styling based on screen sharing state
 function updateRemoteVideoStyling(isScreenSharing) {
+    console.log('updateRemoteVideoStyling called with:', isScreenSharing);
+    console.log('remoteVideo element:', remoteVideo);
+    console.log('remoteVideo has srcObject:', !!remoteVideo?.srcObject);
+
     if (isScreenSharing) {
         remoteVideo.classList.add('screen-share');
         remoteVideo.classList.remove('camera-feed');
-        console.log('Remote screen share detected via data channel, classes:', remoteVideo.className);
+        console.log('Applied screen-share styling. Classes:', remoteVideo.className);
     } else {
         remoteVideo.classList.add('camera-feed');
         remoteVideo.classList.remove('screen-share');
-        console.log('Remote camera feed detected via data channel, classes:', remoteVideo.className);
-    }
-}
-
-// Send screen sharing state to remote peer
-function sendScreenShareState(isSharing) {
-    if (thisConnection && thisConnection.dataChannel && thisConnection.dataChannel.readyState === 'open') {
-        try {
-            thisConnection.dataChannel.send(
-                JSON.stringify({
-                    type: 'screenShareState',
-                    isScreenSharing: isSharing,
-                })
-            );
-            console.log('Sent screen share state:', isSharing);
-        } catch (error) {
-            console.error('Error sending screen share state:', error);
-        }
+        console.log('Applied camera-feed styling. Classes:', remoteVideo.className);
     }
 }
 
@@ -742,8 +735,8 @@ async function startScreenSharing() {
         screenShareBtn.title = 'Stop screen sharing';
         screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
 
-        // Send screen sharing state to remote peer
-        sendScreenShareState(true);
+        // Send screen sharing status to server
+        sendMediaStatusToServer();
 
         // Listen for screen share end (user clicks browser's stop sharing)
         screenStream.getVideoTracks()[0].onended = () => {
@@ -807,8 +800,8 @@ async function stopScreenSharing() {
         screenShareBtn.title = 'Start screen sharing';
         screenShareBtn.innerHTML = '<i class="fas fa-desktop"></i>';
 
-        // Send screen sharing state to remote peer
-        sendScreenShareState(false);
+        // Send screen sharing status to server
+        sendMediaStatusToServer();
 
         // Reset original stream reference
         originalStream = null;
@@ -1007,7 +1000,7 @@ async function handleSignIn(data) {
             // Initialize device settings after getting media
             await initializeDeviceSettings();
             handleVideoMirror(localVideo, myStream);
-            
+
             // Send initial media status to server
             sendMediaStatusToServer();
         } catch (error) {
@@ -1083,50 +1076,6 @@ function initializeConnection() {
 
     stream.getTracks().forEach((track) => thisConnection.addTrack(track, stream));
 
-    // Create data channel for screen sharing state communication
-    thisConnection.dataChannel = thisConnection.createDataChannel('screenShareState', {
-        ordered: true,
-    });
-
-    thisConnection.dataChannel.onopen = () => {
-        console.log('Data channel opened');
-        // Send current screen sharing state
-        thisConnection.dataChannel.send(
-            JSON.stringify({
-                type: 'screenShareState',
-                isScreenSharing: isScreenSharing,
-            })
-        );
-    };
-
-    thisConnection.dataChannel.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            if (data.type === 'screenShareState') {
-                console.log('Received screen share state:', data.isScreenSharing);
-                updateRemoteVideoStyling(data.isScreenSharing);
-            }
-        } catch (error) {
-            console.error('Error parsing data channel message:', error);
-        }
-    };
-
-    // Handle incoming data channels
-    thisConnection.ondatachannel = (event) => {
-        const channel = event.channel;
-        channel.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'screenShareState') {
-                    console.log('Received screen share state via incoming channel:', data.isScreenSharing);
-                    updateRemoteVideoStyling(data.isScreenSharing);
-                }
-            } catch (error) {
-                console.error('Error parsing incoming data channel message:', error);
-            }
-        };
-    };
-
     thisConnection.ontrack = (e) => {
         if (e.streams && e.streams[0]) {
             const remoteStream = e.streams[0];
@@ -1136,7 +1085,7 @@ function initializeConnection() {
             remoteVideo.autoplay = true;
             remoteVideo.controls = false;
 
-            // Initial styling - will be updated via data channel
+            // Initial styling - will be updated via server status
             remoteVideo.classList.add('camera-feed');
             remoteVideo.classList.remove('screen-share');
 
@@ -1144,6 +1093,9 @@ function initializeConnection() {
             renderUserList(); // Update UI to show hang-up button
 
             console.log('Remote stream set to video element');
+
+            // Reapply media status after stream is connected (in case caller had screen sharing on)
+            reapplyRemoteMediaStatus();
         } else {
             handleError('No stream available in the ontrack event.');
         }
@@ -1215,7 +1167,7 @@ function offerAccept(data) {
             if (data.callerMediaStatus) {
                 applyCallerMediaStatus(data.callerMediaStatus);
             }
-            
+
             data.type = 'offerCreate';
             socket.recipient = data.from;
         } else {
@@ -1363,6 +1315,7 @@ function handleLeave(disconnect = true) {
         // Disconnect from server and reset state
         disconnectConnection();
         connectedUser = null;
+        lastAppliedMediaStatus = null; // Clear stored media status
 
         // Redirect to homepage
         window.location.href = '/';
@@ -1393,6 +1346,7 @@ function handleLeave(disconnect = true) {
 
         // Reset state
         connectedUser = null;
+        lastAppliedMediaStatus = null; // Clear stored media status
         renderUserList();
 
         console.log('Remote user cleanup completed - ready for new connections');
@@ -1449,16 +1403,17 @@ function popupMsg(message, position = 'top', timer = 4000) {
 // Send current media status to server
 function sendMediaStatusToServer() {
     if (!stream) return;
-    
+
     const videoTrack = stream.getVideoTracks()[0];
     const audioTrack = stream.getAudioTracks()[0];
-    
+
     const mediaStatus = {
         type: 'mediaStatus',
         video: videoTrack ? videoTrack.enabled : false,
-        audio: audioTrack ? audioTrack.enabled : false
+        audio: audioTrack ? audioTrack.enabled : false,
+        screenSharing: isScreenSharing,
     };
-    
+
     socket.emit('message', mediaStatus);
     console.log('Sent media status to server:', mediaStatus);
 }
@@ -1466,9 +1421,12 @@ function sendMediaStatusToServer() {
 // Apply caller's media status to remote video/audio indicators
 function applyCallerMediaStatus(callerMediaStatus) {
     if (!callerMediaStatus) return;
-    
+
     console.log('Applying caller media status:', callerMediaStatus);
-    
+
+    // Store for potential reapplication after stream connection
+    lastAppliedMediaStatus = callerMediaStatus;
+
     // Apply video status
     if (!callerMediaStatus.video) {
         remoteVideoDisabled.classList.add('show');
@@ -1477,12 +1435,50 @@ function applyCallerMediaStatus(callerMediaStatus) {
         remoteVideoDisabled.classList.remove('show');
         showCameraOffOverlay('remote', false);
     }
-    
+
     // Apply audio status
     if (!callerMediaStatus.audio) {
         remoteAudioDisabled.classList.add('show');
     } else {
         remoteAudioDisabled.classList.remove('show');
+    }
+
+    // Apply screen sharing status
+    if (callerMediaStatus.screenSharing) {
+        updateRemoteVideoStyling(true);
+    } else {
+        updateRemoteVideoStyling(false);
+    }
+}
+
+// Reapply media status after stream connection
+function reapplyRemoteMediaStatus() {
+    if (lastAppliedMediaStatus) {
+        console.log('Reapplying media status after stream connection:', lastAppliedMediaStatus);
+
+        // Only reapply screen sharing status since video/audio indicators should be preserved
+        if (lastAppliedMediaStatus.screenSharing) {
+            updateRemoteVideoStyling(true);
+        } else {
+            updateRemoteVideoStyling(false);
+        }
+    }
+}
+
+// Handle remote screen sharing status updates
+function handleRemoteScreenShare(data) {
+    const { from, screenSharing } = data;
+
+    // Only apply if this message is from the connected user
+    if (from === connectedUser) {
+        console.log('Remote screen sharing status changed:', screenSharing);
+
+        // Update stored media status
+        if (lastAppliedMediaStatus) {
+            lastAppliedMediaStatus.screenSharing = screenSharing;
+        }
+
+        updateRemoteVideoStyling(screenSharing);
     }
 }
 
