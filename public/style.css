@@ -10,6 +10,12 @@
     --btn-size-mobile: 40px;
     --highlight-color: rgba(0, 0, 0, 0.1);
     --fallback-bg: #222;
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --username-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(24, 26, 32, 0.85));
+    --username-bg-hover: linear-gradient(135deg, rgba(0, 123, 255, 0.9), rgba(0, 86, 179, 0.9));
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-border-hover: rgba(255, 255, 255, 0.3);
 }
 
 /* Global Styles */
@@ -92,21 +98,39 @@ button {
     display: none;
 }
 
-/* Session Time */
+/* Session Time - Compact Design */
 #sessionTime {
     z-index: 4;
     display: none;
     position: absolute;
-    text-align: center;
+    top: 12px;
+    right: 15px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: rgba(0, 123, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+    display: flex;
     align-items: center;
-    padding: 5px;
-    top: 10px;
-    right: 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--text-color);
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: var(--border-radius);
+    gap: 3px;
+    min-width: 50px;
+    justify-content: center;
+    font-family: inherit;
+}
+
+#sessionTime::before {
+    content: '⏱';
+    font-size: 0.65rem;
+}
+
+#sessionTime:hover {
+    background: rgba(0, 123, 255, 1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
 }
 
 /* Room */
@@ -223,6 +247,20 @@ video::-webkit-media-controls {
     font-size: 14px;
     font-weight: 500;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.camera-off-overlay .username {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+}
+
+.camera-off-overlay .status {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.8;
 }
 
 /* Local Video Styles */
@@ -261,18 +299,41 @@ video::-webkit-media-controls {
     border: 2px solid #ff6b35 !important; /* Orange border to indicate screen sharing */
 }
 
-#localUsername {
+/* Username Labels - Enhanced UI */
+/* Username Labels - Compact & Clean */
+#localUsername,
+#remoteUsername {
     position: absolute;
-    bottom: 4px;
-    left: 8px;
-    color: var(--text-color);
-    background: rgba(0, 0, 0, 0.7);
-    padding: 2px 6px;
-    font-size: 0.75rem;
+    bottom: 2px;
+    left: 3px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 4px;
+    font-size: 0.7rem;
     font-weight: 500;
-    border-radius: 4px;
-    backdrop-filter: blur(4px);
-    z-index: 4;
+    border-radius: 3px;
+    z-index: 102;
+    transition: background 0.2s ease;
+    max-width: calc(100% - 6px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(2px);
+    font-family: inherit;
+}
+
+/* Different icons for local vs remote */
+#localUsername::before {
+    content: '🟢';
+    margin-right: 2px;
+    font-size: 0.65rem;
+}
+
+#remoteUsername::before {
+    content: '🟢';
+    margin-right: 2px;
+    font-size: 0.65rem;
 }
 
 /* Remote Video Styles */
@@ -342,11 +403,34 @@ video::-webkit-media-controls {
         transform: scale(1.02);
     }
 
-    #localUsername {
-        font-size: 0.65rem;
-        padding: 1px 4px;
-        bottom: 2px;
-        left: 4px;
+    #localUsername,
+    #remoteUsername {
+        font-size: 0.7rem;
+        padding: 2px 4px;
+        bottom: 1px;
+        left: 1px;
+        border-radius: 5px;
+        max-width: calc(100% - 12px);
+    }
+
+    #localUsername::before,
+    #remoteUsername::before {
+        font-size: 0.7rem;
+        margin-right: 2px;
+    }
+
+    /* Mobile Session Time */
+    #sessionTime {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 16px;
+        min-width: 70px;
+    }
+
+    #sessionTime::before {
+        font-size: 0.8rem;
     }
 
     #remoteVideoContainer {
@@ -468,9 +552,32 @@ video::-webkit-media-controls {
         left: 10px;
     }
 
-    #localUsername {
+    #localUsername,
+    #remoteUsername {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+        border-radius: 10px;
+        max-width: calc(100% - 8px);
+    }
+
+    #localUsername::before,
+    #remoteUsername::before {
         font-size: 0.6rem;
-        padding: 1px 3px;
+        margin-right: 1px;
+    }
+
+    /* Very Small Screen Session Time */
+    #sessionTime {
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 14px;
+        min-width: 60px;
+    }
+
+    #sessionTime::before {
+        font-size: 0.7rem;
     }
 
     #remoteVideoContainer {

@@ -56,6 +56,7 @@ const localVideo = document.getElementById('localVideo');
 const remoteAudioDisabled = document.getElementById('remoteAudioDisabled');
 const remoteVideoDisabled = document.getElementById('remoteVideoDisabled');
 const localUsername = document.getElementById('localUsername');
+const remoteUsername = document.getElementById('remoteUsername');
 const remoteVideo = document.getElementById('remoteVideo');
 
 // Ensure app is defined, even if config.js is not loaded
@@ -538,6 +539,7 @@ function handleUserClickToCall(user) {
     }
     selectedUser = user;
     connectedUser = user;
+    updateUsernameDisplay();
     renderUserList();
     sendMsg({
         type: 'offerAccept',
@@ -1035,6 +1037,7 @@ async function handleSignIn(data) {
             localVideo.controls = false;
             localVideo.classList.add('camera-feed'); // Set default styling for camera
             localUsername.innerText = userName;
+            updateUsernameDisplay();
             initializeConnection();
             await handleEnumerateDevices();
             // Initialize device settings after getting media
@@ -1224,6 +1227,7 @@ async function handleOffer(data) {
     const { offer, name } = data;
     console.log('Handling offer from:', name);
     connectedUser = name;
+    updateUsernameDisplay();
 
     // Initialize fresh connection for incoming call
     initializeConnection();
@@ -1291,7 +1295,23 @@ function handleRemoteAudio(data) {
     data.enabled ? remoteAudioDisabled.classList.remove('show') : remoteAudioDisabled.classList.add('show');
 }
 
-// Show/hide camera off overlay (minimal implementation)
+// Update username displays on video containers
+function updateUsernameDisplay() {
+    if (localUsername) {
+        localUsername.innerText = userName || 'You';
+    }
+    if (remoteUsername && connectedUser) {
+        remoteUsername.innerText = connectedUser;
+        // Show remoteUsername when user is connected
+        remoteUsername.classList.remove('hide');
+    } else if (remoteUsername) {
+        remoteUsername.innerText = '';
+        // Hide remoteUsername when no user is connected
+        remoteUsername.classList.add('hide');
+    }
+}
+
+// Show/hide camera off overlay with username display
 function showCameraOffOverlay(type, show) {
     const container =
         type === 'local'
@@ -1302,14 +1322,40 @@ function showCameraOffOverlay(type, show) {
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.className = 'camera-off-overlay';
-        overlay.innerHTML = `
-            <img src="./assets/camOff.png" alt="Video Off" />
-            <span>${type === 'local' ? 'Video Off' : 'Video Disabled'}</span>
-        `;
         container.appendChild(overlay);
     }
 
+    if (show) {
+        const username = type === 'local' ? userName : connectedUser;
+        overlay.innerHTML = `
+            <img src="./assets/camOff.png" alt="Video Off" />
+            <span class="username">${username || (type === 'local' ? 'You' : 'Remote User')}</span>
+            <span class="status">${type === 'local' ? 'Video Off' : 'Video Disabled'}</span>
+        `;
+    }
+
     overlay.classList.toggle('show', show);
+
+    // Hide/show username elements when video is off/on
+    const usernameElement = type === 'local' ? localUsername : remoteUsername;
+    if (usernameElement) {
+        if (show) {
+            // Video is off - hide username
+            usernameElement.classList.add('hide');
+        } else {
+            // Video is on - show username only if conditions are met
+            if (type === 'local') {
+                // Always show local username when video is on
+                usernameElement.classList.remove('hide');
+            } else {
+                // For remote username, only show if user is connected
+                if (connectedUser) {
+                    usernameElement.classList.remove('hide');
+                }
+                // If no connected user, keep it hidden (handled by updateUsernameDisplay)
+            }
+        }
+    }
 }
 
 // Play audio sound
@@ -1356,6 +1402,7 @@ function handleLeave(disconnect = true) {
         disconnectConnection();
         connectedUser = null;
         lastAppliedMediaStatus = null; // Clear stored media status
+        updateUsernameDisplay();
 
         // Redirect to homepage
         window.location.href = '/';
@@ -1387,6 +1434,7 @@ function handleLeave(disconnect = true) {
         // Reset state
         connectedUser = null;
         lastAppliedMediaStatus = null; // Clear stored media status
+        updateUsernameDisplay();
         renderUserList();
 
         console.log('Remote user cleanup completed - ready for new connections');
