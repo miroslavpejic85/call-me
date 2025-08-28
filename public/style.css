@@ -1131,18 +1131,6 @@ input {
         font-size: 0.9em;
     }
 
-    .emoji-picker-container {
-        bottom: 70px;
-        left: 12px;
-        right: 12px;
-        width: auto;
-    }
-
-    .emoji-picker-container em-emoji-picker {
-        width: 100%;
-        height: 280px;
-    }
-
     #chatInput {
         font-size: 16px; /* Prevent zoom on iOS */
     }
