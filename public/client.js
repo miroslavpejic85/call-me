@@ -66,6 +66,7 @@ const app = window.myAppConfig || {};
 let userInfo;
 let userName;
 let connectedUser;
+let pendingUser; // Track outgoing call target
 let thisConnection;
 let camera = 'user';
 let stream;
@@ -538,8 +539,7 @@ function handleUserClickToCall(user) {
         return;
     }
     selectedUser = user;
-    connectedUser = user;
-    updateUsernameDisplay();
+    pendingUser = user;
     renderUserList();
     sendMsg({
         type: 'offerAccept',
@@ -1227,6 +1227,7 @@ async function handleOffer(data) {
     const { offer, name } = data;
     console.log('Handling offer from:', name);
     connectedUser = name;
+    pendingUser = null;
     updateUsernameDisplay();
 
     // Initialize fresh connection for incoming call
@@ -1251,6 +1252,12 @@ async function handleAnswer(data) {
     const { answer } = data;
     try {
         await thisConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        // Set connectedUser from pendingUser after call is accepted
+        if (pendingUser) {
+            connectedUser = pendingUser;
+            pendingUser = null;
+            updateUsernameDisplay();
+        }
     } catch (error) {
         handleError('Error when set remote description.', error);
     }
@@ -1300,13 +1307,12 @@ function updateUsernameDisplay() {
     if (localUsername) {
         localUsername.innerText = userName || 'You';
     }
+    // Only show remoteUsername if call is established (not just pending)
     if (remoteUsername && connectedUser) {
         remoteUsername.innerText = connectedUser;
-        // Show remoteUsername when user is connected
         remoteUsername.classList.remove('hide');
     } else if (remoteUsername) {
         remoteUsername.innerText = '';
-        // Hide remoteUsername when no user is connected
         remoteUsername.classList.add('hide');
     }
 }
@@ -1572,8 +1578,11 @@ function handleRemoteScreenShare(data) {
 
 // Send messages to the server
 function sendMsg(message) {
+    // Use connectedUser if call is established, otherwise use pendingUser for signaling
     if (connectedUser) {
         message.name = connectedUser;
+    } else if (pendingUser) {
+        message.name = pendingUser;
     }
     socket.emit('message', message);
 }
