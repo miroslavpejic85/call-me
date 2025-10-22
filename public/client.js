@@ -901,6 +901,21 @@ function refreshLocalVideoStream(newStream) {
         return;
     }
 
+    // Preserve previous video enabled state (if the user had video disabled)
+    let wasVideoEnabled = true;
+    try {
+        if (stream && stream.getVideoTracks().length > 0) {
+            wasVideoEnabled = stream.getVideoTracks()[0].enabled;
+        } else if (videoBtn && videoBtn.classList.contains('btn-danger')) {
+            wasVideoEnabled = false;
+        }
+    } catch (e) {
+        console.warn('Could not determine previous video enabled state:', e);
+    }
+
+    // Apply preserved enabled state to new track
+    videoTrack.enabled = wasVideoEnabled;
+
     const audioTrack = stream.getAudioTracks()[0];
     if (!audioTrack) {
         handleError('No audio track available in the stream.');
@@ -915,6 +930,15 @@ function refreshLocalVideoStream(newStream) {
     // Ensure camera feed styling is maintained during swap
     localVideo.classList.add('camera-feed');
     localVideo.classList.remove('screen-share');
+
+    // Reflect video state in UI and overlays
+    if (wasVideoEnabled) {
+        videoBtn && videoBtn.classList.remove('btn-danger');
+        showCameraOffOverlay('local', false);
+    } else {
+        videoBtn && videoBtn.classList.add('btn-danger');
+        showCameraOffOverlay('local', true);
+    }
 
     handleVideoMirror(localVideo, stream);
 }
@@ -2109,6 +2133,16 @@ async function updateVideoStream() {
             throw new Error('No video track found in new stream');
         }
 
+        // Preserve previous video enabled state
+        let wasVideoEnabled = true;
+        if (stream && stream.getVideoTracks().length > 0) {
+            wasVideoEnabled = stream.getVideoTracks()[0].enabled;
+        } else if (videoBtn && videoBtn.classList.contains('btn-danger')) {
+            wasVideoEnabled = false;
+        }
+        // Apply preserved enabled state to new track
+        videoTrack.enabled = wasVideoEnabled;
+
         // Update peer connection if it exists
         if (thisConnection) {
             const sender = thisConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
@@ -2134,6 +2168,18 @@ async function updateVideoStream() {
                 localVideo.srcObject = stream;
                 handleVideoMirror(localVideo, stream);
             }
+
+            // Reflect video state in UI and overlays
+            if (wasVideoEnabled) {
+                videoBtn && videoBtn.classList.remove('btn-danger');
+                showCameraOffOverlay('local', false);
+            } else {
+                videoBtn && videoBtn.classList.add('btn-danger');
+                showCameraOffOverlay('local', true);
+            }
+
+            // Notify server about media status change so remote user is aware
+            sendMediaStatusToServer();
         }
 
         // Stop other tracks from the temporary stream
