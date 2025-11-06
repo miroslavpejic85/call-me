@@ -124,7 +124,6 @@ const io = socketIO(server);
 // Server config
 function getServerConfig(tunnelHttps = false) {
     return {
-        running_at: tunnelHttps ? tunnelHttps : host,
         ice: config.iceServers,
         host: {
             password_enabled: config.hostPasswordEnabled,
@@ -132,7 +131,10 @@ function getServerConfig(tunnelHttps = false) {
         },
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
-        version: packageJson.version,
+        running_at: tunnelHttps ? tunnelHttps : host,
+        environment: process.env.NODE_ENV || 'development',
+        appVersion: packageJson.version,
+        nodeVersion: process.versions.node,
     };
 }
 
