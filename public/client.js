@@ -1050,8 +1050,36 @@ async function handleSignIn(data) {
         elemDisplay(signInPage, false);
         elemDisplay(roomPage, true);
 
+        let myStream = null;
+        let lastError = null;
+
+        // Try to get media with progressive fallback
         try {
-            const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            // Try video + audio first
+            myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            console.log('Successfully obtained video + audio stream');
+        } catch (error) {
+            lastError = error;
+            console.warn('Video + audio failed, trying video only:', error.name);
+            try {
+                // Try video only
+                myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                console.log('Successfully obtained video-only stream');
+            } catch (error2) {
+                lastError = error2;
+                console.warn('Video only failed, trying audio only:', error2.name);
+                try {
+                    // Try audio only
+                    myStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                    console.log('Successfully obtained audio-only stream');
+                } catch (error3) {
+                    lastError = error3;
+                    console.error('All getUserMedia attempts failed:', error3.name);
+                }
+            }
+        }
+
+        if (myStream) {
             stream = myStream;
             localVideo.srcObject = stream;
             localVideo.playsInline = true;
@@ -1068,10 +1096,14 @@ async function handleSignIn(data) {
             await initializeDeviceSettings();
             handleVideoMirror(localVideo, myStream);
 
+            // Update UI based on available devices
+            updateUIForAvailableDevices();
+
             // Send initial media status to server
             sendMediaStatusToServer();
-        } catch (error) {
-            handleMediaStreamError(error);
+        } else {
+            // All attempts failed, show error only now
+            handleMediaStreamError(lastError);
         }
     }
 }
@@ -1086,19 +1118,19 @@ function handleMediaStreamError(error) {
     switch (error.name) {
         case 'NotFoundError':
         case 'DevicesNotFoundError':
-            errorMessage = 'Required track is missing';
+            errorMessage = 'No camera or microphone found. You can still join with available devices.';
             break;
         case 'NotReadableError':
         case 'TrackStartError':
-            errorMessage = 'Device is already in use';
+            errorMessage = 'Device is already in use by another application';
             break;
         case 'OverconstrainedError':
         case 'ConstraintNotSatisfiedError':
-            errorMessage = 'Constraints cannot be satisfied by available devices';
+            errorMessage = 'Cannot find devices matching the requirements. Try with different devices.';
             break;
         case 'NotAllowedError':
         case 'PermissionDeniedError':
-            errorMessage = 'Permission denied in browser';
+            errorMessage = 'Permission denied. Please allow access to camera/microphone in your browser settings.';
             break;
         case 'AbortError':
             errorMessage = 'Operation aborted unexpectedly';
@@ -2016,9 +2048,16 @@ function populateDeviceSelects() {
     // Populate video select
     if (videoSelect) {
         videoSelect.innerHTML = '';
-        if (availableDevices.videoInputs.length === 0) {
+        // Check if we actually have camera access by checking the stream
+        const hasCamera = stream && stream.getVideoTracks().length > 0;
+
+        if (!hasCamera) {
             videoSelect.innerHTML = '<option value="">No cameras found</option>';
+            videoSelect.disabled = true;
+            videoSelect.parentElement.style.opacity = '0.5';
         } else {
+            videoSelect.disabled = false;
+            videoSelect.parentElement.style.opacity = '1';
             availableDevices.videoInputs.forEach((device) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
@@ -2034,9 +2073,16 @@ function populateDeviceSelects() {
     // Populate audio input select
     if (audioSelect) {
         audioSelect.innerHTML = '';
-        if (availableDevices.audioInputs.length === 0) {
+        // Check if we actually have microphone access by checking the stream
+        const hasMic = stream && stream.getAudioTracks().length > 0;
+
+        if (!hasMic) {
             audioSelect.innerHTML = '<option value="">No microphones found</option>';
+            audioSelect.disabled = true;
+            audioSelect.parentElement.style.opacity = '0.5';
         } else {
+            audioSelect.disabled = false;
+            audioSelect.parentElement.style.opacity = '1';
             availableDevices.audioInputs.forEach((device) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
@@ -2068,6 +2114,48 @@ function populateDeviceSelects() {
     }
 }
 
+// Update UI elements based on available devices
+function updateUIForAvailableDevices() {
+    const hasCamera = stream && stream.getVideoTracks().length > 0;
+    const hasMic = stream && stream.getAudioTracks().length > 0;
+
+    // Handle video button and local video
+    if (!hasCamera) {
+        if (videoBtn) {
+            videoBtn.classList.add('btn-danger');
+            videoBtn.disabled = true;
+            videoBtn.style.opacity = '0.5';
+            videoBtn.title = 'No camera available';
+        }
+        if (swapCameraBtn) {
+            swapCameraBtn.style.display = 'none';
+        }
+        if (localVideoContainer) {
+            showCameraOffOverlay('local', true);
+        }
+    } else {
+        if (videoBtn) {
+            videoBtn.disabled = false;
+            videoBtn.style.opacity = '1';
+        }
+    }
+
+    // Handle audio button
+    if (!hasMic) {
+        if (audioBtn) {
+            audioBtn.classList.add('btn-danger');
+            audioBtn.disabled = true;
+            audioBtn.style.opacity = '0.5';
+            audioBtn.title = 'No microphone available';
+        }
+    } else {
+        if (audioBtn) {
+            audioBtn.disabled = false;
+            audioBtn.style.opacity = '1';
+        }
+    }
+}
+
 async function refreshDevices(showToast = true) {
     if (refreshDevicesBtn) {
         refreshDevicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
@@ -2075,9 +2163,25 @@ async function refreshDevices(showToast = true) {
     }
 
     try {
-        // Request permissions first to get device labels
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // Try to request permissions for available devices (don't fail if one is missing)
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        } catch (e) {
+            // Try video only
+            try {
+                await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            } catch (videoError) {
+                // Try audio only as fallback
+                try {
+                    await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                } catch (audioError) {
+                    console.warn('No media devices available for permission request');
+                }
+            }
+        }
+
         await enumerateDevices();
+        updateUIForAvailableDevices();
         if (showToast) {
             toast('Devices refreshed successfully', 'success', 'top-end', 2000);
         }
@@ -2097,6 +2201,7 @@ async function handleVideoDeviceChange() {
     if (newDeviceId && newDeviceId !== selectedDevices.videoInput) {
         selectedDevices.videoInput = newDeviceId;
         await updateVideoStream();
+        updateUIForAvailableDevices();
         toast('Camera changed successfully', 'success', 'top-end', 2000);
     }
 }
@@ -2106,6 +2211,7 @@ async function handleAudioDeviceChange() {
     if (newDeviceId && newDeviceId !== selectedDevices.audioInput) {
         selectedDevices.audioInput = newDeviceId;
         await updateAudioStream();
+        updateUIForAvailableDevices();
         toast('Microphone changed successfully', 'success', 'top-end', 2000);
     }
 }
@@ -2255,9 +2361,26 @@ async function testDevices() {
     }
 
     try {
+        // Build constraints based on available devices
+        const hasCamera = availableDevices.videoInputs.length > 0;
+        const hasMic = availableDevices.audioInputs.length > 0;
+
+        if (!hasCamera && !hasMic) {
+            toast('No devices available to test', 'warning', 'top-end', 2000);
+            return;
+        }
+
         const constraints = {
-            video: selectedDevices.videoInput ? { deviceId: { exact: selectedDevices.videoInput } } : true,
-            audio: selectedDevices.audioInput ? { deviceId: { exact: selectedDevices.audioInput } } : true,
+            video: hasCamera
+                ? selectedDevices.videoInput
+                    ? { deviceId: { exact: selectedDevices.videoInput } }
+                    : true
+                : false,
+            audio: hasMic
+                ? selectedDevices.audioInput
+                    ? { deviceId: { exact: selectedDevices.audioInput } }
+                    : true
+                : false,
         };
 
         const testStream = await navigator.mediaDevices.getUserMedia(constraints);
