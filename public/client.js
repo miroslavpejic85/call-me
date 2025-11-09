@@ -1173,7 +1173,25 @@ function handleMediaStreamError(error) {
 function initializeConnection() {
     thisConnection = new RTCPeerConnection(config);
 
+    // Add existing tracks from local stream
     stream.getTracks().forEach((track) => thisConnection.addTrack(track, stream));
+
+    // Ensure we have transceivers for both audio and video, even if we don't have those tracks
+    // This allows us to receive video/audio from remote peer even if we don't have camera/mic
+    const hasVideo = stream.getVideoTracks().length > 0;
+    const hasAudio = stream.getAudioTracks().length > 0;
+
+    if (!hasVideo) {
+        // Add video transceiver to receive video from remote peer
+        thisConnection.addTransceiver('video', { direction: 'recvonly' });
+        console.log('Added recvonly video transceiver (no local camera)');
+    }
+
+    if (!hasAudio) {
+        // Add audio transceiver to receive audio from remote peer
+        thisConnection.addTransceiver('audio', { direction: 'recvonly' });
+        console.log('Added recvonly audio transceiver (no local microphone)');
+    }
 
     thisConnection.ontrack = (e) => {
         if (e.streams && e.streams[0]) {
