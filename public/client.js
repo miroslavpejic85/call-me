@@ -1805,12 +1805,14 @@ if (chatForm && chatInput) {
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const text = chatInput.value.trim();
-        if (text.length > 0 && allConnectedUsers.length > 0) {
+        if (text.length > 0) {
+            if (allConnectedUsers.length === 0) {
+                toast('Cannot send message: no users are currently connected', 'warning', 'top', 2000);
+                return;
+            }
             socket.emit('message', { type: 'chat', text });
             addChatMessage({ from: userName || 'Me', text, timestamp: Date.now() }, true);
             chatInput.value = '';
-        } else {
-            toast('Cannot send empty message or no user connected', 'warning', 'top', 2000);
         }
     });
 }
