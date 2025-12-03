@@ -1808,6 +1808,7 @@ if (chatForm && chatInput) {
         if (text.length > 0) {
             if (allConnectedUsers.length === 0) {
                 toast('Cannot send message: no users are currently connected', 'warning', 'top', 2000);
+                chatInput.value = '';
                 return;
             }
             socket.emit('message', { type: 'chat', text });
