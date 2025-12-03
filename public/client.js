@@ -767,7 +767,7 @@ async function startScreenSharing() {
             stopScreenSharing();
         };
 
-        toast('Screen sharing started', 'success', 'top-end', 2000);
+        toast('Screen sharing started', 'success', 'top', 2000);
         console.log('Screen sharing started');
     } catch (error) {
         if (error.name === 'NotAllowedError') {
@@ -848,7 +848,7 @@ async function stopScreenSharing() {
         // Ensure UI button state matches actual video state
         checkVideoAudioStatus();
 
-        toast('Screen sharing stopped', 'success', 'top-end', 2000);
+        toast('Screen sharing stopped', 'success', 'top', 2000);
         console.log('Screen sharing stopped');
     } catch (error) {
         handleError('Failed to stop screen sharing', error.message);
@@ -1805,10 +1805,12 @@ if (chatForm && chatInput) {
     chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const text = chatInput.value.trim();
-        if (text.length > 0) {
+        if (text.length > 0 && allConnectedUsers.length > 0) {
             socket.emit('message', { type: 'chat', text });
             addChatMessage({ from: userName || 'Me', text, timestamp: Date.now() }, true);
             chatInput.value = '';
+        } else {
+            toast('Cannot send empty message or no user connected', 'warning', 'top', 2000);
         }
     });
 }
@@ -1845,7 +1847,7 @@ function addChatMessage(msg, isSelf = false) {
 
         // Show toast notification for new messages only if sidebar is not opened
         if (!userSidebar.classList.contains('active')) {
-            toast(`New message from ${msg.from}`, 'info', 'top-end', 2000);
+            toast(`New message from ${msg.from}`, 'info', 'top', 2000);
         }
     }
 }
@@ -1971,7 +1973,7 @@ function handleSaveChatClick() {
     const chatText = generateChatExportText();
 
     if (!chatText) {
-        toast('No chat messages to save', 'info', 'top-end', 2000);
+        toast('No chat messages to save', 'info', 'top', 2000);
         return;
     }
 
@@ -1980,13 +1982,13 @@ function handleSaveChatClick() {
 
     downloadTextAsFile(chatText, fileName);
 
-    toast(`Chat messages saved as ${fileName}`, 'success', 'top-end', 3000);
+    toast(`Chat messages saved as ${fileName}`, 'success', 'top', 3000);
 }
 
 // Handle clear chat button click
 function handleClearChatClick() {
     if (!thereAreChatMessages()) {
-        toast('No chat messages to clear', 'info', 'top-end', 2000);
+        toast('No chat messages to clear', 'info', 'top', 2000);
         return;
     }
 
@@ -2010,7 +2012,7 @@ function handleClearChatClick() {
             updateChatNotification();
 
             // Show success message
-            toast('Chat messages cleared successfully', 'success', 'top-end', 2000);
+            toast('Chat messages cleared successfully', 'success', 'top', 2000);
         }
     });
 }
@@ -2201,7 +2203,7 @@ async function refreshDevices(showToast = true) {
         await enumerateDevices();
         updateUIForAvailableDevices();
         if (showToast) {
-            toast('Devices refreshed successfully', 'success', 'top-end', 2000);
+            toast('Devices refreshed successfully', 'success', 'top', 2000);
         }
     } catch (error) {
         console.error('Error refreshing devices:', error);
@@ -2220,7 +2222,7 @@ async function handleVideoDeviceChange() {
         selectedDevices.videoInput = newDeviceId;
         await updateVideoStream();
         updateUIForAvailableDevices();
-        toast('Camera changed successfully', 'success', 'top-end', 2000);
+        toast('Camera changed successfully', 'success', 'top', 2000);
     }
 }
 
@@ -2230,7 +2232,7 @@ async function handleAudioDeviceChange() {
         selectedDevices.audioInput = newDeviceId;
         await updateAudioStream();
         updateUIForAvailableDevices();
-        toast('Microphone changed successfully', 'success', 'top-end', 2000);
+        toast('Microphone changed successfully', 'success', 'top', 2000);
     }
 }
 
@@ -2239,7 +2241,7 @@ async function handleAudioOutputDeviceChange() {
     if (newDeviceId && newDeviceId !== selectedDevices.audioOutput) {
         selectedDevices.audioOutput = newDeviceId;
         await setAudioOutputDevice(newDeviceId);
-        toast('Speaker changed successfully', 'success', 'top-end', 2000);
+        toast('Speaker changed successfully', 'success', 'top', 2000);
     }
 }
 
@@ -2364,7 +2366,7 @@ async function setAudioOutputDevice(deviceId) {
             selectedDevices.audioOutput = deviceId;
         } else {
             console.warn('Browser does not support audio output device selection');
-            toast('Audio output selection not supported in this browser', 'warning', 'top-end', 3000);
+            toast('Audio output selection not supported in this browser', 'warning', 'top', 3000);
         }
     } catch (error) {
         console.error('Error setting audio output device:', error);
@@ -2384,7 +2386,7 @@ async function testDevices() {
         const hasMic = availableDevices.audioInputs.length > 0;
 
         if (!hasCamera && !hasMic) {
-            toast('No devices available to test', 'warning', 'top-end', 2000);
+            toast('No devices available to test', 'warning', 'top', 2000);
             return;
         }
 
@@ -2414,7 +2416,7 @@ async function testDevices() {
         // Test for 2 seconds then stop
         setTimeout(() => {
             testStream.getTracks().forEach((track) => track.stop());
-            toast('Device test completed successfully', 'success', 'top-end', 2000);
+            toast('Device test completed successfully', 'success', 'top', 2000);
         }, 2000);
     } catch (error) {
         console.error('Error testing devices:', error);
