@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.2.78",
+    "version": "1.2.79",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -28,7 +28,7 @@
         "helmet": "^8.1.0",
         "httpolyglot": "0.1.2",
         "js-yaml": "4.1.1",
-        "socket.io": "^4.8.1",
+        "socket.io": "^4.8.2",
         "swagger-ui-express": "5.0.1"
     },
     "devDependencies": {
