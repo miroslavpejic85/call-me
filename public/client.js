@@ -101,6 +101,15 @@ let selectedDevices = {
 // Variable to store the interval ID
 let sessionTimerId = null;
 
+// Data channel and file transfer state
+let dataChannel = null;
+let incomingFileMeta = null;
+let incomingFileData = null;
+let fileInput = null;
+let pendingFileRecipient = null;
+let incomingFileBuffers = [];
+let incomingFileReceivedBytes = 0;
+
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
     userInfo = getUserInfo(userAgent);
@@ -108,6 +117,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     handleLocalStorage();
     await handleDirectJoin();
     handleListeners();
+    initializeFileSharing();
     await fetchRandomImage();
 });
 
@@ -526,6 +536,40 @@ function handleListeners() {
             }
         });
     }
+}
+
+// Initialize hidden file input and handlers for file sharing
+function initializeFileSharing() {
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        if (!dataChannel || dataChannel.readyState !== 'open') {
+            toast('Data channel not ready for file transfer', 'warning', 'top', 3000);
+            fileInput.value = '';
+            return;
+        }
+
+        if (!connectedUser || pendingFileRecipient !== connectedUser) {
+            toast('You can send files only to the active call participant', 'warning', 'top', 3000);
+            fileInput.value = '';
+            return;
+        }
+
+        try {
+            await sendFileOverDataChannel(file);
+        } catch (error) {
+            handleError('Failed to send file', error.message || error);
+        } finally {
+            fileInput.value = '';
+            pendingFileRecipient = null;
+        }
+    });
 }
 
 // Hide sidebar after user selection (on mobile)
@@ -1173,6 +1217,12 @@ function handleMediaStreamError(error) {
 function initializeConnection() {
     thisConnection = new RTCPeerConnection(config);
 
+    // Handle incoming data channels (file transfer, etc.)
+    thisConnection.ondatachannel = (event) => {
+        const channel = event.channel;
+        setupDataChannel(channel);
+    };
+
     // Add existing tracks from local stream
     stream.getTracks().forEach((track) => thisConnection.addTrack(track, stream));
 
@@ -1242,6 +1292,10 @@ async function offerCreate() {
     // Always initialize a fresh connection for new calls
     console.log('Creating new offer - initializing fresh connection');
     initializeConnection();
+
+    // Create data channel for file transfer on the offerer side
+    const channel = thisConnection.createDataChannel('fileTransfer');
+    setupDataChannel(channel);
 
     try {
         const offer = await thisConnection.createOffer();
@@ -1464,6 +1518,20 @@ function disconnectConnection() {
         thisConnection.close();
         thisConnection = null;
     }
+
+    if (dataChannel) {
+        try {
+            dataChannel.close();
+        } catch (e) {
+            console.warn('Error closing data channel', e);
+        }
+        dataChannel = null;
+    }
+
+    incomingFileMeta = null;
+    incomingFileData = null;
+    incomingFileBuffers = [];
+    incomingFileReceivedBytes = 0;
 }
 
 // Handle leaving the room
@@ -1661,6 +1729,131 @@ function sendMsg(message) {
     socket.emit('message', message);
 }
 
+// Set up a data channel for file transfer
+function setupDataChannel(channel) {
+    dataChannel = channel;
+
+    dataChannel.onopen = () => {
+        console.log('Data channel open for file transfer');
+    };
+
+    dataChannel.onclose = () => {
+        console.log('Data channel closed');
+    };
+
+    dataChannel.onerror = (error) => {
+        console.error('Data channel error:', error);
+        toast('Data channel error occurred', 'warning', 'top', 3000);
+    };
+
+    dataChannel.onmessage = async (event) => {
+        // Meta information is sent as JSON string, file as binary
+        if (typeof event.data === 'string') {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg && msg.type === 'file-meta') {
+                    incomingFileMeta = msg;
+                    incomingFileData = null;
+                    incomingFileBuffers = [];
+                    incomingFileReceivedBytes = 0;
+                    console.log('Received file meta:', msg);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Non-JSON data received on data channel:', event.data);
+            }
+        } else {
+            if (!incomingFileMeta) {
+                console.warn('Received binary data without file meta');
+                return;
+            }
+
+            let arrayBuffer;
+            if (event.data instanceof ArrayBuffer) {
+                arrayBuffer = event.data;
+            } else if (event.data instanceof Blob) {
+                arrayBuffer = await event.data.arrayBuffer();
+            } else {
+                console.warn('Unknown binary data type on data channel');
+                return;
+            }
+            // Accumulate chunks until full file is received
+            incomingFileBuffers.push(arrayBuffer);
+            incomingFileReceivedBytes += arrayBuffer.byteLength;
+
+            if (incomingFileReceivedBytes >= incomingFileMeta.size) {
+                const blob = new Blob(incomingFileBuffers, {
+                    type: incomingFileMeta.mime || 'application/octet-stream',
+                });
+                const url = URL.createObjectURL(blob);
+
+                addFileMessageToChat({
+                    from: connectedUser || 'Remote',
+                    name: incomingFileMeta.name,
+                    size: incomingFileMeta.size,
+                    url,
+                    isSelf: false,
+                });
+
+                incomingFileMeta = null;
+                incomingFileData = null;
+                incomingFileBuffers = [];
+                incomingFileReceivedBytes = 0;
+            }
+        }
+    };
+}
+
+// Send a file over the data channel to the connected peer
+async function sendFileOverDataChannel(file) {
+    if (!dataChannel || dataChannel.readyState !== 'open') {
+        throw new Error('Data channel is not open');
+    }
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+    if (file.size > MAX_FILE_SIZE) {
+        handleError('File too large. Maximum allowed size is 10 MB.');
+        return;
+    }
+
+    const meta = {
+        type: 'file-meta',
+        name: file.name,
+        size: file.size,
+        mime: file.type || 'application/octet-stream',
+    };
+
+    try {
+        dataChannel.send(JSON.stringify(meta));
+        const arrayBuffer = await file.arrayBuffer();
+
+        // Send the file in small chunks to avoid data channel send errors
+        const CHUNK_SIZE = 16 * 1024; // 16 KB
+        for (let offset = 0; offset < arrayBuffer.byteLength; offset += CHUNK_SIZE) {
+            if (!dataChannel || dataChannel.readyState !== 'open') {
+                throw new Error('Data channel closed during file transfer');
+            }
+            const chunk = arrayBuffer.slice(offset, offset + CHUNK_SIZE);
+            dataChannel.send(chunk);
+        }
+
+        const blobUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: meta.mime }));
+
+        addFileMessageToChat({
+            from: userName || 'Me',
+            name: file.name,
+            size: file.size,
+            url: blobUrl,
+            isSelf: true,
+        });
+
+        toast(`File "${file.name}" sent`, 'success', 'top', 3000);
+    } catch (error) {
+        console.error('Error sending file over data channel:', error);
+        handleError('Error sending file over data channel', error.message || error);
+    }
+}
+
 // Select user by value in the user list
 function renderUserList() {
     userList.innerHTML = '';
@@ -1708,7 +1901,36 @@ function renderUserList() {
         const nameSpan = document.createElement('span');
         nameSpan.textContent = user;
 
+        // Send file button
+        const sendFileBtn = document.createElement('button');
+        sendFileBtn.className = 'btn btn-custom btn-secondary btn-s fas fa-paperclip';
+        sendFileBtn.style.marginRight = '10px';
+        sendFileBtn.style.cursor = 'pointer';
+        sendFileBtn.setAttribute('data-toggle', 'tooltip');
+        sendFileBtn.setAttribute('data-placement', 'top');
+        sendFileBtn.title = `Send file to ${user}`;
+        sendFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!userSignedIn) return;
+
+            if (!connectedUser || connectedUser !== user || !remoteVideo.srcObject) {
+                toast('You can send files only to the user you are in a call with', 'warning', 'top', 3000);
+                return;
+            }
+
+            if (!dataChannel || dataChannel.readyState !== 'open') {
+                toast('Data channel not ready. Try again after the call is fully connected.', 'warning', 'top', 3000);
+                return;
+            }
+
+            pendingFileRecipient = user;
+            if (fileInput) {
+                fileInput.click();
+            }
+        });
+
         li.appendChild(actionBtnEl);
+        li.appendChild(sendFileBtn);
         li.appendChild(nameSpan);
 
         li.addEventListener('click', () => {
@@ -1851,6 +2073,52 @@ function addChatMessage(msg, isSelf = false) {
         // Show toast notification for new messages only if sidebar is not opened
         if (!userSidebar.classList.contains('active')) {
             toast(`New message from ${msg.from}`, 'info', 'top', 2000);
+        }
+    }
+}
+
+// Add a file message entry into the chat with download link
+function addFileMessageToChat({ from, name, size, url, isSelf }) {
+    if (!chatMessages) return;
+
+    const div = document.createElement('div');
+    div.className = 'chat-message file-message';
+    if (isSelf) {
+        div.classList.add('own-message');
+    }
+
+    const userSpan = document.createElement('span');
+    userSpan.className = 'chat-user';
+    userSpan.textContent = isSelf ? 'Me' : from;
+
+    const linkSpan = document.createElement('span');
+    linkSpan.className = 'chat-text';
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = name;
+    const sizeKb = Math.max(1, Math.round(size / 1024));
+    link.textContent = `${name} (${sizeKb} KB)`;
+    linkSpan.appendChild(document.createTextNode(' sent file: '));
+    linkSpan.appendChild(link);
+
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'chat-time';
+    timeSpan.textContent = formatChatTime(Date.now());
+
+    div.appendChild(userSpan);
+    div.appendChild(linkSpan);
+    div.appendChild(timeSpan);
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Handle unread message counter for received files
+    if (!isSelf && currentTab !== 'chat') {
+        unreadMessages++;
+        updateChatNotification();
+
+        if (!userSidebar.classList.contains('active')) {
+            toast(`New file from ${from}`, 'info', 'top', 2000);
         }
     }
 }
