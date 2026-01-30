@@ -109,6 +109,9 @@ let fileInput = null;
 let pendingFileRecipient = null;
 let incomingFileBuffers = [];
 let incomingFileReceivedBytes = 0;
+let outgoingTransfer = null;
+let incomingTransfer = null;
+let fileTransferStatusEl = null;
 
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
@@ -570,6 +573,14 @@ function initializeFileSharing() {
             pendingFileRecipient = null;
         }
     });
+
+    // Create global file transfer status container (top-center of the screen)
+    if (!fileTransferStatusEl) {
+        fileTransferStatusEl = document.createElement('div');
+        fileTransferStatusEl.id = 'fileTransferStatus';
+        fileTransferStatusEl.className = 'file-transfer-status';
+        document.body.appendChild(fileTransferStatusEl);
+    }
 }
 
 // Hide sidebar after user selection (on mobile)
@@ -1532,6 +1543,9 @@ function disconnectConnection() {
     incomingFileData = null;
     incomingFileBuffers = [];
     incomingFileReceivedBytes = 0;
+    outgoingTransfer = null;
+    incomingTransfer = null;
+    renderFileTransferStatus();
 }
 
 // Handle leaving the room
@@ -1756,7 +1770,36 @@ function setupDataChannel(channel) {
                     incomingFileData = null;
                     incomingFileBuffers = [];
                     incomingFileReceivedBytes = 0;
+                    incomingTransfer = {
+                        id: msg.id,
+                        name: msg.name,
+                        size: msg.size,
+                        receivedBytes: 0,
+                        cancelled: false,
+                    };
                     console.log('Received file meta:', msg);
+                    renderFileTransferStatus();
+                    return;
+                }
+
+                if (msg && msg.type === 'file-cancel') {
+                    console.log('Received file cancel:', msg);
+                    if (incomingTransfer && (!msg.id || msg.id === incomingTransfer.id)) {
+                        incomingTransfer.cancelled = true;
+                        incomingTransfer = null;
+                        incomingFileMeta = null;
+                        incomingFileData = null;
+                        incomingFileBuffers = [];
+                        incomingFileReceivedBytes = 0;
+                        toast('File transfer cancelled by remote', 'info', 'top', 3000);
+                        renderFileTransferStatus();
+                    }
+                    if (outgoingTransfer && (!msg.id || msg.id === outgoingTransfer.id)) {
+                        outgoingTransfer.cancelled = true;
+                        outgoingTransfer = null;
+                        toast('File transfer cancelled by remote', 'info', 'top', 3000);
+                        renderFileTransferStatus();
+                    }
                     return;
                 }
             } catch (e) {
@@ -1781,6 +1824,11 @@ function setupDataChannel(channel) {
             incomingFileBuffers.push(arrayBuffer);
             incomingFileReceivedBytes += arrayBuffer.byteLength;
 
+            if (incomingTransfer) {
+                incomingTransfer.receivedBytes = incomingFileReceivedBytes;
+                renderFileTransferStatus();
+            }
+
             if (incomingFileReceivedBytes >= incomingFileMeta.size) {
                 const blob = new Blob(incomingFileBuffers, {
                     type: incomingFileMeta.mime || 'application/octet-stream',
@@ -1799,6 +1847,8 @@ function setupDataChannel(channel) {
                 incomingFileData = null;
                 incomingFileBuffers = [];
                 incomingFileReceivedBytes = 0;
+                incomingTransfer = null;
+                renderFileTransferStatus();
             }
         }
     };
@@ -1816,14 +1866,26 @@ async function sendFileOverDataChannel(file) {
         return;
     }
 
+    const transferId = Date.now() + '-' + Math.random().toString(16).slice(2);
+
     const meta = {
         type: 'file-meta',
+        id: transferId,
         name: file.name,
         size: file.size,
         mime: file.type || 'application/octet-stream',
     };
 
     try {
+        outgoingTransfer = {
+            id: transferId,
+            name: file.name,
+            size: file.size,
+            sentBytes: 0,
+            cancelled: false,
+        };
+        renderFileTransferStatus();
+
         dataChannel.send(JSON.stringify(meta));
         const arrayBuffer = await file.arrayBuffer();
 
@@ -1833,8 +1895,21 @@ async function sendFileOverDataChannel(file) {
             if (!dataChannel || dataChannel.readyState !== 'open') {
                 throw new Error('Data channel closed during file transfer');
             }
+
+            if (!outgoingTransfer || outgoingTransfer.cancelled) {
+                outgoingTransfer = null;
+                renderFileTransferStatus();
+                return;
+            }
+
             const chunk = arrayBuffer.slice(offset, offset + CHUNK_SIZE);
             dataChannel.send(chunk);
+            if (outgoingTransfer) {
+                outgoingTransfer.sentBytes = offset + chunk.byteLength;
+                renderFileTransferStatus();
+            }
+
+            await waitForDataChannelDrain();
         }
 
         const blobUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: meta.mime }));
@@ -1848,10 +1923,33 @@ async function sendFileOverDataChannel(file) {
         });
 
         toast(`File "${file.name}" sent`, 'success', 'top', 3000);
+        outgoingTransfer = null;
+        renderFileTransferStatus();
     } catch (error) {
         console.error('Error sending file over data channel:', error);
         handleError('Error sending file over data channel', error.message || error);
+        outgoingTransfer = null;
+        renderFileTransferStatus();
     }
+}
+
+// Wait for data channel buffer to drain below a threshold
+async function waitForDataChannelDrain() {
+    if (!dataChannel || dataChannel.readyState !== 'open') return;
+
+    const MAX_BUFFERED_AMOUNT = 64 * 1024; // 64 KB
+    if (dataChannel.bufferedAmount < MAX_BUFFERED_AMOUNT) return;
+
+    await new Promise((resolve) => {
+        const check = () => {
+            if (!dataChannel || dataChannel.readyState !== 'open' || dataChannel.bufferedAmount < MAX_BUFFERED_AMOUNT) {
+                resolve();
+            } else {
+                setTimeout(check, 50);
+            }
+        };
+        check();
+    });
 }
 
 // Select user by value in the user list
@@ -2121,6 +2219,170 @@ function addFileMessageToChat({ from, name, size, url, isSelf }) {
             toast(`New file from ${from}`, 'info', 'top', 2000);
         }
     }
+}
+
+// Render file transfer status UI (outgoing + incoming)
+function renderFileTransferStatus() {
+    if (!fileTransferStatusEl) return;
+
+    fileTransferStatusEl.innerHTML = '';
+
+    const anyTransfer = outgoingTransfer || incomingTransfer;
+    if (!anyTransfer) {
+        fileTransferStatusEl.style.display = 'none';
+        return;
+    }
+
+    fileTransferStatusEl.style.display = 'block';
+
+    if (outgoingTransfer) {
+        const row = document.createElement('div');
+        row.className = 'file-transfer-row outgoing';
+
+        const info = document.createElement('div');
+        info.className = 'file-transfer-info';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'file-transfer-name';
+        nameEl.textContent = `Sending: ${outgoingTransfer.name}`;
+
+        const progressWrapper = document.createElement('div');
+        progressWrapper.className = 'file-transfer-progress';
+        const bar = document.createElement('div');
+        bar.className = 'file-transfer-progress-bar';
+        const percent = outgoingTransfer.size
+            ? Math.min(100, Math.round((outgoingTransfer.sentBytes / outgoingTransfer.size) * 100))
+            : 0;
+        bar.style.width = percent + '%';
+        progressWrapper.appendChild(bar);
+
+        const meta = document.createElement('div');
+        meta.className = 'file-transfer-meta';
+        const sentKb = Math.round(outgoingTransfer.sentBytes / 1024);
+        const totalKb = Math.round(outgoingTransfer.size / 1024);
+        meta.textContent = `${sentKb}/${totalKb} KB (${percent}%)`;
+
+        info.appendChild(nameEl);
+        info.appendChild(progressWrapper);
+        info.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'file-transfer-actions';
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-sm btn-danger';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleOutgoingFileCancel();
+        });
+        actions.appendChild(cancelBtn);
+
+        row.appendChild(info);
+        row.appendChild(actions);
+        fileTransferStatusEl.appendChild(row);
+    }
+
+    if (incomingTransfer) {
+        const row = document.createElement('div');
+        row.className = 'file-transfer-row incoming';
+
+        const info = document.createElement('div');
+        info.className = 'file-transfer-info';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'file-transfer-name';
+        nameEl.textContent = `Receiving: ${incomingTransfer.name}`;
+
+        const progressWrapper = document.createElement('div');
+        progressWrapper.className = 'file-transfer-progress';
+        const bar = document.createElement('div');
+        bar.className = 'file-transfer-progress-bar';
+        const percent = incomingTransfer.size
+            ? Math.min(100, Math.round((incomingTransfer.receivedBytes / incomingTransfer.size) * 100))
+            : 0;
+        bar.style.width = percent + '%';
+        progressWrapper.appendChild(bar);
+
+        const meta = document.createElement('div');
+        meta.className = 'file-transfer-meta';
+        const receivedKb = Math.round(incomingTransfer.receivedBytes / 1024);
+        const totalKb = Math.round(incomingTransfer.size / 1024);
+        meta.textContent = `${receivedKb}/${totalKb} KB (${percent}%)`;
+
+        info.appendChild(nameEl);
+        info.appendChild(progressWrapper);
+        info.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'file-transfer-actions';
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-sm btn-danger';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleIncomingFileCancel();
+        });
+        actions.appendChild(cancelBtn);
+
+        row.appendChild(info);
+        row.appendChild(actions);
+        fileTransferStatusEl.appendChild(row);
+    }
+}
+
+// Cancel outgoing file transfer (sender side)
+function handleOutgoingFileCancel() {
+    if (!outgoingTransfer) return;
+
+    const id = outgoingTransfer.id;
+
+    // Try to notify remote, but cancel locally even if this fails
+    if (dataChannel && dataChannel.readyState === 'open') {
+        try {
+            dataChannel.send(
+                JSON.stringify({
+                    type: 'file-cancel',
+                    id,
+                    by: 'sender',
+                })
+            );
+        } catch (e) {
+            console.warn('Error sending cancel message over data channel', e);
+        }
+    }
+
+    // Mark as cancelled; send loop will see this and stop
+    outgoingTransfer.cancelled = true;
+    toast('File transfer cancelled', 'info', 'top', 3000);
+}
+
+// Cancel incoming file transfer (receiver side)
+function handleIncomingFileCancel() {
+    if (!incomingTransfer) return;
+
+    const id = incomingTransfer.id;
+
+    if (dataChannel && dataChannel.readyState === 'open') {
+        try {
+            dataChannel.send(
+                JSON.stringify({
+                    type: 'file-cancel',
+                    id,
+                    by: 'receiver',
+                })
+            );
+        } catch (e) {
+            console.warn('Error sending cancel message over data channel', e);
+        }
+    }
+
+    incomingTransfer = null;
+    incomingFileMeta = null;
+    incomingFileData = null;
+    incomingFileBuffers = [];
+    incomingFileReceivedBytes = 0;
+    toast('File transfer cancelled', 'info', 'top', 3000);
+    renderFileTransferStatus();
 }
 
 function formatChatTime(ts) {
