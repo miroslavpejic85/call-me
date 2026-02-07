@@ -105,7 +105,7 @@ const app = express();
 i18n.configure({
     locales: ['en', 'es', 'fr', 'it', 'de'],
     defaultLocale: 'en',
-    directory: path.join(__dirname, '../locales'),
+    directory: path.join(__dirname, 'locales'),
     objectNotation: true,
     updateFiles: false,
     syncFiles: false,
@@ -213,7 +213,7 @@ app.get('/translations/:locale', (req, res) => {
             return res.status(400).json({ error: 'Invalid locale' });
         }
 
-        const translationPath = path.join(__dirname, '../locales', `${locale}.json`);
+        const translationPath = path.join(__dirname, 'locales', `${locale}.json`);
         const translations = JSON.parse(fs.readFileSync(translationPath, 'utf8'));
 
         res.json({
