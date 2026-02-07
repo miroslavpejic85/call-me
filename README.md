@@ -115,7 +115,7 @@ Easily integrate `Call-Me` into your website or application with a [simple ifram
 
 ```html
 <iframe
-    allow="camera; microphone; fullscreen; clipboard-read; clipboard-write; web-share; autoplay"
+    allow="camera; microphone; speaker-selection; fullscreen; clipboard-read; clipboard-write; web-share; autoplay"
     src="https://cme.mirotalk.com/"
     style="width: 100vw; height: 100vh; border: 0px;"
 ></iframe>
