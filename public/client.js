@@ -116,6 +116,7 @@ let fileTransferStatusEl = null;
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
     userInfo = getUserInfo(userAgent);
+    handleConfig();
     handleToolTip();
     handleLocalStorage();
     await handleDirectJoin();
@@ -150,21 +151,28 @@ function getUserInfo(userAgent) {
     };
 }
 
-// Handle config
-appTitle.innerText = app?.title || 'Call-me';
-appName.innerText = app?.name || 'Call-me';
-
-const elementsToHide = [
-    { condition: !(app?.showGithub ?? true), element: githubDiv },
-    { condition: !(app?.attribution ?? true), element: attribution },
-];
-
-// Hide elements based on conditions
-elementsToHide.forEach(({ condition, element }) => {
-    if (condition && element) {
-        elemDisplay(element, false);
+// Handle config - only set custom values if provided, otherwise let i18n handle it
+function handleConfig() {
+    // Only override if custom values are provided in config
+    if (app?.title && app.title !== 'Call-me') {
+        appTitle.innerText = app.title;
     }
-});
+    if (app?.name && app.name !== 'Call-me') {
+        appName.innerText = app.name;
+    }
+
+    // Hide elements based on config conditions
+    const elementsToHide = [
+        { condition: !(app?.showGithub ?? true), element: githubDiv },
+        { condition: !(app?.attribution ?? true), element: attribution },
+    ];
+
+    elementsToHide.forEach(({ condition, element }) => {
+        if (condition && element) {
+            elemDisplay(element, false);
+        }
+    });
+}
 
 async function checkHostPassword(maxRetries = 3, attempts = 0) {
     try {
@@ -495,6 +503,10 @@ function handleListeners() {
     emojiBtn.addEventListener('click', handleEmojiClick);
     saveChatBtn.addEventListener('click', handleSaveChatClick);
     clearChatBtn.addEventListener('click', handleClearChatClick);
+    // Language change event listener - reapply config after translation
+    window.addEventListener('languageChanged', () => {
+        handleConfig();
+    });
 
     // Sidebar toggle
     if (sidebarBtn && userSidebar) {

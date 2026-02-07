@@ -109,6 +109,9 @@ async function changeLanguage(locale) {
     if (languageSelect) {
         languageSelect.value = locale;
     }
+
+    // Dispatch custom event to notify other scripts that language has changed
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { locale } }));
 }
 
 /**
@@ -213,5 +216,92 @@ function showTranslatedAlert(titleKey, textKey, icon = 'info') {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initI18n);
 } else {
+    // DOM already loaded, initialize immediately
     initI18n();
+}
+
+// Re-translate when dynamic content is added (for mobile compatibility)
+if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) {
+                        // Element node
+                        translateElement(node);
+                    }
+                });
+            }
+        });
+    });
+
+    // Start observing after a short delay to allow initial setup
+    setTimeout(() => {
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }, 100);
+}
+
+/**
+ * Translate a single element and its children
+ * @param {Element} element - The element to translate
+ */
+function translateElement(element) {
+    // Translate data-i18n
+    if (element.hasAttribute && element.hasAttribute('data-i18n')) {
+        const key = element.getAttribute('data-i18n');
+        const translation = t(key);
+
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            if (element.type === 'button' || element.type === 'submit') {
+                element.value = translation;
+            } else {
+                element.placeholder = translation;
+            }
+        } else {
+            element.textContent = translation;
+        }
+    }
+
+    // Translate data-i18n-placeholder
+    if (element.hasAttribute && element.hasAttribute('data-i18n-placeholder')) {
+        const key = element.getAttribute('data-i18n-placeholder');
+        element.placeholder = t(key);
+    }
+
+    // Translate data-i18n-title
+    if (element.hasAttribute && element.hasAttribute('data-i18n-title')) {
+        const key = element.getAttribute('data-i18n-title');
+        element.title = t(key);
+    }
+
+    // Recursively translate children
+    if (element.querySelectorAll) {
+        element.querySelectorAll('[data-i18n]').forEach((child) => {
+            const key = child.getAttribute('data-i18n');
+            const translation = t(key);
+
+            if (child.tagName === 'INPUT' || child.tagName === 'TEXTAREA') {
+                if (child.type === 'button' || child.type === 'submit') {
+                    child.value = translation;
+                } else {
+                    child.placeholder = translation;
+                }
+            } else {
+                child.textContent = translation;
+            }
+        });
+
+        element.querySelectorAll('[data-i18n-placeholder]').forEach((child) => {
+            const key = child.getAttribute('data-i18n-placeholder');
+            child.placeholder = t(key);
+        });
+
+        element.querySelectorAll('[data-i18n-title]').forEach((child) => {
+            const key = child.getAttribute('data-i18n-title');
+            child.title = t(key);
+        });
+    }
 }
