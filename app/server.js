@@ -167,18 +167,7 @@ async function ngrokStart() {
     }
 }
 
-// Start the server and listen on the specified port
-server.listen(port, () => {
-    if (ngrokEnabled && ngrokAuthToken) {
-        ngrokStart();
-    } else {
-        log.info('Server', getServerConfig());
-    }
-});
-
-// Handle WebSocket connections
-io.on('connection', handleConnection);
-
+// Configure Express middleware BEFORE starting the server
 app.use(cors(corsOptions)); // Handle cors options
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
@@ -360,6 +349,18 @@ const isAuthorized = (req) => {
     const { authorization } = req.headers;
     return authorization === config.apiKeySecret;
 };
+
+// Start the server and listen on the specified port
+server.listen(port, () => {
+    if (ngrokEnabled && ngrokAuthToken) {
+        ngrokStart();
+    } else {
+        log.info('Server', getServerConfig());
+    }
+});
+
+// Handle WebSocket connections
+io.on('connection', handleConnection);
 
 // Function to handle individual WebSocket connections
 function handleConnection(socket) {
