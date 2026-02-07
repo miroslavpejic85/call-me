@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
+const i18n = require('i18n');
 const packageJson = require('../package.json');
 
 // Logs
@@ -99,6 +100,20 @@ const corsOptions = {
 
 // Create Express application
 const app = express();
+
+// Configure i18n
+i18n.configure({
+    locales: ['en', 'es', 'fr', 'it', 'de'],
+    defaultLocale: 'en',
+    directory: path.join(__dirname, '../locales'),
+    objectNotation: true,
+    updateFiles: false,
+    syncFiles: false,
+    api: {
+        __: 'translate',
+        __n: 'translateN',
+    },
+});
 
 // Server configurations
 const port = process.env.PORT || 4000;
@@ -196,6 +211,29 @@ app.get('/randomImage', async (req, res) => {
         res.send(data);
     } catch (error) {
         log.error('Error fetching image', error.message);
+    }
+});
+
+// Get translations for a specific language
+app.get('/translations/:locale', (req, res) => {
+    try {
+        const locale = req.params.locale || 'en';
+        const validLocales = ['en', 'es', 'fr', 'it', 'de'];
+
+        if (!validLocales.includes(locale)) {
+            return res.status(400).json({ error: 'Invalid locale' });
+        }
+
+        const translationPath = path.join(__dirname, '../locales', `${locale}.json`);
+        const translations = JSON.parse(fs.readFileSync(translationPath, 'utf8'));
+
+        res.json({
+            locale: locale,
+            translations: translations,
+        });
+    } catch (error) {
+        log.error('Error fetching translations', error.message);
+        res.status(500).json({ error: 'Error loading translations' });
     }
 });
 

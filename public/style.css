@@ -670,7 +670,7 @@ input {
     display: flex;
     top: 0;
     right: 0;
-    width: 350px;
+    width: 430px;
     height: 100%;
     background: rgba(30, 32, 36, 0.98);
     flex-direction: column;
@@ -700,11 +700,22 @@ input {
     padding: 0.5rem 1rem;
     background: rgba(24, 25, 28, 0.95);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 0.5rem;
+    overflow: visible;
 }
 
 .sidebar-tabs {
     display: flex;
     gap: 4px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.sidebar-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .sidebar-tab {
@@ -720,6 +731,14 @@ input {
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    overflow: visible;
+}
+
+.sidebar-tab span {
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .sidebar-tab:hover {
@@ -772,6 +791,8 @@ input {
     cursor: pointer;
     border-radius: 6px;
     transition: all 0.2s;
+    flex-shrink: 0;
+    min-width: 40px;
 }
 
 .btn-exit-sidebar:hover {
@@ -1175,15 +1196,21 @@ input {
 
     .sidebar-tabs {
         flex: 1;
-        justify-content: center;
+        justify-content: flex-start;
+        overflow-x: auto;
     }
 
     .sidebar-tab {
-        flex: 1;
+        flex: 0 0 auto;
         text-align: center;
-        padding: 8px 4px;
-        font-size: 0.75rem;
+        padding: 8px 8px;
+        font-size: 0.8rem;
         gap: 4px;
+        min-width: fit-content;
+    }
+
+    .sidebar-tab span {
+        display: inline;
     }
 
     .sidebar-tab i {

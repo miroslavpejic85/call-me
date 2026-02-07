@@ -66,15 +66,23 @@
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="card">
-                            <div class="card-header"><h1 id="appName">Call-me</h1></div>
+                            <div class="card-header"><h1 id="appName" data-i18n="appName">Call-me</h1></div>
                             <div class="card-body">
                                 <!-- Sign-in Form -->
                                 <div class="mb-3">
                                     <!-- Input field for entering the username -->
-                                    <input id="usernameIn" type="text" placeholder="Enter username" required />
+                                    <input
+                                        id="usernameIn"
+                                        type="text"
+                                        placeholder="Enter username"
+                                        data-i18n-placeholder="signIn.username"
+                                        required
+                                    />
                                 </div>
                                 <!-- Sign-in button -->
-                                <button id="signInBtn" class="btn btn-primary">Sign In</button>
+                                <button id="signInBtn" class="btn btn-primary" data-i18n="signIn.button">
+                                    Sign In
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -194,14 +202,14 @@
             <div class="user-sidebar-header">
                 <div class="sidebar-tabs">
                     <button id="usersTab" class="sidebar-tab active" data-tab="users">
-                        <i class="fas fa-users"></i> Users
+                        <i class="fas fa-users"></i> <span data-i18n="room.users">Users</span>
                     </button>
                     <button id="chatTab" class="sidebar-tab" data-tab="chat">
-                        <i class="fas fa-comments"></i> Chat
+                        <i class="fas fa-comments"></i> <span data-i18n="room.chat">Chat</span>
                         <span id="chatNotification" class="chat-notification hidden">0</span>
                     </button>
                     <button id="settingsTab" class="sidebar-tab" data-tab="settings">
-                        <i class="fas fa-cog"></i> Settings
+                        <i class="fas fa-cog"></i> <span data-i18n="settings.settings">Settings</span>
                     </button>
                 </div>
 
@@ -213,7 +221,13 @@
             <!-- Users Tab Content -->
             <div id="usersContent" class="tab-content active">
                 <div class="user-search-bar">
-                    <input type="text" id="userSearchInput" placeholder="Search users..." autocomplete="off" />
+                    <input
+                        type="text"
+                        id="userSearchInput"
+                        placeholder="Search users..."
+                        data-i18n-placeholder="room.searchUsers"
+                        autocomplete="off"
+                    />
                 </div>
                 <ul id="userList" class="user-list"></ul>
             </div>
@@ -222,11 +236,23 @@
             <div id="chatContent" class="tab-content mt-5">
                 <div id="chatMessages" class="chat-messages"></div>
                 <form id="chatForm" class="chat-form" autocomplete="off">
-                    <button type="button" id="emojiBtn" class="btn btn-emoji" title="Add emoji">
+                    <button
+                        type="button"
+                        id="emojiBtn"
+                        class="btn btn-emoji"
+                        title="Add emoji"
+                        data-i18n-title="chat.addEmoji"
+                    >
                         <i class="fas fa-smile"></i>
                     </button>
-                    <input id="chatInput" type="text" placeholder="Type a message..." autocomplete="off" />
-                    <button type="submit" class="btn btn-primary btn-send-chat">
+                    <input
+                        id="chatInput"
+                        type="text"
+                        placeholder="Type a message..."
+                        data-i18n-placeholder="chat.typeMessage"
+                        autocomplete="off"
+                    />
+                    <button type="submit" class="btn btn-primary btn-send-chat" data-i18n-title="chat.sendMessage">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </form>
@@ -236,6 +262,21 @@
             <!-- Settings Tab Content -->
             <div id="settingsContent" class="tab-content">
                 <div class="settings-section">
+                    <h3 class="settings-title"><i class="fas fa-globe"></i> Language</h3>
+
+                    <div class="setting-group">
+                        <label for="languageSelect" class="setting-label">
+                            <i class="fas fa-language"></i> Select Language
+                        </label>
+                        <select id="languageSelect" class="setting-select">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                        </select>
+                    </div>
+
                     <h3 class="settings-title"><i class="fas fa-video"></i> Media Devices</h3>
 
                     <div class="setting-group">
@@ -265,20 +306,20 @@
 
                     <div class="settings-actions">
                         <button id="testDevicesBtn" class="btn btn-success btn-test-devices">
-                            <i class="fas fa-play"></i> Test Devices
+                            <i class="fas fa-play"></i> <span data-i18n="settings.testDevices">Test Devices</span>
                         </button>
                         <button id="refreshDevicesBtn" class="btn btn-secondary btn-refresh-devices">
-                            <i class="fas fa-sync"></i> Refresh
+                            <i class="fas fa-sync"></i> <span data-i18n="settings.refresh">Refresh</span>
                         </button>
                     </div>
 
                     <h3 class="settings-title"><i class="fas fa-comments"></i> Chat Settings</h3>
                     <div class="settings-actions">
                         <button id="saveChatBtn" class="btn btn-success btn-save-chat">
-                            <i class="fas fa-download"></i> Save Messages
+                            <i class="fas fa-download"></i> <span data-i18n="settings.saveMessages">Save Messages</span>
                         </button>
                         <button id="clearChatBtn" class="btn btn-danger btn-clear-chat">
-                            <i class="fas fa-trash"></i> Clear All
+                            <i class="fas fa-trash"></i> <span data-i18n="settings.clearAll">Clear All</span>
                         </button>
                     </div>
                 </div>
@@ -288,6 +329,7 @@
         <!-- JavaScript libraries for WebSocket and custom client code -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="config.js"></script>
+        <script src="i18n.js"></script>
         <script src="client.js"></script>
 
         <!-- Include UaParser -->

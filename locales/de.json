@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - Sofortige Videoanrufe",
+    "appDescription": "Ihre erste Wahl für sofortige Videoanrufe!",
+    "signIn": {
+        "title": "Anmelden",
+        "username": "Benutzernamen eingeben",
+        "button": "Anmelden",
+        "enterUsername": "Bitte geben Sie Ihren Benutzernamen ein"
+    },
+    "room": {
+        "sessionTime": "Sitzungszeit",
+        "localUsername": "Sie",
+        "remoteUsername": "Remote-Benutzer",
+        "waiting": "Warte darauf, dass jemand beitritt...",
+        "connecting": "Verbinden...",
+        "userJoined": "__username__ ist dem Anruf beigetreten",
+        "userLeft": "__username__ hat den Anruf verlassen",
+        "users": "Benutzer",
+        "chat": "Chat",
+        "searchUsers": "Benutzer suchen..."
+    },
+    "controls": {
+        "microphone": "Mikrofon",
+        "camera": "Kamera",
+        "screenShare": "Bildschirm Teilen",
+        "endCall": "Anruf Beenden",
+        "settings": "Einstellungen",
+        "fullscreen": "Vollbild"
+    },
+    "messages": {
+        "microphoneEnabled": "Mikrofon aktiviert",
+        "microphoneDisabled": "Mikrofon deaktiviert",
+        "cameraEnabled": "Kamera aktiviert",
+        "cameraDisabled": "Kamera deaktiviert",
+        "screenShareStarted": "Bildschirmfreigabe gestartet",
+        "screenShareStopped": "Bildschirmfreigabe beendet",
+        "callEnded": "Anruf beendet",
+        "connectionFailed": "Verbindung fehlgeschlagen",
+        "permissionDenied": "Berechtigung verweigert",
+        "error": "Ein Fehler ist aufgetreten",
+        "copied": "In die Zwischenablage kopiert",
+        "invalidPassword": "Ungültiges Passwort"
+    },
+    "errors": {
+        "noUsername": "Benutzername erforderlich",
+        "connectionLost": "Verbindung verloren",
+        "mediaDevices": "Zugriff auf Mediengeräte nicht möglich",
+        "noSupport": "Ihr Browser unterstützt diese Funktion nicht"
+    },
+    "settings": {
+        "language": "Sprache",
+        "selectLanguage": "Sprache Auswählen",
+        "audioInput": "Mikrofon",
+        "videoInput": "Kamera",
+        "audioOutput": "Lautsprecher",
+        "resolution": "Videoauflösung",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "settings": "Einstellungen",
+        "testDevices": "Geräte Testen",
+        "refresh": "Aktualisieren",
+        "saveMessages": "Nachrichten Speichern",
+        "clearAll": "Alles Löschen"
+    },
+    "chat": {
+        "addEmoji": "Emoji hinzufügen",
+        "typeMessage": "Nachricht eingeben...",
+        "sendMessage": "Nachricht senden"
+    },
+    "api": {
+        "unauthorized": "Nicht autorisierter Zugriff",
+        "invalidApiKey": "Ungültiger API-Schlüssel",
+        "serverError": "Serverfehler",
+        "notFound": "Ressource nicht gefunden"
+    }
+}

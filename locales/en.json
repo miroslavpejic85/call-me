@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - Instant Video Calls",
+    "appDescription": "Your Go-To for Instant Video Calls!",
+    "signIn": {
+        "title": "Sign In",
+        "username": "Enter username",
+        "button": "Sign In",
+        "enterUsername": "Please enter your username"
+    },
+    "room": {
+        "sessionTime": "Session Time",
+        "localUsername": "You",
+        "remoteUsername": "Remote User",
+        "waiting": "Waiting for someone to join...",
+        "connecting": "Connecting...",
+        "userJoined": "__username__ joined the call",
+        "userLeft": "__username__ left the call",
+        "users": "Users",
+        "chat": "Chat",
+        "searchUsers": "Search users..."
+    },
+    "controls": {
+        "microphone": "Microphone",
+        "camera": "Camera",
+        "screenShare": "Share Screen",
+        "endCall": "End Call",
+        "settings": "Settings",
+        "fullscreen": "Fullscreen"
+    },
+    "messages": {
+        "microphoneEnabled": "Microphone enabled",
+        "microphoneDisabled": "Microphone disabled",
+        "cameraEnabled": "Camera enabled",
+        "cameraDisabled": "Camera disabled",
+        "screenShareStarted": "Screen sharing started",
+        "screenShareStopped": "Screen sharing stopped",
+        "callEnded": "Call ended",
+        "connectionFailed": "Connection failed",
+        "permissionDenied": "Permission denied",
+        "error": "An error occurred",
+        "copied": "Copied to clipboard",
+        "invalidPassword": "Invalid password"
+    },
+    "errors": {
+        "noUsername": "Username is required",
+        "connectionLost": "Connection lost",
+        "mediaDevices": "Could not access media devices",
+        "noSupport": "Your browser does not support this feature"
+    },
+    "settings": {
+        "language": "Language",
+        "selectLanguage": "Select Language",
+        "audioInput": "Microphone",
+        "videoInput": "Camera",
+        "audioOutput": "Speaker",
+        "resolution": "Video Resolution",
+        "save": "Save",
+        "cancel": "Cancel",
+        "settings": "Settings",
+        "testDevices": "Test Devices",
+        "refresh": "Refresh",
+        "saveMessages": "Save Messages",
+        "clearAll": "Clear All"
+    },
+    "chat": {
+        "addEmoji": "Add emoji",
+        "typeMessage": "Type a message...",
+        "sendMessage": "Send message"
+    },
+    "api": {
+        "unauthorized": "Unauthorized access",
+        "invalidApiKey": "Invalid API key",
+        "serverError": "Server error",
+        "notFound": "Resource not found"
+    }
+}
