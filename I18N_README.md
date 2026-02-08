@@ -9,6 +9,12 @@ The Call-me application now supports multiple languages! 🌍
 - 🇫🇷 French (fr)
 - 🇮🇹 Italian (it)
 - 🇩🇪 German (de)
+- 🇧🇷 Portuguese (pt)
+- 🇷🇺 Russian (ru)
+- 🇸🇦 Arabic (ar)
+- 🇮🇳 Hindi (hi)
+- 🇨🇳 Chinese (zh)
+- 🇯🇵 Japanese (ja)
 
 ## Features
 
@@ -17,6 +23,7 @@ The Call-me application now supports multiple languages! 🌍
 - ✅ Real-time language switching
 - ✅ JSON-based translations
 - ✅ RESTful translations API
+- ✅ Dynamic locale discovery (no hardcoded locale list)
 
 ## Usage
 
@@ -46,6 +53,9 @@ const message = t('room.userJoined', { username: 'John' }); // Returns: "John jo
 **API Endpoint:**
 
 ```bash
+GET /locales
+# Example: GET /locales
+
 GET /translations/:locale
 # Example: GET /translations/es
 ```
@@ -53,12 +63,12 @@ GET /translations/:locale
 ## Files Structure
 
 ```
-locales/
+app/locales/
 ├── en.json  # English translations
 ├── es.json  # Spanish translations
 ├── fr.json  # French translations
 ├── it.json  # Italian translations
-└── de.json  # German translations
+└── ...      # Other locales (pt, ru, ar, hi, zh, ja)
 
 public/
 └── i18n.js  # Client-side i18n library
@@ -70,6 +80,9 @@ doc/
 ## Quick Test
 
 ```bash
+# List supported locales (derived from app/locales/*.json)
+curl http://localhost:8000/locales
+
 # Test English translations
 curl http://localhost:8000/translations/en
 
