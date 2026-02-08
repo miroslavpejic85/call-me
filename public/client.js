@@ -182,6 +182,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
         if (config.isPasswordRequired) {
             // Show prompt for the password
             const { value: password } = await Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
                 title: 'Host Protected',
                 text: 'Please enter the host password:',
                 input: 'password',
@@ -216,6 +218,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
 
             if (validationResult.success) {
                 await Swal.fire({
+                    heightAuto: false,
+                    scrollbarPadding: false,
                     position: 'top',
                     icon: 'success',
                     title: 'Access Granted',
@@ -228,6 +232,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                 attempts++;
                 if (attempts < maxRetries) {
                     await Swal.fire({
+                        heightAuto: false,
+                        scrollbarPadding: false,
                         position: 'top',
                         icon: 'error',
                         title: 'Invalid Password',
@@ -237,6 +243,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                     await checkHostPassword(maxRetries, attempts);
                 } else {
                     await Swal.fire({
+                        heightAuto: false,
+                        scrollbarPadding: false,
                         position: 'top',
                         icon: 'warning',
                         title: 'Too Many Attempts',
@@ -251,6 +259,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
     } catch (error) {
         console.error('Error:', error);
         Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
             position: 'top',
             icon: 'error',
             title: 'Error',
@@ -460,12 +470,12 @@ async function handleEnumerateDevices() {
         const videoInputs = devices.filter((device) => device.kind === 'videoinput');
         if (videoInputs.length > 1 && userInfo.device.isMobile) {
             swapCameraBtn.addEventListener('click', swapCamera);
-            elemDisplay(swapCameraBtn, true, 'inline');
+            elemDisplay(swapCameraBtn, true, 'inline-flex');
         }
 
         // Check if screen sharing is supported
         if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-            elemDisplay(screenShareBtn, true, 'inline');
+            elemDisplay(screenShareBtn, true, 'inline-flex');
         } else {
             elemDisplay(screenShareBtn, false);
             console.log('Screen sharing not supported in this browser');
@@ -1217,6 +1227,8 @@ function handleMediaStreamError(error) {
     }
 
     Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
         position: 'top',
         icon: 'warning',
         html: errorMessage,
@@ -1343,6 +1355,8 @@ function offerAccept(data) {
     }
 
     Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
         position: 'top',
         imageUrl: 'assets/ring.png',
         imageWidth: 284,
@@ -1617,17 +1631,15 @@ function handleLeave(disconnect = true) {
 
 // Display toast messages
 function toast(message, icon = 'info', position = 'top', timer = 3000) {
-    const Toast = Swal.mixin({
-        toast: true,
-        position: position,
-        icon: icon,
-        showConfirmButton: false,
+    Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
+        position,
+        icon,
+        html: message,
+        timer,
         timerProgressBar: true,
-        timer: timer,
-    });
-    Toast.fire({
-        icon: icon,
-        title: message,
+        showConfirmButton: false,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
     });
@@ -1638,6 +1650,8 @@ function handleError(message, error = false, position = 'top', timer = 6000) {
     if (error) console.error(error);
 
     Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
         position,
         icon: 'warning',
         html: message,
@@ -1653,6 +1667,8 @@ function handleError(message, error = false, position = 'top', timer = 6000) {
 // Display Message to user
 function popupMsg(message, position = 'top', timer = 4000) {
     Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
         position,
         html: message,
         timerProgressBar: true,
@@ -1767,8 +1783,21 @@ function setupDataChannel(channel) {
         console.log('Data channel closed');
     };
 
-    dataChannel.onerror = (error) => {
-        console.error('Data channel error:', error);
+    dataChannel.onerror = (event) => {
+        // Some browsers emit an error event during/after close (e.g. "User-Initiated Abort, reason=Close called").
+        // That's expected during hang-up/teardown and shouldn't be shown to the user.
+        const rtcError = event?.error;
+        const message = (rtcError && (rtcError.message || rtcError.reason)) || '';
+        const isClosingOrClosed = dataChannel?.readyState && dataChannel.readyState !== 'open';
+        const isBenignCloseError =
+            rtcError?.name === 'OperationError' && /close called|user-initiated abort|abort/i.test(String(message));
+
+        if (isClosingOrClosed || isBenignCloseError) {
+            console.debug('Ignoring data channel close-related error:', event);
+            return;
+        }
+
+        console.error('Data channel error:', event);
         toast('Data channel error occurred', 'warning', 'top', 3000);
     };
 
@@ -1985,7 +2014,8 @@ function renderUserList() {
 
         if (isInActiveCall) {
             // Show hang-up button only if in active call (user has answered)
-            actionBtnEl.className = 'btn btn-custom btn-danger btn-s hangup-user-btn fas fa-phone-slash';
+            actionBtnEl.className = 'btn btn-custom btn-danger btn-s hangup-user-btn';
+            actionBtnEl.innerHTML = '<i class="fas fa-phone-slash"></i>';
             actionBtnEl.title = `Hang up call with ${user}`;
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1998,7 +2028,8 @@ function renderUserList() {
             });
         } else {
             // Show call button if not in active call
-            actionBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn fas fa-phone';
+            actionBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn';
+            actionBtnEl.innerHTML = '<i class="fas fa-phone"></i>';
             actionBtnEl.title = `Call ${user}`;
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -2013,7 +2044,8 @@ function renderUserList() {
 
         // Send file button
         const sendFileBtn = document.createElement('button');
-        sendFileBtn.className = 'btn btn-custom btn-secondary btn-s fas fa-paperclip';
+        sendFileBtn.className = 'btn btn-custom btn-secondary btn-s';
+        sendFileBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
         sendFileBtn.style.marginRight = '10px';
         sendFileBtn.style.cursor = 'pointer';
         sendFileBtn.setAttribute('data-toggle', 'tooltip');
@@ -2538,6 +2570,8 @@ function handleClearChatClick() {
     }
 
     Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
         position: 'center',
         icon: 'question',
         title: 'Clear Chat Messages',

@@ -4,6 +4,7 @@ const util = require('util');
 const colors = require('colors');
 colors.enable(); // colors.disable();
 
+const LOGS_DEBUG = process.env.LOGS_DEBUG !== undefined ? process.env.LOGS_DEBUG === 'true' : true;
 const LOGS_JSON = process.env.LOGS_JSON ? process.env.LOGS_JSON === 'true' : false;
 const LOGS_JSON_PRETTY = process.env.LOGS_JSON_PRETTY ? process.env.LOGS_JSON_PRETTY === 'true' : false;
 
@@ -15,7 +16,7 @@ const options = {
 module.exports = class Logs {
     constructor(appName = 'call-me') {
         this.appName = colors.yellow(appName);
-        this.debugOn = process.env.DEBUG !== undefined ? process.env.DEBUG === 'true' : true;
+        this.debugOn = LOGS_DEBUG;
         this.timeStart = Date.now();
         this.timeEnd = null;
         this.timeElapsedMs = null;

@@ -249,6 +249,8 @@ function updateCustomTranslations() {
 function showTranslatedAlert(titleKey, textKey, icon = 'info') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
             title: t(titleKey),
             text: t(textKey),
             icon: icon,
