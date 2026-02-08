@@ -26,6 +26,26 @@ const PUBLIC_DIR = path.join(__dirname, '../', 'public');
 // Home page/client
 const HOME = path.join(PUBLIC_DIR, '/index.html');
 
+// Locales directory location
+const LOCALES_DIR = path.join(__dirname, 'locales');
+
+function getAvailableLocales() {
+    try {
+        return fs
+            .readdirSync(LOCALES_DIR, { withFileTypes: true })
+            .filter((dirent) => dirent.isFile() && dirent.name.endsWith('.json'))
+            .map((dirent) => path.basename(dirent.name, '.json'))
+            .filter(Boolean)
+            .sort();
+    } catch (error) {
+        log.warn('Unable to read locales directory', {
+            directory: LOCALES_DIR,
+            error: error.message,
+        });
+        return [];
+    }
+}
+
 // Map to store connected users
 const users = new Map();
 
@@ -101,19 +121,49 @@ const corsOptions = {
 // Create Express application
 const app = express();
 
-// Configure i18n
-i18n.configure({
-    locales: ['en', 'es', 'fr', 'it', 'de'],
-    defaultLocale: 'en',
-    directory: path.join(__dirname, 'locales'),
-    objectNotation: true,
-    updateFiles: false,
-    syncFiles: false,
-    api: {
-        __: 'translate',
-        __n: 'translateN',
-    },
-});
+function configureI18n() {
+    const locales = getAvailableLocales();
+    const effectiveLocales = locales.length > 0 ? locales : ['en'];
+    const defaultLocale = effectiveLocales.includes('en') ? 'en' : effectiveLocales[0] || 'en';
+
+    i18n.configure({
+        locales: effectiveLocales,
+        defaultLocale: defaultLocale,
+        directory: LOCALES_DIR,
+        objectNotation: true,
+        updateFiles: false,
+        syncFiles: false,
+        api: {
+            __: 'translate',
+            __n: 'translateN',
+        },
+    });
+
+    return { locales: effectiveLocales, defaultLocale };
+}
+
+// Configure i18n (dynamic locales from app/locales/*.json)
+configureI18n();
+
+// Optional: watch locales folder and reconfigure automatically (no restart)
+if (process.env.I18N_WATCH === 'true') {
+    try {
+        let debounceTimer;
+        fs.watch(LOCALES_DIR, { persistent: false }, () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const state = configureI18n();
+                log.info('i18n reconfigured', state);
+            }, 250);
+        });
+        log.info('i18n watch enabled', { directory: LOCALES_DIR });
+    } catch (error) {
+        log.warn('Unable to watch locales directory', {
+            directory: LOCALES_DIR,
+            error: error.message,
+        });
+    }
+}
 
 // Server configurations
 const port = process.env.PORT || 4000;
@@ -203,17 +253,26 @@ app.get('/randomImage', async (req, res) => {
     }
 });
 
+// List available locales (derived from app/locales/*.json)
+app.get('/locales', (req, res) => {
+    const locales = getAvailableLocales();
+    res.json({ locales: locales.length > 0 ? locales : ['en'] });
+});
+
 // Get translations for a specific language
 app.get('/translations/:locale', (req, res) => {
     try {
-        const locale = req.params.locale || 'en';
-        const validLocales = ['en', 'es', 'fr', 'it', 'de'];
+        const locale = String(req.params.locale || 'en').toLowerCase();
+        const validLocales = getAvailableLocales();
 
-        if (!validLocales.includes(locale)) {
+        if (validLocales.length > 0 && !validLocales.includes(locale)) {
             return res.status(400).json({ error: 'Invalid locale' });
         }
 
-        const translationPath = path.join(__dirname, 'locales', `${locale}.json`);
+        const translationPath = path.join(LOCALES_DIR, `${locale}.json`);
+        if (!fs.existsSync(translationPath)) {
+            return res.status(400).json({ error: 'Invalid locale' });
+        }
         const translations = JSON.parse(fs.readFileSync(translationPath, 'utf8'));
 
         res.json({

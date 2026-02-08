@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - 即时视频通话",
+    "appDescription": "即时视频通话的首选！",
+    "signIn": {
+        "title": "登录",
+        "username": "请输入用户名",
+        "button": "登录",
+        "enterUsername": "请输入您的用户名"
+    },
+    "room": {
+        "sessionTime": "会话时长",
+        "localUsername": "你",
+        "remoteUsername": "远端用户",
+        "waiting": "等待有人加入...",
+        "connecting": "正在连接...",
+        "userJoined": "__username__ 加入了通话",
+        "userLeft": "__username__ 离开了通话",
+        "users": "用户",
+        "chat": "聊天",
+        "searchUsers": "搜索用户..."
+    },
+    "controls": {
+        "microphone": "麦克风",
+        "camera": "摄像头",
+        "screenShare": "共享屏幕",
+        "endCall": "结束通话",
+        "settings": "设置",
+        "fullscreen": "全屏"
+    },
+    "messages": {
+        "microphoneEnabled": "麦克风已开启",
+        "microphoneDisabled": "麦克风已关闭",
+        "cameraEnabled": "摄像头已开启",
+        "cameraDisabled": "摄像头已关闭",
+        "screenShareStarted": "已开始共享屏幕",
+        "screenShareStopped": "已停止共享屏幕",
+        "callEnded": "通话已结束",
+        "connectionFailed": "连接失败",
+        "permissionDenied": "权限被拒绝",
+        "error": "发生错误",
+        "copied": "已复制到剪贴板",
+        "invalidPassword": "密码无效"
+    },
+    "errors": {
+        "noUsername": "必须填写用户名",
+        "connectionLost": "连接已断开",
+        "mediaDevices": "无法访问媒体设备",
+        "noSupport": "您的浏览器不支持此功能"
+    },
+    "settings": {
+        "language": "语言",
+        "selectLanguage": "选择语言",
+        "audioInput": "麦克风",
+        "videoInput": "摄像头",
+        "audioOutput": "扬声器",
+        "resolution": "视频分辨率",
+        "save": "保存",
+        "cancel": "取消",
+        "settings": "设置",
+        "testDevices": "测试设备",
+        "refresh": "刷新",
+        "saveMessages": "保存消息",
+        "clearAll": "全部清除"
+    },
+    "chat": {
+        "addEmoji": "添加表情",
+        "typeMessage": "输入消息...",
+        "sendMessage": "发送消息"
+    },
+    "api": {
+        "unauthorized": "未授权访问",
+        "invalidApiKey": "API 密钥无效",
+        "serverError": "服务器错误",
+        "notFound": "资源未找到"
+    }
+}

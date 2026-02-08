@@ -6,7 +6,39 @@ const i18n = {
     currentLocale: 'en',
     translations: {},
     defaultLocale: 'en',
+    availableLocales: [],
 };
+
+async function fetchAvailableLocales() {
+    try {
+        const response = await fetch('/locales');
+        if (!response.ok) throw new Error('Failed to fetch locales');
+        const data = await response.json();
+        if (data && Array.isArray(data.locales) && data.locales.length > 0) {
+            return data.locales;
+        }
+    } catch (error) {
+        console.warn('Unable to fetch available locales, using fallback list', error);
+    }
+    return ['en', 'es', 'fr', 'it', 'de'];
+}
+
+function getLocaleLabel(locale) {
+    const labels = {
+        en: '🇬🇧 English',
+        es: '🇪🇸 Español',
+        fr: '🇫🇷 Français',
+        it: '🇮🇹 Italiano',
+        de: '🇩🇪 Deutsch',
+        pt: '🇧🇷 Português',
+        ru: '🇷🇺 Русский',
+        ar: '🇸🇦 العربية',
+        hi: '🇮🇳 हिन्दी',
+        zh: '🇨🇳 中文',
+        ja: '🇯🇵 日本語',
+    };
+    return labels[locale] || locale;
+}
 
 /**
  * Initialize i18n
@@ -15,7 +47,8 @@ async function initI18n() {
     // Get saved locale from localStorage or use browser language or default
     const savedLocale = localStorage.getItem('locale');
     const browserLocale = navigator.language.split('-')[0]; // Get 'en' from 'en-US'
-    const supportedLocales = ['en', 'es', 'fr', 'it', 'de'];
+    const supportedLocales = await fetchAvailableLocales();
+    i18n.availableLocales = supportedLocales;
 
     // Determine which locale to use
     if (savedLocale && supportedLocales.includes(savedLocale)) {
@@ -120,6 +153,17 @@ async function changeLanguage(locale) {
 function setupLanguageSelector() {
     const languageSelect = document.getElementById('languageSelect');
     if (languageSelect) {
+        // Rebuild options dynamically
+        const locales =
+            Array.isArray(i18n.availableLocales) && i18n.availableLocales.length ? i18n.availableLocales : ['en'];
+        languageSelect.innerHTML = '';
+        locales.forEach((locale) => {
+            const option = document.createElement('option');
+            option.value = locale;
+            option.textContent = getLocaleLabel(locale);
+            languageSelect.appendChild(option);
+        });
+
         // Set current locale
         languageSelect.value = i18n.currentLocale;
 

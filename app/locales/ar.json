@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - مكالمات فيديو فورية",
+    "appDescription": "خيارك للمكالمات المرئية الفورية!",
+    "signIn": {
+        "title": "تسجيل الدخول",
+        "username": "أدخل اسم المستخدم",
+        "button": "تسجيل الدخول",
+        "enterUsername": "يرجى إدخال اسم المستخدم"
+    },
+    "room": {
+        "sessionTime": "مدة الجلسة",
+        "localUsername": "أنت",
+        "remoteUsername": "مستخدم بعيد",
+        "waiting": "بانتظار انضمام شخص ما...",
+        "connecting": "جارٍ الاتصال...",
+        "userJoined": "انضم __username__ إلى المكالمة",
+        "userLeft": "غادر __username__ المكالمة",
+        "users": "المستخدمون",
+        "chat": "الدردشة",
+        "searchUsers": "ابحث عن مستخدمين..."
+    },
+    "controls": {
+        "microphone": "الميكروفون",
+        "camera": "الكاميرا",
+        "screenShare": "مشاركة الشاشة",
+        "endCall": "إنهاء المكالمة",
+        "settings": "الإعدادات",
+        "fullscreen": "ملء الشاشة"
+    },
+    "messages": {
+        "microphoneEnabled": "تم تفعيل الميكروفون",
+        "microphoneDisabled": "تم تعطيل الميكروفون",
+        "cameraEnabled": "تم تفعيل الكاميرا",
+        "cameraDisabled": "تم تعطيل الكاميرا",
+        "screenShareStarted": "بدأت مشاركة الشاشة",
+        "screenShareStopped": "توقفت مشاركة الشاشة",
+        "callEnded": "انتهت المكالمة",
+        "connectionFailed": "فشل الاتصال",
+        "permissionDenied": "تم رفض الإذن",
+        "error": "حدث خطأ",
+        "copied": "تم النسخ إلى الحافظة",
+        "invalidPassword": "كلمة مرور غير صحيحة"
+    },
+    "errors": {
+        "noUsername": "اسم المستخدم مطلوب",
+        "connectionLost": "انقطع الاتصال",
+        "mediaDevices": "تعذر الوصول إلى أجهزة الوسائط",
+        "noSupport": "متصفحك لا يدعم هذه الميزة"
+    },
+    "settings": {
+        "language": "اللغة",
+        "selectLanguage": "اختر اللغة",
+        "audioInput": "الميكروفون",
+        "videoInput": "الكاميرا",
+        "audioOutput": "مكبر الصوت",
+        "resolution": "دقة الفيديو",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "settings": "الإعدادات",
+        "testDevices": "اختبار الأجهزة",
+        "refresh": "تحديث",
+        "saveMessages": "حفظ الرسائل",
+        "clearAll": "مسح الكل"
+    },
+    "chat": {
+        "addEmoji": "إضافة إيموجي",
+        "typeMessage": "اكتب رسالة...",
+        "sendMessage": "إرسال رسالة"
+    },
+    "api": {
+        "unauthorized": "وصول غير مصرح به",
+        "invalidApiKey": "مفتاح API غير صالح",
+        "serverError": "خطأ في الخادم",
+        "notFound": "المورد غير موجود"
+    }
+}

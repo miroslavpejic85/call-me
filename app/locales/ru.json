@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me — мгновенные видеозвонки",
+    "appDescription": "Ваш выбор для мгновенных видеозвонков!",
+    "signIn": {
+        "title": "Войти",
+        "username": "Введите имя пользователя",
+        "button": "Войти",
+        "enterUsername": "Пожалуйста, введите имя пользователя"
+    },
+    "room": {
+        "sessionTime": "Время сессии",
+        "localUsername": "Вы",
+        "remoteUsername": "Удалённый пользователь",
+        "waiting": "Ожидание подключения...",
+        "connecting": "Подключение...",
+        "userJoined": "__username__ присоединился к звонку",
+        "userLeft": "__username__ покинул звонок",
+        "users": "Пользователи",
+        "chat": "Чат",
+        "searchUsers": "Поиск пользователей..."
+    },
+    "controls": {
+        "microphone": "Микрофон",
+        "camera": "Камера",
+        "screenShare": "Демонстрация экрана",
+        "endCall": "Завершить звонок",
+        "settings": "Настройки",
+        "fullscreen": "Полный экран"
+    },
+    "messages": {
+        "microphoneEnabled": "Микрофон включён",
+        "microphoneDisabled": "Микрофон выключен",
+        "cameraEnabled": "Камера включена",
+        "cameraDisabled": "Камера выключена",
+        "screenShareStarted": "Демонстрация экрана началась",
+        "screenShareStopped": "Демонстрация экрана остановлена",
+        "callEnded": "Звонок завершён",
+        "connectionFailed": "Не удалось подключиться",
+        "permissionDenied": "Доступ запрещён",
+        "error": "Произошла ошибка",
+        "copied": "Скопировано в буфер обмена",
+        "invalidPassword": "Неверный пароль"
+    },
+    "errors": {
+        "noUsername": "Имя пользователя обязательно",
+        "connectionLost": "Соединение потеряно",
+        "mediaDevices": "Не удалось получить доступ к медиа-устройствам",
+        "noSupport": "Ваш браузер не поддерживает эту функцию"
+    },
+    "settings": {
+        "language": "Язык",
+        "selectLanguage": "Выберите язык",
+        "audioInput": "Микрофон",
+        "videoInput": "Камера",
+        "audioOutput": "Динамик",
+        "resolution": "Разрешение видео",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "settings": "Настройки",
+        "testDevices": "Проверить устройства",
+        "refresh": "Обновить",
+        "saveMessages": "Сохранить сообщения",
+        "clearAll": "Очистить всё"
+    },
+    "chat": {
+        "addEmoji": "Добавить эмодзи",
+        "typeMessage": "Введите сообщение...",
+        "sendMessage": "Отправить сообщение"
+    },
+    "api": {
+        "unauthorized": "Доступ запрещён",
+        "invalidApiKey": "Неверный API-ключ",
+        "serverError": "Ошибка сервера",
+        "notFound": "Ресурс не найден"
+    }
+}

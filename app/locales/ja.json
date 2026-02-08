@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - 即時ビデオ通話",
+    "appDescription": "即時ビデオ通話に最適！",
+    "signIn": {
+        "title": "サインイン",
+        "username": "ユーザー名を入力",
+        "button": "サインイン",
+        "enterUsername": "ユーザー名を入力してください"
+    },
+    "room": {
+        "sessionTime": "セッション時間",
+        "localUsername": "あなた",
+        "remoteUsername": "リモートユーザー",
+        "waiting": "参加者を待っています...",
+        "connecting": "接続中...",
+        "userJoined": "__username__ が通話に参加しました",
+        "userLeft": "__username__ が通話から退出しました",
+        "users": "ユーザー",
+        "chat": "チャット",
+        "searchUsers": "ユーザーを検索..."
+    },
+    "controls": {
+        "microphone": "マイク",
+        "camera": "カメラ",
+        "screenShare": "画面共有",
+        "endCall": "通話終了",
+        "settings": "設定",
+        "fullscreen": "全画面"
+    },
+    "messages": {
+        "microphoneEnabled": "マイクを有効にしました",
+        "microphoneDisabled": "マイクを無効にしました",
+        "cameraEnabled": "カメラを有効にしました",
+        "cameraDisabled": "カメラを無効にしました",
+        "screenShareStarted": "画面共有を開始しました",
+        "screenShareStopped": "画面共有を停止しました",
+        "callEnded": "通話が終了しました",
+        "connectionFailed": "接続に失敗しました",
+        "permissionDenied": "権限が拒否されました",
+        "error": "エラーが発生しました",
+        "copied": "クリップボードにコピーしました",
+        "invalidPassword": "パスワードが無効です"
+    },
+    "errors": {
+        "noUsername": "ユーザー名は必須です",
+        "connectionLost": "接続が切断されました",
+        "mediaDevices": "メディアデバイスにアクセスできませんでした",
+        "noSupport": "お使いのブラウザはこの機能をサポートしていません"
+    },
+    "settings": {
+        "language": "言語",
+        "selectLanguage": "言語を選択",
+        "audioInput": "マイク",
+        "videoInput": "カメラ",
+        "audioOutput": "スピーカー",
+        "resolution": "ビデオ解像度",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "settings": "設定",
+        "testDevices": "デバイスをテスト",
+        "refresh": "更新",
+        "saveMessages": "メッセージを保存",
+        "clearAll": "すべてクリア"
+    },
+    "chat": {
+        "addEmoji": "絵文字を追加",
+        "typeMessage": "メッセージを入力...",
+        "sendMessage": "メッセージを送信"
+    },
+    "api": {
+        "unauthorized": "未承認のアクセス",
+        "invalidApiKey": "無効な API キー",
+        "serverError": "サーバーエラー",
+        "notFound": "リソースが見つかりません"
+    }
+}

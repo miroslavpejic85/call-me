@@ -1,0 +1,77 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - तुरंत वीडियो कॉल",
+    "appDescription": "तुरंत वीडियो कॉल के लिए आपका पसंदीदा विकल्प!",
+    "signIn": {
+        "title": "साइन इन",
+        "username": "उपयोगकर्ता नाम दर्ज करें",
+        "button": "साइन इन",
+        "enterUsername": "कृपया अपना उपयोगकर्ता नाम दर्ज करें"
+    },
+    "room": {
+        "sessionTime": "सत्र समय",
+        "localUsername": "आप",
+        "remoteUsername": "दूरस्थ उपयोगकर्ता",
+        "waiting": "किसी के जुड़ने का इंतज़ार...",
+        "connecting": "कनेक्ट हो रहा है...",
+        "userJoined": "__username__ कॉल में शामिल हुआ",
+        "userLeft": "__username__ कॉल से निकल गया",
+        "users": "उपयोगकर्ता",
+        "chat": "चैट",
+        "searchUsers": "उपयोगकर्ता खोजें..."
+    },
+    "controls": {
+        "microphone": "माइक्रोफ़ोन",
+        "camera": "कैमरा",
+        "screenShare": "स्क्रीन साझा करें",
+        "endCall": "कॉल समाप्त करें",
+        "settings": "सेटिंग्स",
+        "fullscreen": "फुलस्क्रीन"
+    },
+    "messages": {
+        "microphoneEnabled": "माइक्रोफ़ोन चालू",
+        "microphoneDisabled": "माइक्रोफ़ोन बंद",
+        "cameraEnabled": "कैमरा चालू",
+        "cameraDisabled": "कैमरा बंद",
+        "screenShareStarted": "स्क्रीन साझा करना शुरू हुआ",
+        "screenShareStopped": "स्क्रीन साझा करना बंद हुआ",
+        "callEnded": "कॉल समाप्त हुई",
+        "connectionFailed": "कनेक्शन विफल",
+        "permissionDenied": "अनुमति अस्वीकृत",
+        "error": "एक त्रुटि हुई",
+        "copied": "क्लिपबोर्ड पर कॉपी किया गया",
+        "invalidPassword": "अमान्य पासवर्ड"
+    },
+    "errors": {
+        "noUsername": "उपयोगकर्ता नाम आवश्यक है",
+        "connectionLost": "कनेक्शन खो गया",
+        "mediaDevices": "मीडिया डिवाइस तक पहुँच नहीं हो सकी",
+        "noSupport": "आपका ब्राउज़र इस सुविधा का समर्थन नहीं करता"
+    },
+    "settings": {
+        "language": "भाषा",
+        "selectLanguage": "भाषा चुनें",
+        "audioInput": "माइक्रोफ़ोन",
+        "videoInput": "कैमरा",
+        "audioOutput": "स्पीकर",
+        "resolution": "वीडियो रिज़ॉल्यूशन",
+        "save": "सहेजें",
+        "cancel": "रद्द करें",
+        "settings": "सेटिंग्स",
+        "testDevices": "डिवाइस जाँचें",
+        "refresh": "रीफ़्रेश",
+        "saveMessages": "संदेश सहेजें",
+        "clearAll": "सभी साफ़ करें"
+    },
+    "chat": {
+        "addEmoji": "इमोजी जोड़ें",
+        "typeMessage": "संदेश लिखें...",
+        "sendMessage": "संदेश भेजें"
+    },
+    "api": {
+        "unauthorized": "अनधिकृत पहुँच",
+        "invalidApiKey": "अमान्य API कुंजी",
+        "serverError": "सर्वर त्रुटि",
+        "notFound": "संसाधन नहीं मिला"
+    }
+}
