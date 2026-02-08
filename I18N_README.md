@@ -1,6 +1,6 @@
-# i18n Support - Quick Start
+# i18n Support
 
-The Call-me application now supports multiple languages! 🌍
+This repository supports multiple languages via JSON translation files in `app/locales/`.
 
 ## Supported Languages
 
@@ -24,6 +24,24 @@ The Call-me application now supports multiple languages! 🌍
 - ✅ JSON-based translations
 - ✅ RESTful translations API
 - ✅ Dynamic locale discovery (no hardcoded locale list)
+
+## How It Works
+
+### Translation source of truth
+
+- Server + client load translations from `app/locales/<locale>.json`.
+- Locales are discovered dynamically by scanning `app/locales/*.json` (no config change required).
+
+### API
+
+- `GET /locales` returns available locale codes derived from `app/locales/*.json`.
+- `GET /translations/:locale` returns the full JSON translations for that locale.
+
+### Client behavior
+
+- Chooses a locale in this order: `localStorage.locale` (if supported) → browser language → default `en`.
+- Uses dot-notation keys (example: `signIn.button`).
+- Supports placeholder replacement using `__name__` tokens.
 
 ## Usage
 
@@ -50,6 +68,24 @@ const text = t('signIn.button'); // Returns: "Sign In"
 const message = t('room.userJoined', { username: 'John' }); // Returns: "John joined the call"
 ```
 
+**Placeholder format:**
+
+In your JSON:
+
+```json
+{
+    "room": {
+        "userJoined": "__username__ joined the call"
+    }
+}
+```
+
+In JS:
+
+```javascript
+t('room.userJoined', { username: 'John' });
+```
+
 **API Endpoint:**
 
 ```bash
@@ -72,9 +108,6 @@ app/locales/
 
 public/
 └── i18n.js  # Client-side i18n library
-
-doc/
-└── i18n.md  # Complete documentation
 ```
 
 ## Quick Test
@@ -90,10 +123,19 @@ curl http://localhost:8000/translations/en
 curl http://localhost:8000/translations/es
 ```
 
-## Documentation
+## Adding a New Language
 
-For complete documentation, see [doc/i18n.md](doc/i18n.md)
+1. Create `app/locales/<locale>.json` (example: `app/locales/nl.json`).
+2. Copy the structure of `app/locales/en.json` and translate only the values.
+3. Restart the server.
 
-## Based On
+Optional:
 
-Implementation follows the [Crowdin Node.js i18n guide](https://crowdin.com/blog/nodejs-i18n-and-localization)
+- Set `I18N_WATCH=true` to have the server re-scan `app/locales/` and reconfigure i18n automatically when locale files change.
+- If you want a friendly label (flag + name) in the Settings dropdown, add your locale to the `getLocaleLabel()` mapping in `public/i18n.js`. Otherwise the dropdown shows the raw locale code.
+
+## Adding / Changing Translation Keys
+
+- Keep keys consistent across all locale files.
+- Keys are nested objects; the client uses dot-notation to access them.
+- If a key is missing, the client logs a warning and shows the key string.
