@@ -249,7 +249,6 @@ button {
 
 .card:hover {
     border-color: var(--glass-border-hover) !important;
-    box-shadow: var(--shadow-xl), var(--shadow-glow) !important;
     transform: translateY(-2px) !important;
 }
 
