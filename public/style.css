@@ -437,8 +437,6 @@ video::-webkit-media-controls {
 #localUsername,
 #remoteUsername {
     position: absolute;
-    bottom: 8px;
-    left: 8px;
     color: #fff;
     background: var(--glass-bg-strong);
     padding: 6px 12px;
@@ -457,6 +455,16 @@ video::-webkit-media-controls {
     -webkit-backdrop-filter: blur(8px);
     font-family: inherit;
     box-shadow: var(--shadow-sm);
+}
+
+#localUsername {
+    top: 8px;
+    left: 8px;
+}
+
+#remoteUsername {
+    bottom: 8px;
+    left: 8px;
 }
 
 #localUsername:hover,
@@ -559,10 +567,18 @@ video::-webkit-media-controls {
     #remoteUsername {
         font-size: 0.7rem;
         padding: 2px 4px;
-        bottom: 1px;
-        left: 1px;
         border-radius: 5px;
         max-width: calc(100% - 12px);
+    }
+
+    #localUsername {
+        top: 1px;
+        left: 1px;
+    }
+
+    #remoteUsername {
+        bottom: 1px;
+        left: 1px;
     }
 
     #localUsername::before,
