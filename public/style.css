@@ -468,13 +468,13 @@ video::-webkit-media-controls {
 }
 
 #localUsername::before {
-    content: '🎥';
+    content: '🟢';
     margin-right: 4px;
     font-size: var(--font-size-sm);
 }
 
 #remoteUsername::before {
-    content: '👤';
+    content: '🟢';
     margin-right: 4px;
     font-size: var(--font-size-sm);
 }
