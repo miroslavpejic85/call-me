@@ -393,11 +393,7 @@ video::-webkit-media-controls {
 }
 
 #localVideoContainer:hover {
-    border-color: var(--primary-color);
     transform: translateY(-4px) scale(1.03);
-    box-shadow:
-        var(--shadow-xl),
-        0 0 24px rgba(59, 130, 246, 0.3);
 }
 
 #localVideoContainer::after {
@@ -469,10 +465,7 @@ video::-webkit-media-controls {
 
 #localUsername:hover,
 #remoteUsername:hover {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-    border-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 #localUsername::before {
