@@ -20,7 +20,7 @@ async function fetchAvailableLocales() {
     } catch (error) {
         console.warn('Unable to fetch available locales, using fallback list', error);
     }
-    return ['en', 'es', 'fr', 'it', 'de'];
+    return ['en', 'es', 'fr', 'it', 'de', 'pt', 'ru', 'ar', 'hi', 'zh', 'ja']; // Fallback list of common locales
 }
 
 function getLocaleLabel(locale) {
