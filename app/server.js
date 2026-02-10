@@ -13,7 +13,6 @@ const helmet = require('helmet');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
-const i18n = require('i18n');
 const packageJson = require('../package.json');
 
 // Logs
@@ -120,50 +119,6 @@ const corsOptions = {
 
 // Create Express application
 const app = express();
-
-function configureI18n() {
-    const locales = getAvailableLocales();
-    const effectiveLocales = locales.length > 0 ? locales : ['en'];
-    const defaultLocale = effectiveLocales.includes('en') ? 'en' : effectiveLocales[0] || 'en';
-
-    i18n.configure({
-        locales: effectiveLocales,
-        defaultLocale: defaultLocale,
-        directory: LOCALES_DIR,
-        objectNotation: true,
-        updateFiles: false,
-        syncFiles: false,
-        api: {
-            __: 'translate',
-            __n: 'translateN',
-        },
-    });
-
-    return { locales: effectiveLocales, defaultLocale };
-}
-
-// Configure i18n (dynamic locales from app/locales/*.json)
-configureI18n();
-
-// Optional: watch locales folder and reconfigure automatically (no restart)
-if (process.env.I18N_WATCH === 'true') {
-    try {
-        let debounceTimer;
-        fs.watch(LOCALES_DIR, { persistent: false }, () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                const state = configureI18n();
-                log.info('i18n reconfigured', state);
-            }, 250);
-        });
-        log.info('i18n watch enabled', { directory: LOCALES_DIR });
-    } catch (error) {
-        log.warn('Unable to watch locales directory', {
-            directory: LOCALES_DIR,
-            error: error.message,
-        });
-    }
-}
 
 // Server configurations
 const port = process.env.PORT || 4000;

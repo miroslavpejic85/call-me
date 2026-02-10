@@ -29,7 +29,8 @@ This repository supports multiple languages via JSON translation files in `app/l
 
 ### Translation source of truth
 
-- Server + client load translations from `app/locales/<locale>.json`.
+- Translations live in `app/locales/<locale>.json`.
+- The server does not translate strings; it only serves these JSON files to the browser.
 - Locales are discovered dynamically by scanning `app/locales/*.json` (no config change required).
 
 ### API
@@ -127,12 +128,16 @@ curl http://localhost:8000/translations/es
 
 1. Create `app/locales/<locale>.json` (example: `app/locales/nl.json`).
 2. Copy the structure of `app/locales/en.json` and translate only the values.
-3. Restart the server.
+3. No restart is required: the client will see the new locale via `GET /locales`.
 
 Optional:
 
-- Set `I18N_WATCH=true` to have the server re-scan `app/locales/` and reconfigure i18n automatically when locale files change.
 - If you want a friendly label (flag + name) in the Settings dropdown, add your locale to the `getLocaleLabel()` mapping in `public/i18n.js`. Otherwise the dropdown shows the raw locale code.
+
+## Notes
+
+- This project uses client-side i18n (see `public/i18n.js`). The server remains language-agnostic.
+- Any server-generated messages (API errors, WebSocket `error` payloads) are currently plain strings and are not translated.
 
 ## Adding / Changing Translation Keys
 
