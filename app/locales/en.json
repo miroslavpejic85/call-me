@@ -18,7 +18,8 @@
         "userLeft": "__username__ left the call",
         "users": "Users",
         "chat": "Chat",
-        "searchUsers": "Search users..."
+        "searchUsers": "Search users...",
+        "closeSidebar": "Close sidebar"
     },
     "controls": {
         "microphone": "Microphone",
@@ -26,7 +27,15 @@
         "screenShare": "Share Screen",
         "endCall": "End Call",
         "settings": "Settings",
-        "fullscreen": "Fullscreen"
+        "fullscreen": "Fullscreen",
+        "shareRoom": "Share room",
+        "toggleHideMe": "Toggle hide me",
+        "toggleAudio": "Toggle audio",
+        "toggleVideo": "Toggle video",
+        "swapCamera": "Swap camera",
+        "toggleScreen": "Toggle screen",
+        "toggleUsers": "Toggle users",
+        "leave": "Leave"
     },
     "messages": {
         "microphoneEnabled": "Microphone enabled",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "Language",
         "selectLanguage": "Select Language",
+        "mediaDevicesTitle": "Media Devices",
+        "chatSettingsTitle": "Chat Settings",
         "audioInput": "Microphone",
         "videoInput": "Camera",
         "audioOutput": "Speaker",
+        "loadingCameras": "Loading cameras...",
+        "loadingMicrophones": "Loading microphones...",
+        "loadingSpeakers": "Loading speakers...",
         "resolution": "Video Resolution",
         "save": "Save",
         "cancel": "Cancel",

@@ -18,7 +18,8 @@
         "userLeft": "__username__ hat den Anruf verlassen",
         "users": "Benutzer",
         "chat": "Chat",
-        "searchUsers": "Benutzer suchen..."
+        "searchUsers": "Benutzer suchen...",
+        "closeSidebar": "Seitenleiste schließen"
     },
     "controls": {
         "microphone": "Mikrofon",
@@ -26,7 +27,15 @@
         "screenShare": "Bildschirm Teilen",
         "endCall": "Anruf Beenden",
         "settings": "Einstellungen",
-        "fullscreen": "Vollbild"
+        "fullscreen": "Vollbild",
+        "shareRoom": "Raum teilen",
+        "toggleHideMe": "Mich ein-/ausblenden",
+        "toggleAudio": "Audio umschalten",
+        "toggleVideo": "Video umschalten",
+        "swapCamera": "Kamera wechseln",
+        "toggleScreen": "Bildschirm umschalten",
+        "toggleUsers": "Benutzer umschalten",
+        "leave": "Verlassen"
     },
     "messages": {
         "microphoneEnabled": "Mikrofon aktiviert",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "Sprache",
         "selectLanguage": "Sprache Auswählen",
+        "mediaDevicesTitle": "Mediengeräte",
+        "chatSettingsTitle": "Chat-Einstellungen",
         "audioInput": "Mikrofon",
         "videoInput": "Kamera",
         "audioOutput": "Lautsprecher",
+        "loadingCameras": "Kameras werden geladen...",
+        "loadingMicrophones": "Mikrofone werden geladen...",
+        "loadingSpeakers": "Lautsprecher werden geladen...",
         "resolution": "Videoauflösung",
         "save": "Speichern",
         "cancel": "Abbrechen",

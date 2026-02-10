@@ -18,7 +18,8 @@
         "userLeft": "__username__ कॉल से निकल गया",
         "users": "उपयोगकर्ता",
         "chat": "चैट",
-        "searchUsers": "उपयोगकर्ता खोजें..."
+        "searchUsers": "उपयोगकर्ता खोजें...",
+        "closeSidebar": "साइडबार बंद करें"
     },
     "controls": {
         "microphone": "माइक्रोफ़ोन",
@@ -26,7 +27,15 @@
         "screenShare": "स्क्रीन साझा करें",
         "endCall": "कॉल समाप्त करें",
         "settings": "सेटिंग्स",
-        "fullscreen": "फुलस्क्रीन"
+        "fullscreen": "फुलस्क्रीन",
+        "shareRoom": "कमरा साझा करें",
+        "toggleHideMe": "मुझे छुपाएँ/दिखाएँ",
+        "toggleAudio": "ऑडियो टॉगल करें",
+        "toggleVideo": "वीडियो टॉगल करें",
+        "swapCamera": "कैमरा बदलें",
+        "toggleScreen": "स्क्रीन टॉगल करें",
+        "toggleUsers": "उपयोगकर्ता टॉगल करें",
+        "leave": "छोड़ें"
     },
     "messages": {
         "microphoneEnabled": "माइक्रोफ़ोन चालू",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "भाषा",
         "selectLanguage": "भाषा चुनें",
+        "mediaDevicesTitle": "मीडिया डिवाइस",
+        "chatSettingsTitle": "चैट सेटिंग्स",
         "audioInput": "माइक्रोफ़ोन",
         "videoInput": "कैमरा",
         "audioOutput": "स्पीकर",
+        "loadingCameras": "कैमरे लोड हो रहे हैं...",
+        "loadingMicrophones": "माइक्रोफ़ोन लोड हो रहे हैं...",
+        "loadingSpeakers": "स्पीकर लोड हो रहे हैं...",
         "resolution": "वीडियो रिज़ॉल्यूशन",
         "save": "सहेजें",
         "cancel": "रद्द करें",

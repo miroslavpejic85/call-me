@@ -18,7 +18,8 @@
         "userLeft": "__username__ покинул звонок",
         "users": "Пользователи",
         "chat": "Чат",
-        "searchUsers": "Поиск пользователей..."
+        "searchUsers": "Поиск пользователей...",
+        "closeSidebar": "Закрыть боковую панель"
     },
     "controls": {
         "microphone": "Микрофон",
@@ -26,7 +27,15 @@
         "screenShare": "Демонстрация экрана",
         "endCall": "Завершить звонок",
         "settings": "Настройки",
-        "fullscreen": "Полный экран"
+        "fullscreen": "Полный экран",
+        "shareRoom": "Поделиться комнатой",
+        "toggleHideMe": "Скрыть/показать меня",
+        "toggleAudio": "Вкл/выкл звук",
+        "toggleVideo": "Вкл/выкл видео",
+        "swapCamera": "Сменить камеру",
+        "toggleScreen": "Вкл/выкл экран",
+        "toggleUsers": "Показать/скрыть пользователей",
+        "leave": "Выйти"
     },
     "messages": {
         "microphoneEnabled": "Микрофон включён",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "Язык",
         "selectLanguage": "Выберите язык",
+        "mediaDevicesTitle": "Медиаустройства",
+        "chatSettingsTitle": "Настройки чата",
         "audioInput": "Микрофон",
         "videoInput": "Камера",
         "audioOutput": "Динамик",
+        "loadingCameras": "Загрузка камер...",
+        "loadingMicrophones": "Загрузка микрофонов...",
+        "loadingSpeakers": "Загрузка динамиков...",
         "resolution": "Разрешение видео",
         "save": "Сохранить",
         "cancel": "Отмена",

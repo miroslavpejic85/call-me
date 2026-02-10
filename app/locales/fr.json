@@ -18,7 +18,8 @@
         "userLeft": "__username__ a quitté l'appel",
         "users": "Utilisateurs",
         "chat": "Chat",
-        "searchUsers": "Rechercher des utilisateurs..."
+        "searchUsers": "Rechercher des utilisateurs...",
+        "closeSidebar": "Fermer la barre latérale"
     },
     "controls": {
         "microphone": "Microphone",
@@ -26,7 +27,15 @@
         "screenShare": "Partager l'Écran",
         "endCall": "Terminer l'Appel",
         "settings": "Paramètres",
-        "fullscreen": "Plein Écran"
+        "fullscreen": "Plein Écran",
+        "shareRoom": "Partager la salle",
+        "toggleHideMe": "Masquer/Afficher moi",
+        "toggleAudio": "Activer/Désactiver l'audio",
+        "toggleVideo": "Activer/Désactiver la vidéo",
+        "swapCamera": "Changer de caméra",
+        "toggleScreen": "Activer/Désactiver l'écran",
+        "toggleUsers": "Afficher/Masquer les utilisateurs",
+        "leave": "Quitter"
     },
     "messages": {
         "microphoneEnabled": "Microphone activé",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "Langue",
         "selectLanguage": "Sélectionner la Langue",
+        "mediaDevicesTitle": "Périphériques multimédias",
+        "chatSettingsTitle": "Paramètres du chat",
         "audioInput": "Microphone",
         "videoInput": "Caméra",
         "audioOutput": "Haut-parleur",
+        "loadingCameras": "Chargement des caméras...",
+        "loadingMicrophones": "Chargement des microphones...",
+        "loadingSpeakers": "Chargement des haut-parleurs...",
         "resolution": "Résolution Vidéo",
         "save": "Enregistrer",
         "cancel": "Annuler",

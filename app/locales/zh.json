@@ -18,7 +18,8 @@
         "userLeft": "__username__ 离开了通话",
         "users": "用户",
         "chat": "聊天",
-        "searchUsers": "搜索用户..."
+        "searchUsers": "搜索用户...",
+        "closeSidebar": "关闭侧边栏"
     },
     "controls": {
         "microphone": "麦克风",
@@ -26,7 +27,15 @@
         "screenShare": "共享屏幕",
         "endCall": "结束通话",
         "settings": "设置",
-        "fullscreen": "全屏"
+        "fullscreen": "全屏",
+        "shareRoom": "分享房间",
+        "toggleHideMe": "隐藏/显示我",
+        "toggleAudio": "切换音频",
+        "toggleVideo": "切换视频",
+        "swapCamera": "切换摄像头",
+        "toggleScreen": "切换屏幕",
+        "toggleUsers": "切换用户",
+        "leave": "离开"
     },
     "messages": {
         "microphoneEnabled": "麦克风已开启",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "语言",
         "selectLanguage": "选择语言",
+        "mediaDevicesTitle": "媒体设备",
+        "chatSettingsTitle": "聊天设置",
         "audioInput": "麦克风",
         "videoInput": "摄像头",
         "audioOutput": "扬声器",
+        "loadingCameras": "正在加载摄像头...",
+        "loadingMicrophones": "正在加载麦克风...",
+        "loadingSpeakers": "正在加载扬声器...",
         "resolution": "视频分辨率",
         "save": "保存",
         "cancel": "取消",

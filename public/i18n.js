@@ -205,7 +205,8 @@ function translatePage() {
     // Translate elements with data-i18n-title attribute (for tooltips)
     document.querySelectorAll('[data-i18n-title]').forEach((element) => {
         const key = element.getAttribute('data-i18n-title');
-        element.title = t(key);
+        const translatedTitle = t(key);
+        setElementTitle(element, translatedTitle);
     });
 
     // Update document title
@@ -213,6 +214,37 @@ function translatePage() {
 
     // Custom translations for specific elements that need special handling
     updateCustomTranslations();
+}
+
+/**
+ * Set element title in a way that works with Bootstrap tooltips.
+ * Bootstrap may cache the initial title into the Tooltip instance config.
+ * @param {Element} element
+ * @param {string} translatedTitle
+ */
+function setElementTitle(element, translatedTitle) {
+    if (!element || typeof translatedTitle !== 'string') return;
+
+    // Keep regular title attribute in sync
+    element.setAttribute('title', translatedTitle);
+
+    // Bootstrap 5 stores original title here and may remove the title attribute
+    element.setAttribute('data-bs-original-title', translatedTitle);
+
+    // If a Bootstrap Tooltip instance already exists, update its cached config/content
+    try {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            const instance = bootstrap.Tooltip.getInstance ? bootstrap.Tooltip.getInstance(element) : null;
+            if (instance) {
+                if (instance._config) instance._config.title = translatedTitle;
+                if (typeof instance.setContent === 'function') {
+                    instance.setContent({ '.tooltip-inner': translatedTitle });
+                }
+            }
+        }
+    } catch (err) {
+        // No-op: translation should still work without tooltip refresh
+    }
 }
 
 /**
@@ -226,18 +258,6 @@ function updateCustomTranslations() {
     // Update app name
     const appName = document.getElementById('appName');
     if (appName) appName.textContent = t('appName');
-
-    // Update settings title for language
-    const settingsTitles = document.querySelectorAll('.settings-title');
-    if (settingsTitles.length > 0) {
-        settingsTitles[0].innerHTML = '<i class="fas fa-globe"></i> ' + t('settings.language');
-    }
-    if (settingsTitles.length > 1) {
-        settingsTitles[1].innerHTML = '<i class="fas fa-video"></i> Media Devices';
-    }
-    if (settingsTitles.length > 2) {
-        settingsTitles[2].innerHTML = '<i class="fas fa-comments"></i> Chat Settings';
-    }
 }
 
 /**
@@ -320,7 +340,7 @@ function translateElement(element) {
     // Translate data-i18n-title
     if (element.hasAttribute && element.hasAttribute('data-i18n-title')) {
         const key = element.getAttribute('data-i18n-title');
-        element.title = t(key);
+        setElementTitle(element, t(key));
     }
 
     // Recursively translate children
@@ -347,7 +367,7 @@ function translateElement(element) {
 
         element.querySelectorAll('[data-i18n-title]').forEach((child) => {
             const key = child.getAttribute('data-i18n-title');
-            child.title = t(key);
+            setElementTitle(child, t(key));
         });
     }
 }

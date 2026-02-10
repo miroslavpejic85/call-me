@@ -18,7 +18,8 @@
         "userLeft": "غادر __username__ المكالمة",
         "users": "المستخدمون",
         "chat": "الدردشة",
-        "searchUsers": "ابحث عن مستخدمين..."
+        "searchUsers": "البحث عن المستخدمين...",
+        "closeSidebar": "إغلاق الشريط الجانبي"
     },
     "controls": {
         "microphone": "الميكروفون",
@@ -26,7 +27,15 @@
         "screenShare": "مشاركة الشاشة",
         "endCall": "إنهاء المكالمة",
         "settings": "الإعدادات",
-        "fullscreen": "ملء الشاشة"
+        "fullscreen": "ملء الشاشة",
+        "shareRoom": "مشاركة الغرفة",
+        "toggleHideMe": "إظهار/إخفاء نفسي",
+        "toggleAudio": "تبديل الصوت",
+        "toggleVideo": "تبديل الفيديو",
+        "swapCamera": "تبديل الكاميرا",
+        "toggleScreen": "تبديل الشاشة",
+        "toggleUsers": "تبديل المستخدمين",
+        "leave": "مغادرة"
     },
     "messages": {
         "microphoneEnabled": "تم تفعيل الميكروفون",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "اللغة",
         "selectLanguage": "اختر اللغة",
+        "mediaDevicesTitle": "أجهزة الوسائط",
+        "chatSettingsTitle": "إعدادات الدردشة",
         "audioInput": "الميكروفون",
         "videoInput": "الكاميرا",
         "audioOutput": "مكبر الصوت",
+        "loadingCameras": "جارٍ تحميل الكاميرات...",
+        "loadingMicrophones": "جارٍ تحميل الميكروفونات...",
+        "loadingSpeakers": "جارٍ تحميل مكبرات الصوت...",
         "resolution": "دقة الفيديو",
         "save": "حفظ",
         "cancel": "إلغاء",

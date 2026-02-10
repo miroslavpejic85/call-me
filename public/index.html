@@ -115,6 +115,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Share room"
+                    data-i18n-title="controls.shareRoom"
                 >
                     <i class="fas fa-share-nodes"></i>
                 </button>
@@ -125,6 +126,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Toggle hide me"
+                    data-i18n-title="controls.toggleHideMe"
                 >
                     <i class="fas fa-eye-slash"></i>
                 </button>
@@ -135,6 +137,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Toggle audio"
+                    data-i18n-title="controls.toggleAudio"
                 >
                     <i class="fas fa-microphone"></i>
                 </button>
@@ -145,6 +148,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Toggle video"
+                    data-i18n-title="controls.toggleVideo"
                 >
                     <i class="fas fa-video"></i>
                 </button>
@@ -155,6 +159,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Swap camera"
+                    data-i18n-title="controls.swapCamera"
                 >
                     <i class="fas fa-camera-rotate"></i>
                 </button>
@@ -165,6 +170,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Toggle screen"
+                    data-i18n-title="controls.toggleScreen"
                 >
                     <i class="fas fa-desktop"></i>
                 </button>
@@ -175,6 +181,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Toggle users"
+                    data-i18n-title="controls.toggleUsers"
                 >
                     <i class="fas fa-users"></i>
                 </button>
@@ -185,6 +192,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     title="Leave"
+                    data-i18n-title="controls.leave"
                 >
                     <i class="fas fa-phone-slash red"></i>
                 </button>
@@ -207,7 +215,12 @@
                     </button>
                 </div>
 
-                <button id="exitSidebarBtn" class="btn btn-exit-sidebar" title="Close sidebar">
+                <button
+                    id="exitSidebarBtn"
+                    class="btn btn-exit-sidebar"
+                    title="Close sidebar"
+                    data-i18n-title="room.closeSidebar"
+                >
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -256,39 +269,46 @@
             <!-- Settings Tab Content -->
             <div id="settingsContent" class="tab-content">
                 <div class="settings-section">
-                    <h3 class="settings-title"><i class="fas fa-globe"></i> Language</h3>
+                    <h3 class="settings-title">
+                        <i class="fas fa-globe"></i> <span data-i18n="settings.language">Language</span>
+                    </h3>
 
                     <div class="setting-group">
                         <label for="languageSelect" class="setting-label">
-                            <i class="fas fa-language"></i> Select Language
+                            <i class="fas fa-language"></i>
+                            <span data-i18n="settings.selectLanguage">Select Language</span>
                         </label>
                         <select id="languageSelect" class="setting-select"></select>
                     </div>
 
-                    <h3 class="settings-title"><i class="fas fa-video"></i> Media Devices</h3>
+                    <h3 class="settings-title">
+                        <i class="fas fa-video"></i> <span data-i18n="settings.mediaDevicesTitle">Media Devices</span>
+                    </h3>
 
                     <div class="setting-group">
-                        <label for="videoSelect" class="setting-label"> <i class="fas fa-camera"></i> Camera </label>
+                        <label for="videoSelect" class="setting-label">
+                            <i class="fas fa-camera"></i> <span data-i18n="settings.videoInput">Camera</span>
+                        </label>
                         <select id="videoSelect" class="setting-select">
-                            <option value="">Loading cameras...</option>
+                            <option value="" data-i18n="settings.loadingCameras">Loading cameras...</option>
                         </select>
                     </div>
 
                     <div class="setting-group">
                         <label for="audioSelect" class="setting-label">
-                            <i class="fas fa-microphone"></i> Microphone
+                            <i class="fas fa-microphone"></i> <span data-i18n="settings.audioInput">Microphone</span>
                         </label>
                         <select id="audioSelect" class="setting-select">
-                            <option value="">Loading microphones...</option>
+                            <option value="" data-i18n="settings.loadingMicrophones">Loading microphones...</option>
                         </select>
                     </div>
 
                     <div class="setting-group">
                         <label for="audioOutputSelect" class="setting-label">
-                            <i class="fas fa-volume-up"></i> Speaker
+                            <i class="fas fa-volume-up"></i> <span data-i18n="settings.audioOutput">Speaker</span>
                         </label>
                         <select id="audioOutputSelect" class="setting-select">
-                            <option value="">Loading speakers...</option>
+                            <option value="" data-i18n="settings.loadingSpeakers">Loading speakers...</option>
                         </select>
                     </div>
 
@@ -301,7 +321,10 @@
                         </button>
                     </div>
 
-                    <h3 class="settings-title"><i class="fas fa-comments"></i> Chat Settings</h3>
+                    <h3 class="settings-title">
+                        <i class="fas fa-comments"></i>
+                        <span data-i18n="settings.chatSettingsTitle">Chat Settings</span>
+                    </h3>
                     <div class="settings-actions">
                         <button id="saveChatBtn" class="btn btn-success btn-save-chat">
                             <i class="fas fa-download"></i> <span data-i18n="settings.saveMessages">Save Messages</span>

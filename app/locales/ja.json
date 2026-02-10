@@ -18,7 +18,8 @@
         "userLeft": "__username__ が通話から退出しました",
         "users": "ユーザー",
         "chat": "チャット",
-        "searchUsers": "ユーザーを検索..."
+        "searchUsers": "ユーザーを検索...",
+        "closeSidebar": "サイドバーを閉じる"
     },
     "controls": {
         "microphone": "マイク",
@@ -26,7 +27,15 @@
         "screenShare": "画面共有",
         "endCall": "通話終了",
         "settings": "設定",
-        "fullscreen": "全画面"
+        "fullscreen": "全画面",
+        "shareRoom": "ルームを共有",
+        "toggleHideMe": "自分を表示/非表示",
+        "toggleAudio": "音声を切り替え",
+        "toggleVideo": "映像を切り替え",
+        "swapCamera": "カメラを切り替え",
+        "toggleScreen": "画面を切り替え",
+        "toggleUsers": "ユーザーを切り替え",
+        "leave": "退室"
     },
     "messages": {
         "microphoneEnabled": "マイクを有効にしました",
@@ -51,9 +60,14 @@
     "settings": {
         "language": "言語",
         "selectLanguage": "言語を選択",
+        "mediaDevicesTitle": "メディアデバイス",
+        "chatSettingsTitle": "チャット設定",
         "audioInput": "マイク",
         "videoInput": "カメラ",
         "audioOutput": "スピーカー",
+        "loadingCameras": "カメラを読み込み中...",
+        "loadingMicrophones": "マイクを読み込み中...",
+        "loadingSpeakers": "スピーカーを読み込み中...",
         "resolution": "ビデオ解像度",
         "save": "保存",
         "cancel": "キャンセル",
