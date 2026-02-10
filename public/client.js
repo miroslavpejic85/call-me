@@ -2757,7 +2757,6 @@ function updateUIForAvailableDevices() {
 
 async function refreshDevices(showToast = true) {
     if (refreshDevicesBtn) {
-        refreshDevicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
         refreshDevicesBtn.disabled = true;
     }
 
@@ -2789,7 +2788,6 @@ async function refreshDevices(showToast = true) {
         handleError('Failed to refresh devices');
     } finally {
         if (refreshDevicesBtn) {
-            refreshDevicesBtn.innerHTML = '<i class="fas fa-sync"></i> Refresh';
             refreshDevicesBtn.disabled = false;
         }
     }
@@ -2955,7 +2953,6 @@ async function setAudioOutputDevice(deviceId) {
 
 async function testDevices() {
     if (testDevicesBtn) {
-        testDevicesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
         testDevicesBtn.disabled = true;
     }
 
@@ -3002,7 +2999,6 @@ async function testDevices() {
         handleError('Device test failed: ' + error.message);
     } finally {
         if (testDevicesBtn) {
-            testDevicesBtn.innerHTML = '<i class="fas fa-play"></i> Test Devices';
             testDevicesBtn.disabled = false;
         }
     }
