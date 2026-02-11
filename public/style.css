@@ -1059,7 +1059,7 @@ input {
     display: flex;
     top: 0;
     right: 0;
-    width: 480px;
+    width: 600px;
     height: 100%;
     background: var(--glass-bg-strong);
     flex-direction: column;
