@@ -823,7 +823,7 @@ async function startScreenSharing() {
 
         // Update UI
         isScreenSharing = true;
-        screenShareBtn.classList.add('btn-danger');
+        screenShareBtn.classList.add('btn-warning');
         screenShareBtn.classList.remove('btn-success');
         screenShareBtn.title = t('controls.stopScreenShare');
         screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
@@ -911,7 +911,7 @@ async function stopScreenSharing() {
 
         // Update UI
         isScreenSharing = false;
-        screenShareBtn.classList.remove('btn-danger');
+        screenShareBtn.classList.remove('btn-warning');
         screenShareBtn.classList.add('btn-success');
         screenShareBtn.title = t('controls.startScreenShare');
         screenShareBtn.innerHTML = '<i class="fas fa-desktop"></i>';
