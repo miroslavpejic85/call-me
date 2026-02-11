@@ -1,0 +1,91 @@
+{
+    "appName": "Call-me",
+    "appTitle": "Call-me - Trenutni video pozivi",
+    "appDescription": "Vaš izbor za trenutne video pozive!",
+    "signIn": {
+        "title": "Prijava",
+        "username": "Unesite korisničko ime",
+        "button": "Prijavi se",
+        "enterUsername": "Molimo unesite svoje korisničko ime"
+    },
+    "room": {
+        "sessionTime": "Trajanje sesije",
+        "localUsername": "Vi",
+        "remoteUsername": "Udaljeni korisnik",
+        "waiting": "Čekanje da se neko pridruži...",
+        "connecting": "Povezivanje...",
+        "userJoined": "__username__ se pridružio pozivu",
+        "userLeft": "__username__ je napustio poziv",
+        "users": "Korisnici",
+        "chat": "Ćaskanje",
+        "searchUsers": "Pretraži korisnike...",
+        "closeSidebar": "Zatvori bočnu traku"
+    },
+    "controls": {
+        "microphone": "Mikrofon",
+        "camera": "Kamera",
+        "screenShare": "Podeli ekran",
+        "endCall": "Završi poziv",
+        "settings": "Podešavanja",
+        "fullscreen": "Ceo ekran",
+        "shareRoom": "Podeli sobu",
+        "toggleHideMe": "Prikaži/sakrij mene",
+        "toggleAudio": "Uključi/isključi zvuk",
+        "toggleVideo": "Uključi/isključi video",
+        "swapCamera": "Promeni kameru",
+        "toggleScreen": "Uključi/isključi deljenje ekrana",
+        "toggleUsers": "Prikaži/sakrij korisnike",
+        "leave": "Napusti"
+    },
+    "messages": {
+        "microphoneEnabled": "Mikrofon uključen",
+        "microphoneDisabled": "Mikrofon isključen",
+        "cameraEnabled": "Kamera uključena",
+        "cameraDisabled": "Kamera isključena",
+        "screenShareStarted": "Deljenje ekrana pokrenuto",
+        "screenShareStopped": "Deljenje ekrana zaustavljeno",
+        "callEnded": "Poziv završen",
+        "connectionFailed": "Povezivanje nije uspelo",
+        "permissionDenied": "Dozvola odbijena",
+        "error": "Došlo je do greške",
+        "copied": "Kopirano u ostavu",
+        "invalidPassword": "Neispravna lozinka"
+    },
+    "errors": {
+        "noUsername": "Korisničko ime je obavezno",
+        "connectionLost": "Veza je izgubljena",
+        "mediaDevices": "Nije moguće pristupiti medijskim uređajima",
+        "noSupport": "Vaš pregledač ne podržava ovu funkciju"
+    },
+    "settings": {
+        "language": "Jezik",
+        "selectLanguage": "Izaberite jezik",
+        "mediaDevicesTitle": "Medijski uređaji",
+        "chatSettingsTitle": "Podešavanja ćaskanja",
+        "audioInput": "Mikrofon",
+        "videoInput": "Kamera",
+        "audioOutput": "Zvučnik",
+        "loadingCameras": "Učitavanje kamera...",
+        "loadingMicrophones": "Učitavanje mikrofona...",
+        "loadingSpeakers": "Učitavanje zvučnika...",
+        "resolution": "Rezolucija videa",
+        "save": "Sačuvaj",
+        "cancel": "Otkaži",
+        "settings": "Podešavanja",
+        "testDevices": "Testiraj uređaje",
+        "refresh": "Osveži",
+        "saveMessages": "Sačuvaj poruke",
+        "clearAll": "Obriši sve"
+    },
+    "chat": {
+        "addEmoji": "Dodaj emoji",
+        "typeMessage": "Unesite poruku...",
+        "sendMessage": "Pošalji poruku"
+    },
+    "api": {
+        "unauthorized": "Neovlašćen pristup",
+        "invalidApiKey": "Neispravan API ključ",
+        "serverError": "Greška servera",
+        "notFound": "Resurs nije pronađen"
+    }
+}

@@ -18,7 +18,7 @@ async function fetchAvailableLocales() {
     } catch (error) {
         console.warn('Unable to fetch available locales, using fallback list', error);
     }
-    return ['en', 'es', 'fr', 'it', 'de', 'pt', 'ru', 'ar', 'hi', 'zh', 'ja']; // Fallback list
+    return ['en', 'es', 'fr', 'it', 'de', 'pt', 'ru', 'ar', 'hi', 'zh', 'ja', 'hr', 'sr']; // Fallback list
 }
 
 function getLocaleLabel(locale) {
@@ -34,6 +34,8 @@ function getLocaleLabel(locale) {
         hi: '🇮🇳 हिन्दी',
         zh: '🇨🇳 中文',
         ja: '🇯🇵 日本語',
+        hr: '🇭🇷 Hrvatski',
+        sr: '🇷🇸 Srpski',
     };
     return labels[locale] || locale;
 }

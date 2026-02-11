@@ -15,6 +15,8 @@ This repository supports multiple languages via JSON translation files in `app/l
 - 🇮🇳 Hindi (hi)
 - 🇨🇳 Chinese (zh)
 - 🇯🇵 Japanese (ja)
+- 🇭🇷 Croatian (hr)
+- 🇷🇸 Serbian (sr)
 
 ## Features
 
