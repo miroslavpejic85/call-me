@@ -19,7 +19,13 @@
         "users": "उपयोगकर्ता",
         "chat": "चैट",
         "searchUsers": "उपयोगकर्ता खोजें...",
-        "closeSidebar": "साइडबार बंद करें"
+        "closeSidebar": "साइडबार बंद करें",
+        "callingUser": "आप __username__ को कॉल कर रहे हैं।<br/>कृपया उनके उत्तर देने का इंतज़ार करें।",
+        "acceptCallFrom": "क्या आप __username__ से कॉल स्वीकार करना चाहते हैं ?",
+        "hangupWith": "__username__ के साथ कॉल समाप्त करें",
+        "callUser": "__username__ को कॉल करें",
+        "videoOff": "वीडियो बंद",
+        "videoDisabled": "वीडियो अक्षम"
     },
     "controls": {
         "microphone": "माइक्रोफ़ोन",
@@ -35,7 +41,9 @@
         "swapCamera": "कैमरा बदलें",
         "toggleScreen": "स्क्रीन टॉगल करें",
         "toggleUsers": "उपयोगकर्ता टॉगल करें",
-        "leave": "छोड़ें"
+        "leave": "छोड़ें",
+        "startScreenShare": "स्क्रीन शेयरिंग शुरू करें",
+        "stopScreenShare": "स्क्रीन शेयरिंग रोकें"
     },
     "messages": {
         "microphoneEnabled": "माइक्रोफ़ोन चालू",
@@ -49,13 +57,59 @@
         "permissionDenied": "अनुमति अस्वीकृत",
         "error": "एक त्रुटि हुई",
         "copied": "क्लिपबोर्ड पर कॉपी किया गया",
-        "invalidPassword": "अमान्य पासवर्ड"
+        "invalidPassword": "अमान्य पासवर्ड",
+        "shareRoomText": "मेरे Call-me रूम में शामिल हों!",
+        "roomCopied": "रूम क्लिपबोर्ड पर कॉपी किया गया __text__",
+        "devicesRefreshed": "डिवाइस सफलतापूर्वक रिफ्रेश किए गए",
+        "cameraChanged": "कैमरा सफलतापूर्वक बदला गया",
+        "microphoneChanged": "माइक्रोफ़ोन सफलतापूर्वक बदला गया",
+        "speakerChanged": "स्पीकर सफलतापूर्वक बदला गया",
+        "deviceTestCompleted": "डिवाइस टेस्ट सफलतापूर्वक पूरा हुआ"
     },
     "errors": {
         "noUsername": "उपयोगकर्ता नाम आवश्यक है",
         "connectionLost": "कनेक्शन खो गया",
         "mediaDevices": "मीडिया डिवाइस तक पहुँच नहीं हो सकी",
-        "noSupport": "आपका ब्राउज़र इस सुविधा का समर्थन नहीं करता"
+        "noSupport": "आपका ब्राउज़र इस सुविधा का समर्थन नहीं करता",
+        "socketError": "सॉकेट त्रुटि",
+        "enumerateDevicesFailed": "डिवाइस सूचीबद्ध करने में त्रुटि",
+        "noUserSelected": "कोई उपयोगकर्ता चयनित नहीं है।",
+        "cannotCallSelf": "आप खुद को कॉल नहीं कर सकते।",
+        "copyToClipboardFailed": "क्लिपबोर्ड पर कॉपी करने में विफल",
+        "screenShareFailed": "स्क्रीन शेयरिंग विफल",
+        "screenSharePermissionDenied": "स्क्रीन शेयरिंग की अनुमति अस्वीकृत",
+        "screenShareNotSupported": "इस ब्राउज़र में स्क्रीन शेयरिंग समर्थित नहीं है",
+        "screenShareStartFailed": "स्क्रीन शेयरिंग शुरू करने में विफल",
+        "screenShareStopFailed": "स्क्रीन शेयरिंग रोकने में विफल",
+        "noOriginalStreamAvailable": "कोई मूल स्ट्रीम उपलब्ध नहीं है",
+        "swapCameraFailed": "कैमरा बदलने में विफल।",
+        "noVideoTrackInStream": "स्ट्रीम में कोई वीडियो ट्रैक उपलब्ध नहीं है।",
+        "noAudioTrackInStream": "स्ट्रीम में कोई ऑडियो ट्रैक उपलब्ध नहीं है।",
+        "noVideoTrackForPeer": "पीयर कनेक्शन के लिए कोई वीडियो ट्रैक उपलब्ध नहीं है।",
+        "replacingTrack": "ट्रैक बदलने में त्रुटि: __message__",
+        "userNotFound": "उपयोगकर्ता नाम __username__ नहीं मिला!",
+        "offerCreateFailed": "ऑफ़र बनाते समय त्रुटि।",
+        "answerCreateFailed": "उत्तर बनाते समय त्रुटि।",
+        "remoteDescriptionFailed": "रिमोट विवरण सेट करते समय त्रुटि।",
+        "addIceCandidateFailed": "ICE कैंडिडेट जोड़ते समय त्रुटि।",
+        "noStreamInOnTrack": "ontrack इवेंट में कोई स्ट्रीम उपलब्ध नहीं है।",
+        "noCameraAvailable": "कोई कैमरा उपलब्ध नहीं है",
+        "noMicrophoneAvailable": "कोई माइक्रोफ़ोन उपलब्ध नहीं है",
+        "refreshDevicesFailed": "डिवाइस रिफ्रेश करने में विफल",
+        "changeCameraFailed": "कैमरा बदलने में विफल",
+        "changeMicrophoneFailed": "माइक्रोफ़ोन बदलने में विफल",
+        "audioOutputNotSupported": "इस ब्राउज़र में ऑडियो आउटपुट चयन समर्थित नहीं है",
+        "changeSpeakerFailed": "स्पीकर बदलने में विफल",
+        "noDevicesToTest": "परीक्षण के लिए कोई डिवाइस उपलब्ध नहीं है",
+        "deviceTestFailed": "डिवाइस टेस्ट विफल: __message__",
+        "getUserMediaNotFound": "कोई कैमरा या माइक्रोफ़ोन नहीं मिला। आप उपलब्ध डिवाइस के साथ फिर भी जुड़ सकते हैं।",
+        "getUserMediaInUse": "डिवाइस पहले से किसी अन्य एप्लिकेशन द्वारा उपयोग में है",
+        "getUserMediaConstraints": "आवश्यकताओं से मेल खाते डिवाइस नहीं मिले। अन्य डिवाइस के साथ प्रयास करें।",
+        "getUserMediaPermissionDenied": "अनुमति अस्वीकृत। ब्राउज़र सेटिंग्स में कैमरा/माइक्रोफ़ोन एक्सेस की अनुमति दें।",
+        "getUserMediaAborted": "ऑपरेशन अप्रत्याशित रूप से रद्द हो गया",
+        "getUserMediaSecurity": "सुरक्षा त्रुटि: अपना कनेक्शन या ब्राउज़र सेटिंग्स जाँचें",
+        "getUserMediaDefault": "स्ट्रीम नहीं मिल सकी; सुनिश्चित करें कि आप सुरक्षित TLS (HTTPS) संदर्भ में हैं और फिर से प्रयास करें",
+        "getUserMediaHelp": "<br/>सामान्य <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia त्रुटियाँ</a> देखें।"
     },
     "settings": {
         "language": "भाषा",
@@ -75,17 +129,67 @@
         "testDevices": "डिवाइस जाँचें",
         "refresh": "रीफ़्रेश",
         "saveMessages": "संदेश सहेजें",
-        "clearAll": "सभी साफ़ करें"
+        "clearAll": "सभी साफ़ करें",
+        "noCamerasFound": "कोई कैमरा नहीं मिला",
+        "noMicrophonesFound": "कोई माइक्रोफ़ोन नहीं मिला",
+        "noSpeakersFound": "कोई स्पीकर नहीं मिला"
     },
     "chat": {
         "addEmoji": "इमोजी जोड़ें",
         "typeMessage": "संदेश लिखें...",
-        "sendMessage": "संदेश भेजें"
+        "sendMessage": "संदेश भेजें",
+        "me": "मैं",
+        "cannotSendNoUsers": "संदेश भेजा नहीं जा सकता: वर्तमान में कोई उपयोगकर्ता कनेक्ट नहीं है",
+        "newMessageFrom": "__username__ से नया संदेश",
+        "noMessagesToSave": "सहेजने के लिए कोई चैट संदेश नहीं",
+        "savedAs": "चैट संदेश __filename__ के रूप में सहेजे गए",
+        "noMessagesToClear": "साफ़ करने के लिए कोई चैट संदेश नहीं",
+        "clearTitle": "चैट संदेश साफ़ करें",
+        "clearConfirm": "क्या आप वाकई सभी चैट संदेश साफ़ करना चाहते हैं? इस क्रिया को वापस नहीं किया जा सकता।",
+        "clearConfirmYes": "हाँ, सब साफ़ करें",
+        "cleared": "चैट संदेश सफलतापूर्वक साफ़ किए गए"
     },
     "api": {
         "unauthorized": "अनधिकृत पहुँच",
         "invalidApiKey": "अमान्य API कुंजी",
         "serverError": "सर्वर त्रुटि",
         "notFound": "संसाधन नहीं मिला"
+    },
+    "common": {
+        "yes": "हाँ",
+        "no": "नहीं",
+        "exit": "बाहर निकलें"
+    },
+    "host": {
+        "protectedTitle": "होस्ट सुरक्षित",
+        "enterPassword": "कृपया होस्ट का पासवर्ड दर्ज करें:",
+        "passwordPlaceholder": "अपना पासवर्ड दर्ज करें",
+        "submit": "जमा करें",
+        "passwordEmpty": "पासवर्ड खाली नहीं हो सकता",
+        "accessGrantedTitle": "प्रवेश स्वीकृत",
+        "accessGrantedText": "पासवर्ड सफलतापूर्वक सत्यापित हुआ!",
+        "invalidPasswordTitle": "अमान्य पासवर्ड",
+        "invalidPasswordText": "कृपया फिर से कोशिश करें। (__attempts__/__maxRetries__ प्रयास)",
+        "tooManyAttemptsTitle": "बहुत अधिक प्रयास",
+        "tooManyAttemptsText": "आपने अधिकतम प्रयासों की संख्या पार कर ली है। कृपया बाद में फिर से प्रयास करें।",
+        "joinError": "होस्ट से जुड़ते समय एक त्रुटि हुई।"
+    },
+    "file": {
+        "dataChannelNotReady": "फ़ाइल ट्रांसफ़र के लिए डेटा चैनल तैयार नहीं है",
+        "dataChannelError": "डेटा चैनल में त्रुटि हुई",
+        "onlyActiveParticipant": "आप फ़ाइलें केवल सक्रिय कॉल प्रतिभागी को भेज सकते हैं",
+        "onlyUserInCall": "आप फ़ाइलें केवल उसी उपयोगकर्ता को भेज सकते हैं जिसके साथ आप कॉल में हैं",
+        "dataChannelNotReadyTryAgain": "डेटा चैनल तैयार नहीं है। कॉल पूरी तरह कनेक्ट होने के बाद फिर से प्रयास करें।",
+        "failedToSend": "फ़ाइल भेजने में विफल",
+        "tooLarge": "फ़ाइल बहुत बड़ी है। अधिकतम अनुमत आकार __maxSizeMb__ MB है।",
+        "sent": "फ़ाइल \"__filename__\" भेजी गई",
+        "sendError": "डेटा चैनल के माध्यम से फ़ाइल भेजने में त्रुटि",
+        "cancelled": "फ़ाइल ट्रांसफ़र रद्द किया गया",
+        "cancelledByRemote": "रिमोट द्वारा फ़ाइल ट्रांसफ़र रद्द किया गया",
+        "sendToUser": "__username__ को फ़ाइल भेजें",
+        "newFileFrom": "__username__ से नई फ़ाइल",
+        "sentFileLabel": " ने फ़ाइल भेजी: ",
+        "sending": "भेजा जा रहा है: __filename__",
+        "receiving": "प्राप्त किया जा रहा है: __filename__"
     }
 }

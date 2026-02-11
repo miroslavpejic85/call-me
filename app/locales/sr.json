@@ -19,7 +19,13 @@
         "users": "Korisnici",
         "chat": "Ćaskanje",
         "searchUsers": "Pretraži korisnike...",
-        "closeSidebar": "Zatvori bočnu traku"
+        "closeSidebar": "Zatvori bočnu traku",
+        "callingUser": "Zoveš __username__.<br/>Sačekaj da se javi",
+        "acceptCallFrom": "Da li želiš da prihvatiš poziv od __username__ ?",
+        "hangupWith": "Prekini poziv sa __username__",
+        "callUser": "Pozovi __username__",
+        "videoOff": "Video isključen",
+        "videoDisabled": "Video onemogućen"
     },
     "controls": {
         "microphone": "Mikrofon",
@@ -35,7 +41,9 @@
         "swapCamera": "Promeni kameru",
         "toggleScreen": "Uključi/isključi deljenje ekrana",
         "toggleUsers": "Prikaži/sakrij korisnike",
-        "leave": "Napusti"
+        "leave": "Napusti",
+        "startScreenShare": "Započni deljenje ekrana",
+        "stopScreenShare": "Zaustavi deljenje ekrana"
     },
     "messages": {
         "microphoneEnabled": "Mikrofon uključen",
@@ -49,13 +57,59 @@
         "permissionDenied": "Dozvola odbijena",
         "error": "Došlo je do greške",
         "copied": "Kopirano u ostavu",
-        "invalidPassword": "Neispravna lozinka"
+        "invalidPassword": "Neispravna lozinka",
+        "shareRoomText": "Pridruži se mojoj Call-me sobi!",
+        "roomCopied": "Soba kopirana u ostavu __text__",
+        "devicesRefreshed": "Uređaji su uspešno osveženi",
+        "cameraChanged": "Kamera je uspešno promenjena",
+        "microphoneChanged": "Mikrofon je uspešno promenjen",
+        "speakerChanged": "Zvučnik je uspešno promenjen",
+        "deviceTestCompleted": "Test uređaja je uspešno završen"
     },
     "errors": {
         "noUsername": "Korisničko ime je obavezno",
         "connectionLost": "Veza je izgubljena",
         "mediaDevices": "Nije moguće pristupiti medijskim uređajima",
-        "noSupport": "Vaš pregledač ne podržava ovu funkciju"
+        "noSupport": "Vaš pregledač ne podržava ovu funkciju",
+        "socketError": "Greška soketa",
+        "enumerateDevicesFailed": "Greška pri nabrajanju uređaja",
+        "noUserSelected": "Nijedan korisnik nije izabran",
+        "cannotCallSelf": "Ne možeš pozvati samog sebe",
+        "copyToClipboardFailed": "Kopiranje u ostavu nije uspelo",
+        "screenShareFailed": "Deljenje ekrana nije uspelo",
+        "screenSharePermissionDenied": "Dozvola za deljenje ekrana je odbijena",
+        "screenShareNotSupported": "Deljenje ekrana nije podržano u ovom pregledaču",
+        "screenShareStartFailed": "Pokretanje deljenja ekrana nije uspelo",
+        "screenShareStopFailed": "Zaustavljanje deljenja ekrana nije uspelo",
+        "noOriginalStreamAvailable": "Nema dostupnog originalnog strima",
+        "swapCameraFailed": "Promena kamere nije uspela",
+        "noVideoTrackInStream": "Nema video trake u strimu",
+        "noAudioTrackInStream": "Nema audio trake u strimu",
+        "noVideoTrackForPeer": "Nema video trake za peer veze",
+        "replacingTrack": "Greška pri zameni trake: __message__",
+        "userNotFound": "Korisničko ime __username__ nije pronađeno!",
+        "offerCreateFailed": "Greška pri kreiranju ponude",
+        "answerCreateFailed": "Greška pri kreiranju odgovora",
+        "remoteDescriptionFailed": "Greška pri postavljanju udaljenog opisa",
+        "addIceCandidateFailed": "Greška pri dodavanju ICE kandidata",
+        "noStreamInOnTrack": "Nema strima u ontrack događaju",
+        "noCameraAvailable": "Nema dostupne kamere",
+        "noMicrophoneAvailable": "Nema dostupnog mikrofona",
+        "refreshDevicesFailed": "Osvežavanje uređaja nije uspelo",
+        "changeCameraFailed": "Promena kamere nije uspela",
+        "changeMicrophoneFailed": "Promena mikrofona nije uspela",
+        "audioOutputNotSupported": "Izbor audio izlaza nije podržan u ovom pregledaču",
+        "changeSpeakerFailed": "Promena zvučnika nije uspela",
+        "noDevicesToTest": "Nema uređaja za testiranje",
+        "deviceTestFailed": "Test uređaja nije uspeo: __message__",
+        "getUserMediaNotFound": "Nije pronađena kamera ili mikrofon. I dalje možeš da se pridružiš sa dostupnim uređajima",
+        "getUserMediaInUse": "Uređaj je već u upotrebi u drugoj aplikaciji",
+        "getUserMediaConstraints": "Nije moguće pronaći uređaje koji odgovaraju zahtevima. Pokušaj sa drugim uređajima",
+        "getUserMediaPermissionDenied": "Dozvola odbijena. Dozvoli pristup kameri/mikrofonu u podešavanjima pregledača",
+        "getUserMediaAborted": "Operacija je neočekivano prekinuta",
+        "getUserMediaSecurity": "Bezbednosna greška: proveri vezu ili podešavanja pregledača",
+        "getUserMediaDefault": "Ne mogu da preuzmem stream; proveri da li si u sigurnom TLS kontekstu (HTTPS) i pokušaj ponovo",
+        "getUserMediaHelp": "<br/>Proveri uobičajene <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia greške</a>"
     },
     "settings": {
         "language": "Jezik",
@@ -75,17 +129,67 @@
         "testDevices": "Testiraj uređaje",
         "refresh": "Osveži",
         "saveMessages": "Sačuvaj poruke",
-        "clearAll": "Obriši sve"
+        "clearAll": "Obriši sve",
+        "noCamerasFound": "Nisu pronađene kamere",
+        "noMicrophonesFound": "Nisu pronađeni mikrofoni",
+        "noSpeakersFound": "Nisu pronađeni zvučnici"
     },
     "chat": {
         "addEmoji": "Dodaj emoji",
         "typeMessage": "Unesite poruku...",
-        "sendMessage": "Pošalji poruku"
+        "sendMessage": "Pošalji poruku",
+        "me": "Ja",
+        "cannotSendNoUsers": "Ne možeš poslati poruku: trenutno nema povezanih korisnika",
+        "newMessageFrom": "Nova poruka od __username__",
+        "noMessagesToSave": "Nema poruka ćaskanja za čuvanje",
+        "savedAs": "Poruke ćaskanja sačuvane kao __filename__",
+        "noMessagesToClear": "Nema poruka ćaskanja za brisanje",
+        "clearTitle": "Obriši poruke ćaskanja",
+        "clearConfirm": "Da li si siguran/na da želiš da obrišeš sve poruke ćaskanja? Ova radnja se ne može opozvati",
+        "clearConfirmYes": "Da, obriši sve",
+        "cleared": "Poruke ćaskanja su uspešno obrisane"
     },
     "api": {
         "unauthorized": "Neovlašćen pristup",
         "invalidApiKey": "Neispravan API ključ",
         "serverError": "Greška servera",
         "notFound": "Resurs nije pronađen"
+    },
+    "common": {
+        "yes": "Da",
+        "no": "Ne",
+        "exit": "Izlaz"
+    },
+    "host": {
+        "protectedTitle": "Host zaštićen",
+        "enterPassword": "Unesi lozinku hosta:",
+        "passwordPlaceholder": "Unesi lozinku",
+        "submit": "Pošalji",
+        "passwordEmpty": "Lozinka ne može biti prazna",
+        "accessGrantedTitle": "Pristup odobren",
+        "accessGrantedText": "Lozinka je uspešno potvrđena!",
+        "invalidPasswordTitle": "Neispravna lozinka",
+        "invalidPasswordText": "Pokušaj ponovo. (__attempts__/__maxRetries__ pokušaja)",
+        "tooManyAttemptsTitle": "Previše pokušaja",
+        "tooManyAttemptsText": "Prekoračio/la si maksimalan broj pokušaja. Pokušaj ponovo kasnije",
+        "joinError": "Došlo je do greške prilikom pridruživanja hostu"
+    },
+    "file": {
+        "dataChannelNotReady": "Kanal podataka nije spreman za prenos fajlova",
+        "dataChannelError": "Došlo je do greške kanala podataka",
+        "onlyActiveParticipant": "Fajlove možeš slati samo aktivnom učesniku poziva",
+        "onlyUserInCall": "Fajlove možeš slati samo korisniku sa kojim si u pozivu",
+        "dataChannelNotReadyTryAgain": "Kanal podataka nije spreman. Pokušaj ponovo kada se poziv potpuno poveže",
+        "failedToSend": "Slanje fajla nije uspelo",
+        "tooLarge": "Fajl je prevelik. Maksimalna dozvoljena veličina je __maxSizeMb__ MB",
+        "sent": "Fajl \"__filename__\" poslat",
+        "sendError": "Greška pri slanju fajla preko kanala podataka",
+        "cancelled": "Prenos fajla je otkazan",
+        "cancelledByRemote": "Prenos fajla je otkazala udaljena strana",
+        "sendToUser": "Pošalji fajl korisniku __username__",
+        "newFileFrom": "Novi fajl od __username__",
+        "sentFileLabel": " poslao fajl: ",
+        "sending": "Slanje: __filename__",
+        "receiving": "Prijem: __filename__"
     }
 }

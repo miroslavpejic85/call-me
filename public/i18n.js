@@ -5,9 +5,19 @@
 const i18n = {
     currentLocale: 'en',
     translations: {},
+    fallbackTranslations: {},
     defaultLocale: 'en',
     availableLocales: [],
 };
+
+async function fetchTranslations(locale) {
+    const response = await fetch(`/translations/${locale}`);
+    if (!response.ok) {
+        throw new Error(`Failed to load translations for locale: ${locale}`);
+    }
+    const data = await response.json();
+    return data?.translations || {};
+}
 
 async function fetchAvailableLocales() {
     try {
@@ -58,6 +68,14 @@ async function initI18n() {
               ? browserLocale
               : i18n.defaultLocale;
 
+    // Always load English once as a per-key fallback
+    try {
+        i18n.fallbackTranslations = await fetchTranslations(i18n.defaultLocale);
+    } catch (error) {
+        console.warn('Unable to load fallback translations', error);
+        i18n.fallbackTranslations = {};
+    }
+
     // Load translations, set up language selector, and translate the page
     await loadTranslations(i18n.currentLocale);
     setupLanguageSelector();
@@ -72,12 +90,7 @@ async function initI18n() {
  */
 async function loadTranslations(locale) {
     try {
-        const response = await fetch(`/translations/${locale}`);
-        if (!response.ok) {
-            throw new Error(`Failed to load translations for locale: ${locale}`);
-        }
-        const data = await response.json();
-        i18n.translations = data.translations;
+        i18n.translations = await fetchTranslations(locale);
         i18n.currentLocale = locale;
         localStorage.setItem('locale', locale);
     } catch (error) {
@@ -97,28 +110,29 @@ async function loadTranslations(locale) {
  */
 function t(key, replacements = {}) {
     const keys = key.split('.');
-    let value = i18n.translations;
 
-    // Navigate through nested keys
-    for (const k of keys) {
-        if (value && typeof value === 'object' && k in value) {
-            value = value[k];
-        } else {
-            console.warn(`Translation key not found: ${key}`);
-            return key; // Return the key itself if translation not found
+    const resolve = (source) => {
+        let value = source;
+        for (const k of keys) {
+            if (value && typeof value === 'object' && k in value) {
+                value = value[k];
+            } else {
+                return undefined;
+            }
         }
-    }
+        return typeof value === 'string' ? value : undefined;
+    };
 
-    // If value is an object, return the key (shouldn't happen with proper keys)
-    if (typeof value === 'object') {
-        console.warn(`Translation key is an object, not a string: ${key}`);
+    const raw = resolve(i18n.translations) ?? resolve(i18n.fallbackTranslations);
+    if (typeof raw !== 'string') {
+        console.warn(`Translation key not found: ${key}`);
         return key;
     }
 
     // Replace placeholders in the translation
     return Object.entries(replacements).reduce(
         (str, [placeholder, replacement]) => str.replace(new RegExp(`__${placeholder}__`, 'g'), replacement),
-        value
+        raw
     );
 }
 

@@ -184,10 +184,10 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
             const { value: password } = await Swal.fire({
                 heightAuto: false,
                 scrollbarPadding: false,
-                title: 'Host Protected',
-                text: 'Please enter the host password:',
+                title: t('host.protectedTitle'),
+                text: t('host.enterPassword'),
                 input: 'password',
-                inputPlaceholder: 'Enter your password',
+                inputPlaceholder: t('host.passwordPlaceholder'),
                 inputAttributes: {
                     autocapitalize: 'off',
                     autocorrect: 'off',
@@ -198,11 +198,11 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showDenyButton: true,
-                confirmButtonText: 'Submit',
-                denyButtonText: `Cancel`,
+                confirmButtonText: t('host.submit'),
+                denyButtonText: t('settings.cancel'),
                 preConfirm: (password) => {
                     if (!password) {
-                        Swal.showValidationMessage('Password cannot be empty');
+                        Swal.showValidationMessage(t('host.passwordEmpty'));
                     }
                     return password;
                 },
@@ -222,8 +222,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                     scrollbarPadding: false,
                     position: 'top',
                     icon: 'success',
-                    title: 'Access Granted',
-                    text: 'Password validated successfully!',
+                    title: t('host.accessGrantedTitle'),
+                    text: t('host.accessGrantedText'),
                     timer: 1500,
                     showConfirmButton: false,
                 });
@@ -236,8 +236,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                         scrollbarPadding: false,
                         position: 'top',
                         icon: 'error',
-                        title: 'Invalid Password',
-                        text: `Please try again. (${attempts}/${maxRetries} attempts)`,
+                        title: t('host.invalidPasswordTitle'),
+                        text: t('host.invalidPasswordText', { attempts, maxRetries }),
                     });
                     // Retry the process
                     await checkHostPassword(maxRetries, attempts);
@@ -247,8 +247,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
                         scrollbarPadding: false,
                         position: 'top',
                         icon: 'warning',
-                        title: 'Too Many Attempts',
-                        text: 'You have exceeded the maximum number of attempts. Please try again later.',
+                        title: t('host.tooManyAttemptsTitle'),
+                        text: t('host.tooManyAttemptsText'),
                     });
                 }
             }
@@ -263,8 +263,8 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
             scrollbarPadding: false,
             position: 'top',
             icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while joining the host.',
+            title: t('messages.error'),
+            text: t('host.joinError'),
         });
     }
 }
@@ -399,7 +399,7 @@ function handleSocketConnect() {
 
 // Handle WebSocket errors
 function handleSocketError(err) {
-    handleError('Socket error', err.message);
+    handleError(t('errors.socketError'), err.message);
 }
 
 // Handle incoming messages based on type
@@ -481,7 +481,7 @@ async function handleEnumerateDevices() {
             console.log('Screen sharing not supported in this browser');
         }
     } catch (error) {
-        handleError('Error enumerating devices', error);
+        handleError(t('errors.enumerateDevicesFailed'), error);
     }
 }
 
@@ -575,13 +575,13 @@ function initializeFileSharing() {
         if (!file) return;
 
         if (!dataChannel || dataChannel.readyState !== 'open') {
-            toast('Data channel not ready for file transfer', 'warning', 'top', 3000);
+            toast(t('file.dataChannelNotReady'), 'warning', 'top', 3000);
             fileInput.value = '';
             return;
         }
 
         if (!connectedUser || pendingFileRecipient !== connectedUser) {
-            toast('You can send files only to the active call participant', 'warning', 'top', 3000);
+            toast(t('file.onlyActiveParticipant'), 'warning', 'top', 3000);
             fileInput.value = '';
             return;
         }
@@ -589,7 +589,7 @@ function initializeFileSharing() {
         try {
             await sendFileOverDataChannel(file);
         } catch (error) {
-            handleError('Failed to send file', error.message || error);
+            handleError(t('file.failedToSend'), error.message || error);
         } finally {
             fileInput.value = '';
             pendingFileRecipient = null;
@@ -608,11 +608,11 @@ function initializeFileSharing() {
 // Hide sidebar after user selection (on mobile)
 function handleUserClickToCall(user) {
     if (!user) {
-        handleError('No user selected.');
+        handleError(t('errors.noUserSelected'));
         return;
     }
     if (user === userName) {
-        handleError('You cannot call yourself.');
+        handleError(t('errors.cannotCallSelf'));
         return;
     }
     selectedUser = user;
@@ -623,7 +623,7 @@ function handleUserClickToCall(user) {
         from: userName,
         to: user,
     });
-    popupMsg(`You are calling ${user}.<br/>Please wait for them to answer.`);
+    popupMsg(t('room.callingUser', { username: user }));
     if (userSidebar.classList.contains('active')) {
         userSidebar.classList.remove('active');
     }
@@ -661,7 +661,7 @@ async function handleShareRoomClick() {
         try {
             await navigator.share({
                 title: document.title,
-                text: 'Join my Call-me room!',
+                text: t('messages.shareRoomText'),
                 url: roomUrl,
             });
         } catch (error) {
@@ -676,10 +676,10 @@ async function handleShareRoomClick() {
 async function copyToClipboard(text, showError = true) {
     try {
         await navigator.clipboard.writeText(text);
-        toast(`Room Copied to clipboard ${text}`, 'success', 'top', 3000);
+        toast(t('messages.roomCopied', { text }), 'success', 'top', 3000);
     } catch (error) {
         showError
-            ? handleError('Failed to copy to clipboard', error.message)
+            ? handleError(t('errors.copyToClipboardFailed'), error.message)
             : console.error('Failed to copy to clipboard', error);
     }
 }
@@ -745,7 +745,7 @@ async function handleScreenShareClick() {
             await startScreenSharing();
         }
     } catch (error) {
-        handleError('Screen sharing failed', error.message);
+        handleError(t('errors.screenShareFailed'), error.message);
         console.error('Screen sharing error:', error);
     }
 }
@@ -825,7 +825,7 @@ async function startScreenSharing() {
         isScreenSharing = true;
         screenShareBtn.classList.add('btn-danger');
         screenShareBtn.classList.remove('btn-success');
-        screenShareBtn.title = 'Stop screen sharing';
+        screenShareBtn.title = t('controls.stopScreenShare');
         screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
 
         // Send screen sharing status to server
@@ -844,15 +844,15 @@ async function startScreenSharing() {
             stopScreenSharing();
         };
 
-        toast('Screen sharing started', 'success', 'top', 2000);
+        toast(t('messages.screenShareStarted'), 'success', 'top', 2000);
         console.log('Screen sharing started');
     } catch (error) {
         if (error.name === 'NotAllowedError') {
-            handleError('Screen sharing permission denied');
+            handleError(t('errors.screenSharePermissionDenied'));
         } else if (error.name === 'NotSupportedError') {
-            handleError('Screen sharing not supported in this browser');
+            handleError(t('errors.screenShareNotSupported'));
         } else {
-            handleError('Failed to start screen sharing', error.message);
+            handleError(t('errors.screenShareStartFailed'), error.message);
         }
         throw error;
     }
@@ -862,7 +862,7 @@ async function startScreenSharing() {
 async function stopScreenSharing() {
     try {
         if (!originalStream) {
-            handleError('No original stream available');
+            handleError(t('errors.noOriginalStreamAvailable'));
             return;
         }
 
@@ -913,7 +913,7 @@ async function stopScreenSharing() {
         isScreenSharing = false;
         screenShareBtn.classList.remove('btn-danger');
         screenShareBtn.classList.add('btn-success');
-        screenShareBtn.title = 'Start screen sharing';
+        screenShareBtn.title = t('controls.startScreenShare');
         screenShareBtn.innerHTML = '<i class="fas fa-desktop"></i>';
 
         // Send screen sharing status to server
@@ -925,10 +925,10 @@ async function stopScreenSharing() {
         // Ensure UI button state matches actual video state
         checkVideoAudioStatus();
 
-        toast('Screen sharing stopped', 'success', 'top', 2000);
+        toast(t('messages.screenShareStopped'), 'success', 'top', 2000);
         console.log('Screen sharing stopped');
     } catch (error) {
-        handleError('Failed to stop screen sharing', error.message);
+        handleError(t('errors.screenShareStopFailed'), error.message);
         console.error('Stop screen sharing error:', error);
     }
 }
@@ -966,7 +966,7 @@ async function swapCamera() {
         // Check video/audio status
         checkVideoAudioStatus();
     } catch (error) {
-        handleError('Failed to swap the camera.', error);
+        handleError(t('errors.swapCameraFailed'), error);
     }
 }
 
@@ -974,7 +974,7 @@ async function swapCamera() {
 function refreshLocalVideoStream(newStream) {
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        handleError('No video track available in the newStream.');
+        handleError(t('errors.noVideoTrackInStream'));
         return;
     }
 
@@ -995,7 +995,7 @@ function refreshLocalVideoStream(newStream) {
 
     const audioTrack = stream.getAudioTracks()[0];
     if (!audioTrack) {
-        handleError('No audio track available in the stream.');
+        handleError(t('errors.noAudioTrackInStream'));
         return;
     }
 
@@ -1034,7 +1034,7 @@ async function refreshPeerVideoStreams(newStream) {
 
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
-        handleError('No video track available for peer connections.');
+        handleError(t('errors.noVideoTrackForPeer'));
         return;
     }
 
@@ -1043,7 +1043,7 @@ async function refreshPeerVideoStreams(newStream) {
         try {
             await videoSender.replaceTrack(videoTrack);
         } catch (error) {
-            handleError(`Replacing track error: ${error.message}`);
+            handleError(t('errors.replacingTrack', { message: error.message }));
         }
     }
 }
@@ -1102,7 +1102,7 @@ function handlePing(data) {
 // Handle user not found from the server
 function handleNotFound(data) {
     const { username } = data;
-    handleError(`Username ${username} not found!`);
+    handleError(t('errors.userNotFound', { username }));
     // Remove from user list if present
     allConnectedUsers = allConnectedUsers.filter((u) => u !== username);
     filterUserList(userSearchInput.value || '');
@@ -1195,35 +1195,34 @@ function handleMediaStreamError(error) {
     switch (error.name) {
         case 'NotFoundError':
         case 'DevicesNotFoundError':
-            errorMessage = 'No camera or microphone found. You can still join with available devices.';
+            errorMessage = t('errors.getUserMediaNotFound');
             break;
         case 'NotReadableError':
         case 'TrackStartError':
-            errorMessage = 'Device is already in use by another application';
+            errorMessage = t('errors.getUserMediaInUse');
             break;
         case 'OverconstrainedError':
         case 'ConstraintNotSatisfiedError':
-            errorMessage = 'Cannot find devices matching the requirements. Try with different devices.';
+            errorMessage = t('errors.getUserMediaConstraints');
             break;
         case 'NotAllowedError':
         case 'PermissionDeniedError':
-            errorMessage = 'Permission denied. Please allow access to camera/microphone in your browser settings.';
+            errorMessage = t('errors.getUserMediaPermissionDenied');
             break;
         case 'AbortError':
-            errorMessage = 'Operation aborted unexpectedly';
+            errorMessage = t('errors.getUserMediaAborted');
             break;
         case 'SecurityError':
-            errorMessage = 'Security error: Check your connection or browser settings';
+            errorMessage = t('errors.getUserMediaSecurity');
             break;
         default:
-            errorMessage = "Can't get stream, make sure you are in a secure TLS context (HTTPS) and try again";
+            errorMessage = t('errors.getUserMediaDefault');
             shouldHandleGetUserMediaError = false;
             break;
     }
 
     if (shouldHandleGetUserMediaError) {
-        errorMessage += `
-        Check the common <a href="https://blog.addpipe.com/common-getusermedia-errors" target="_blank">getUserMedia errors</a></li>`;
+        errorMessage += t('errors.getUserMediaHelp');
     }
 
     Swal.fire({
@@ -1232,7 +1231,7 @@ function handleMediaStreamError(error) {
         position: 'top',
         icon: 'warning',
         html: errorMessage,
-        denyButtonText: 'Exit',
+        denyButtonText: t('common.exit'),
         showDenyButton: true,
         showConfirmButton: false,
         allowOutsideClick: false,
@@ -1299,7 +1298,7 @@ function initializeConnection() {
             // Reapply media status after stream is connected (in case caller had screen sharing on)
             reapplyRemoteMediaStatus();
         } else {
-            handleError('No stream available in the ontrack event.');
+            handleError(t('errors.noStreamInOnTrack'));
         }
     };
 
@@ -1341,7 +1340,7 @@ async function offerCreate() {
         });
         console.log('Offer created and sent successfully');
     } catch (error) {
-        handleError('Error when creating an offer.', error);
+        handleError(t('errors.offerCreateFailed'), error);
     }
 }
 
@@ -1361,10 +1360,10 @@ function offerAccept(data) {
         imageUrl: 'assets/ring.png',
         imageWidth: 284,
         imageHeight: 120,
-        text: 'Do you want to accept call from ' + data.from + ' ?',
+        text: t('room.acceptCallFrom', { username: data.from }),
         showDenyButton: true,
-        confirmButtonText: `Yes`,
-        denyButtonText: `No`,
+        confirmButtonText: t('common.yes'),
+        denyButtonText: t('common.no'),
         timerProgressBar: true,
         timer: 10000,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
@@ -1408,7 +1407,7 @@ async function handleOffer(data) {
         });
         console.log('Answer sent successfully to:', name);
     } catch (error) {
-        handleError('Error when creating an answer.', error);
+        handleError(t('errors.answerCreateFailed'), error);
     }
 }
 
@@ -1424,7 +1423,7 @@ async function handleAnswer(data) {
             updateUsernameDisplay();
         }
     } catch (error) {
-        handleError('Error when set remote description.', error);
+        handleError(t('errors.remoteDescriptionFailed'), error);
     }
 }
 
@@ -1434,7 +1433,7 @@ async function handleCandidate(data) {
     try {
         await thisConnection.addIceCandidate(new RTCIceCandidate(candidate));
     } catch (error) {
-        handleError('Error when add ice candidate.', error);
+        handleError(t('errors.addIceCandidateFailed'), error);
     }
 }
 
@@ -1448,7 +1447,7 @@ function handleUsers(data) {
     if (userSignedIn) {
         currentUsers.forEach((u) => {
             if (!prevUsers.has(u)) {
-                toast(`<b>${u}</b> joined`, 'success');
+                toast(t('room.userJoined', { username: u }), 'success');
             }
         });
     }
@@ -1499,9 +1498,9 @@ function showCameraOffOverlay(type, show) {
     if (show) {
         const username = type === 'local' ? userName : connectedUser;
         overlay.innerHTML = `
-            <img src="./assets/camOff.png" alt="Video Off" />
-            <span class="username">${username || (type === 'local' ? 'You' : 'Remote User')}</span>
-            <span class="status">${type === 'local' ? 'Video Off' : 'Video Disabled'}</span>
+            <img src="./assets/camOff.png" alt="${t('room.videoOff')}" />
+            <span class="username">${username || (type === 'local' ? t('room.localUsername') : t('room.remoteUsername'))}</span>
+            <span class="status">${type === 'local' ? t('room.videoOff') : t('room.videoDisabled')}</span>
         `;
     }
 
@@ -1798,7 +1797,7 @@ function setupDataChannel(channel) {
         }
 
         console.error('Data channel error:', event);
-        toast('Data channel error occurred', 'warning', 'top', 3000);
+        toast(t('file.dataChannelError'), 'warning', 'top', 3000);
     };
 
     dataChannel.onmessage = async (event) => {
@@ -1832,13 +1831,13 @@ function setupDataChannel(channel) {
                         incomingFileData = null;
                         incomingFileBuffers = [];
                         incomingFileReceivedBytes = 0;
-                        toast('File transfer cancelled by remote', 'info', 'top', 3000);
+                        toast(t('file.cancelledByRemote'), 'info', 'top', 3000);
                         renderFileTransferStatus();
                     }
                     if (outgoingTransfer && (!msg.id || msg.id === outgoingTransfer.id)) {
                         outgoingTransfer.cancelled = true;
                         outgoingTransfer = null;
-                        toast('File transfer cancelled by remote', 'info', 'top', 3000);
+                        toast(t('file.cancelledByRemote'), 'info', 'top', 3000);
                         renderFileTransferStatus();
                     }
                     return;
@@ -1903,7 +1902,7 @@ async function sendFileOverDataChannel(file) {
 
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
     if (file.size > MAX_FILE_SIZE) {
-        handleError('File too large. Maximum allowed size is 10 MB.');
+        handleError(t('file.tooLarge', { maxSizeMb: 10 }));
         return;
     }
 
@@ -1956,19 +1955,19 @@ async function sendFileOverDataChannel(file) {
         const blobUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: meta.mime }));
 
         addFileMessageToChat({
-            from: userName || 'Me',
+            from: userName || t('chat.me'),
             name: file.name,
             size: file.size,
             url: blobUrl,
             isSelf: true,
         });
 
-        toast(`File "${file.name}" sent`, 'success', 'top', 3000);
+        toast(t('file.sent', { filename: file.name }), 'success', 'top', 3000);
         outgoingTransfer = null;
         renderFileTransferStatus();
     } catch (error) {
         console.error('Error sending file over data channel:', error);
-        handleError('Error sending file over data channel', error.message || error);
+        handleError(t('file.sendError'), error.message || error);
         outgoingTransfer = null;
         renderFileTransferStatus();
     }
@@ -2016,7 +2015,7 @@ function renderUserList() {
             // Show hang-up button only if in active call (user has answered)
             actionBtnEl.className = 'btn btn-custom btn-danger btn-m hangup-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone-slash"></i>';
-            actionBtnEl.title = `Hang up call with ${user}`;
+            actionBtnEl.title = t('room.hangupWith', { username: user });
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!userSignedIn) return;
@@ -2030,7 +2029,7 @@ function renderUserList() {
             // Show call button if not in active call
             actionBtnEl.className = 'btn btn-custom btn-warning btn-m call-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone"></i>';
-            actionBtnEl.title = `Call ${user}`;
+            actionBtnEl.title = t('room.callUser', { username: user });
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!userSignedIn) return;
@@ -2050,18 +2049,18 @@ function renderUserList() {
         sendFileBtn.style.cursor = 'pointer';
         sendFileBtn.setAttribute('data-toggle', 'tooltip');
         sendFileBtn.setAttribute('data-placement', 'top');
-        sendFileBtn.title = `Send file to ${user}`;
+        sendFileBtn.title = t('file.sendToUser', { username: user });
         sendFileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!userSignedIn) return;
 
             if (!connectedUser || connectedUser !== user || !remoteVideo.srcObject) {
-                toast('You can send files only to the user you are in a call with', 'warning', 'top', 3000);
+                toast(t('file.onlyUserInCall'), 'warning', 'top', 3000);
                 return;
             }
 
             if (!dataChannel || dataChannel.readyState !== 'open') {
-                toast('Data channel not ready. Try again after the call is fully connected.', 'warning', 'top', 3000);
+                toast(t('file.dataChannelNotReadyTryAgain'), 'warning', 'top', 3000);
                 return;
             }
 
@@ -2171,12 +2170,12 @@ if (chatForm && chatInput) {
         const text = chatInput.value.trim();
         if (text.length > 0) {
             if (allConnectedUsers.length === 0) {
-                toast('Cannot send message: no users are currently connected', 'warning', 'top', 2000);
+                toast(t('chat.cannotSendNoUsers'), 'warning', 'top', 2000);
                 chatInput.value = '';
                 return;
             }
             socket.emit('message', { type: 'chat', text });
-            addChatMessage({ from: userName || 'Me', text, timestamp: Date.now() }, true);
+            addChatMessage({ from: userName || t('chat.me'), text, timestamp: Date.now() }, true);
             chatInput.value = '';
         }
     });
@@ -2191,7 +2190,7 @@ function addChatMessage(msg, isSelf = false) {
 
     const userSpan = document.createElement('span');
     userSpan.className = 'chat-user';
-    userSpan.textContent = isSelf ? 'Me' : msg.from;
+    userSpan.textContent = isSelf ? t('chat.me') : msg.from;
 
     const textSpan = document.createElement('span');
     textSpan.className = 'chat-text';
@@ -2214,7 +2213,7 @@ function addChatMessage(msg, isSelf = false) {
 
         // Show toast notification for new messages only if sidebar is not opened
         if (!userSidebar.classList.contains('active')) {
-            toast(`New message from ${msg.from}`, 'info', 'top', 2000);
+            toast(t('chat.newMessageFrom', { username: msg.from }), 'info', 'top', 2000);
         }
     }
 }
@@ -2231,7 +2230,7 @@ function addFileMessageToChat({ from, name, size, url, isSelf }) {
 
     const userSpan = document.createElement('span');
     userSpan.className = 'chat-user';
-    userSpan.textContent = isSelf ? 'Me' : from;
+    userSpan.textContent = isSelf ? t('chat.me') : from;
 
     const linkSpan = document.createElement('span');
     linkSpan.className = 'chat-text';
@@ -2241,7 +2240,7 @@ function addFileMessageToChat({ from, name, size, url, isSelf }) {
     link.download = name;
     const sizeKb = Math.max(1, Math.round(size / 1024));
     link.textContent = `${name} (${sizeKb} KB)`;
-    linkSpan.appendChild(document.createTextNode(' sent file: '));
+    linkSpan.appendChild(document.createTextNode(t('file.sentFileLabel')));
     linkSpan.appendChild(link);
 
     const timeSpan = document.createElement('span');
@@ -2260,7 +2259,7 @@ function addFileMessageToChat({ from, name, size, url, isSelf }) {
         updateChatNotification();
 
         if (!userSidebar.classList.contains('active')) {
-            toast(`New file from ${from}`, 'info', 'top', 2000);
+            toast(t('file.newFileFrom', { username: from }), 'info', 'top', 2000);
         }
     }
 }
@@ -2288,7 +2287,7 @@ function renderFileTransferStatus() {
 
         const nameEl = document.createElement('div');
         nameEl.className = 'file-transfer-name';
-        nameEl.textContent = `Sending: ${outgoingTransfer.name}`;
+        nameEl.textContent = t('file.sending', { filename: outgoingTransfer.name });
 
         const progressWrapper = document.createElement('div');
         progressWrapper.className = 'file-transfer-progress';
@@ -2314,7 +2313,7 @@ function renderFileTransferStatus() {
         actions.className = 'file-transfer-actions';
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'btn btn-sm btn-danger';
-        cancelBtn.textContent = 'Cancel';
+        cancelBtn.textContent = t('settings.cancel');
         cancelBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             handleOutgoingFileCancel();
@@ -2335,7 +2334,7 @@ function renderFileTransferStatus() {
 
         const nameEl = document.createElement('div');
         nameEl.className = 'file-transfer-name';
-        nameEl.textContent = `Receiving: ${incomingTransfer.name}`;
+        nameEl.textContent = t('file.receiving', { filename: incomingTransfer.name });
 
         const progressWrapper = document.createElement('div');
         progressWrapper.className = 'file-transfer-progress';
@@ -2361,7 +2360,7 @@ function renderFileTransferStatus() {
         actions.className = 'file-transfer-actions';
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'btn btn-sm btn-danger';
-        cancelBtn.textContent = 'Cancel';
+        cancelBtn.textContent = t('settings.cancel');
         cancelBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             handleIncomingFileCancel();
@@ -2397,7 +2396,7 @@ function handleOutgoingFileCancel() {
 
     // Mark as cancelled; send loop will see this and stop
     outgoingTransfer.cancelled = true;
-    toast('File transfer cancelled', 'info', 'top', 3000);
+    toast(t('file.cancelled'), 'info', 'top', 3000);
 }
 
 // Cancel incoming file transfer (receiver side)
@@ -2425,7 +2424,7 @@ function handleIncomingFileCancel() {
     incomingFileData = null;
     incomingFileBuffers = [];
     incomingFileReceivedBytes = 0;
-    toast('File transfer cancelled', 'info', 'top', 3000);
+    toast(t('file.cancelled'), 'info', 'top', 3000);
     renderFileTransferStatus();
 }
 
@@ -2550,7 +2549,7 @@ function handleSaveChatClick() {
     const chatText = generateChatExportText();
 
     if (!chatText) {
-        toast('No chat messages to save', 'info', 'top', 2000);
+        toast(t('chat.noMessagesToSave'), 'info', 'top', 2000);
         return;
     }
 
@@ -2559,13 +2558,13 @@ function handleSaveChatClick() {
 
     downloadTextAsFile(chatText, fileName);
 
-    toast(`Chat messages saved as ${fileName}`, 'success', 'top', 3000);
+    toast(t('chat.savedAs', { filename: fileName }), 'success', 'top', 3000);
 }
 
 // Handle clear chat button click
 function handleClearChatClick() {
     if (!thereAreChatMessages()) {
-        toast('No chat messages to clear', 'info', 'top', 2000);
+        toast(t('chat.noMessagesToClear'), 'info', 'top', 2000);
         return;
     }
 
@@ -2574,11 +2573,11 @@ function handleClearChatClick() {
         scrollbarPadding: false,
         position: 'center',
         icon: 'question',
-        title: 'Clear Chat Messages',
-        text: 'Are you sure you want to clear all chat messages? This action cannot be undone.',
+        title: t('chat.clearTitle'),
+        text: t('chat.clearConfirm'),
         showCancelButton: true,
-        confirmButtonText: 'Yes, Clear All',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('chat.clearConfirmYes'),
+        cancelButtonText: t('settings.cancel'),
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
     }).then((result) => {
@@ -2591,7 +2590,7 @@ function handleClearChatClick() {
             updateChatNotification();
 
             // Show success message
-            toast('Chat messages cleared successfully', 'success', 'top', 2000);
+            toast(t('chat.cleared'), 'success', 'top', 2000);
         }
     });
 }
@@ -2639,7 +2638,7 @@ async function enumerateDevices() {
         populateDeviceSelects();
     } catch (error) {
         console.error('Error enumerating devices:', error);
-        handleError('Failed to load media devices');
+        handleError(t('errors.mediaDevices'));
     }
 }
 
@@ -2651,7 +2650,7 @@ function populateDeviceSelects() {
         const hasCamera = stream && stream.getVideoTracks().length > 0;
 
         if (!hasCamera) {
-            videoSelect.innerHTML = '<option value="">No cameras found</option>';
+            videoSelect.innerHTML = `<option value="">${t('settings.noCamerasFound')}</option>`;
             videoSelect.disabled = true;
             videoSelect.parentElement.style.opacity = '0.5';
         } else {
@@ -2660,7 +2659,7 @@ function populateDeviceSelects() {
             availableDevices.videoInputs.forEach((device) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
-                option.textContent = device.label || `Camera ${device.deviceId.slice(0, 8)}`;
+                option.textContent = device.label || `${t('settings.videoInput')} ${device.deviceId.slice(0, 8)}`;
                 if (device.deviceId === selectedDevices.videoInput) {
                     option.selected = true;
                 }
@@ -2676,7 +2675,7 @@ function populateDeviceSelects() {
         const hasMic = stream && stream.getAudioTracks().length > 0;
 
         if (!hasMic) {
-            audioSelect.innerHTML = '<option value="">No microphones found</option>';
+            audioSelect.innerHTML = `<option value="">${t('settings.noMicrophonesFound')}</option>`;
             audioSelect.disabled = true;
             audioSelect.parentElement.style.opacity = '0.5';
         } else {
@@ -2685,7 +2684,7 @@ function populateDeviceSelects() {
             availableDevices.audioInputs.forEach((device) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
-                option.textContent = device.label || `Microphone ${device.deviceId.slice(0, 8)}`;
+                option.textContent = device.label || `${t('settings.audioInput')} ${device.deviceId.slice(0, 8)}`;
                 if (device.deviceId === selectedDevices.audioInput) {
                     option.selected = true;
                 }
@@ -2698,12 +2697,12 @@ function populateDeviceSelects() {
     if (audioOutputSelect) {
         audioOutputSelect.innerHTML = '';
         if (availableDevices.audioOutputs.length === 0) {
-            audioOutputSelect.innerHTML = '<option value="">No speakers found</option>';
+            audioOutputSelect.innerHTML = `<option value="">${t('settings.noSpeakersFound')}</option>`;
         } else {
             availableDevices.audioOutputs.forEach((device) => {
                 const option = document.createElement('option');
                 option.value = device.deviceId;
-                option.textContent = device.label || `Speaker ${device.deviceId.slice(0, 8)}`;
+                option.textContent = device.label || `${t('settings.audioOutput')} ${device.deviceId.slice(0, 8)}`;
                 if (device.deviceId === selectedDevices.audioOutput) {
                     option.selected = true;
                 }
@@ -2724,7 +2723,7 @@ function updateUIForAvailableDevices() {
             videoBtn.classList.add('btn-danger');
             videoBtn.disabled = true;
             videoBtn.style.opacity = '0.5';
-            videoBtn.title = 'No camera available';
+            videoBtn.title = t('errors.noCameraAvailable');
         }
         if (swapCameraBtn) {
             swapCameraBtn.style.display = 'none';
@@ -2745,7 +2744,7 @@ function updateUIForAvailableDevices() {
             audioBtn.classList.add('btn-danger');
             audioBtn.disabled = true;
             audioBtn.style.opacity = '0.5';
-            audioBtn.title = 'No microphone available';
+            audioBtn.title = t('errors.noMicrophoneAvailable');
         }
     } else {
         if (audioBtn) {
@@ -2781,11 +2780,11 @@ async function refreshDevices(showToast = true) {
         await enumerateDevices();
         updateUIForAvailableDevices();
         if (showToast) {
-            toast('Devices refreshed successfully', 'success', 'top', 2000);
+            toast(t('messages.devicesRefreshed'), 'success', 'top', 2000);
         }
     } catch (error) {
         console.error('Error refreshing devices:', error);
-        handleError('Failed to refresh devices');
+        handleError(t('errors.refreshDevicesFailed'));
     } finally {
         if (refreshDevicesBtn) {
             refreshDevicesBtn.disabled = false;
@@ -2799,7 +2798,7 @@ async function handleVideoDeviceChange() {
         selectedDevices.videoInput = newDeviceId;
         await updateVideoStream();
         updateUIForAvailableDevices();
-        toast('Camera changed successfully', 'success', 'top', 2000);
+        toast(t('messages.cameraChanged'), 'success', 'top', 2000);
     }
 }
 
@@ -2809,7 +2808,7 @@ async function handleAudioDeviceChange() {
         selectedDevices.audioInput = newDeviceId;
         await updateAudioStream();
         updateUIForAvailableDevices();
-        toast('Microphone changed successfully', 'success', 'top', 2000);
+        toast(t('messages.microphoneChanged'), 'success', 'top', 2000);
     }
 }
 
@@ -2818,7 +2817,7 @@ async function handleAudioOutputDeviceChange() {
     if (newDeviceId && newDeviceId !== selectedDevices.audioOutput) {
         selectedDevices.audioOutput = newDeviceId;
         await setAudioOutputDevice(newDeviceId);
-        toast('Speaker changed successfully', 'success', 'top', 2000);
+        toast(t('messages.speakerChanged'), 'success', 'top', 2000);
     }
 }
 
@@ -2889,7 +2888,7 @@ async function updateVideoStream() {
         newStream.getAudioTracks().forEach((track) => track.stop());
     } catch (error) {
         console.error('Error updating video stream:', error);
-        handleError('Failed to change camera');
+        handleError(t('errors.changeCameraFailed'));
     }
 }
 
@@ -2932,7 +2931,7 @@ async function updateAudioStream() {
         newStream.getVideoTracks().forEach((track) => track.stop());
     } catch (error) {
         console.error('Error updating audio stream:', error);
-        handleError('Failed to change microphone');
+        handleError(t('errors.changeMicrophoneFailed'));
     }
 }
 
@@ -2943,11 +2942,11 @@ async function setAudioOutputDevice(deviceId) {
             selectedDevices.audioOutput = deviceId;
         } else {
             console.warn('Browser does not support audio output device selection');
-            toast('Audio output selection not supported in this browser', 'warning', 'top', 3000);
+            toast(t('errors.audioOutputNotSupported'), 'warning', 'top', 3000);
         }
     } catch (error) {
         console.error('Error setting audio output device:', error);
-        handleError('Failed to change speaker');
+        handleError(t('errors.changeSpeakerFailed'));
     }
 }
 
@@ -2962,7 +2961,7 @@ async function testDevices() {
         const hasMic = availableDevices.audioInputs.length > 0;
 
         if (!hasCamera && !hasMic) {
-            toast('No devices available to test', 'warning', 'top', 2000);
+            toast(t('errors.noDevicesToTest'), 'warning', 'top', 2000);
             return;
         }
 
@@ -2992,11 +2991,11 @@ async function testDevices() {
         // Test for 2 seconds then stop
         setTimeout(() => {
             testStream.getTracks().forEach((track) => track.stop());
-            toast('Device test completed successfully', 'success', 'top', 2000);
+            toast(t('messages.deviceTestCompleted'), 'success', 'top', 2000);
         }, 2000);
     } catch (error) {
         console.error('Error testing devices:', error);
-        handleError('Device test failed: ' + error.message);
+        handleError(t('errors.deviceTestFailed', { message: error.message }));
     } finally {
         if (testDevicesBtn) {
             testDevicesBtn.disabled = false;

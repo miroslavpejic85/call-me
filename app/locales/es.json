@@ -19,7 +19,13 @@
         "users": "Usuarios",
         "chat": "Chat",
         "searchUsers": "Buscar usuarios...",
-        "closeSidebar": "Cerrar barra lateral"
+        "closeSidebar": "Cerrar barra lateral",
+        "callingUser": "Estás llamando a __username__.<br/>Por favor espera a que responda",
+        "acceptCallFrom": "¿Quieres aceptar la llamada de __username__ ?",
+        "hangupWith": "Colgar la llamada con __username__",
+        "callUser": "Llamar a __username__",
+        "videoOff": "Vídeo desactivado",
+        "videoDisabled": "Vídeo deshabilitado"
     },
     "controls": {
         "microphone": "Micrófono",
@@ -35,7 +41,9 @@
         "swapCamera": "Cambiar cámara",
         "toggleScreen": "Alternar pantalla",
         "toggleUsers": "Alternar usuarios",
-        "leave": "Salir"
+        "leave": "Salir",
+        "startScreenShare": "Iniciar compartir pantalla",
+        "stopScreenShare": "Detener compartir pantalla"
     },
     "messages": {
         "microphoneEnabled": "Micrófono activado",
@@ -49,13 +57,59 @@
         "permissionDenied": "Permiso denegado",
         "error": "Ocurrió un error",
         "copied": "Copiado al portapapeles",
-        "invalidPassword": "Contraseña inválida"
+        "invalidPassword": "Contraseña inválida",
+        "shareRoomText": "¡Únete a mi sala de Call-me!",
+        "roomCopied": "Sala copiada al portapapeles __text__",
+        "devicesRefreshed": "Dispositivos actualizados correctamente",
+        "cameraChanged": "Cámara cambiada correctamente",
+        "microphoneChanged": "Micrófono cambiado correctamente",
+        "speakerChanged": "Altavoz cambiado correctamente",
+        "deviceTestCompleted": "Prueba de dispositivos completada correctamente"
     },
     "errors": {
         "noUsername": "Se requiere nombre de usuario",
         "connectionLost": "Conexión perdida",
         "mediaDevices": "No se pudo acceder a los dispositivos multimedia",
-        "noSupport": "Su navegador no soporta esta función"
+        "noSupport": "Su navegador no soporta esta función",
+        "socketError": "Error de socket",
+        "enumerateDevicesFailed": "Error al enumerar dispositivos",
+        "noUserSelected": "No se ha seleccionado ningún usuario",
+        "cannotCallSelf": "No puedes llamarte a ti mismo",
+        "copyToClipboardFailed": "No se pudo copiar al portapapeles",
+        "screenShareFailed": "Falló el uso compartido de pantalla",
+        "screenSharePermissionDenied": "Permiso denegado para compartir pantalla",
+        "screenShareNotSupported": "Compartir pantalla no está soportado en este navegador",
+        "screenShareStartFailed": "No se pudo iniciar el uso compartido de pantalla",
+        "screenShareStopFailed": "No se pudo detener el uso compartido de pantalla",
+        "noOriginalStreamAvailable": "No hay ningún flujo original disponible",
+        "swapCameraFailed": "No se pudo cambiar la cámara",
+        "noVideoTrackInStream": "No hay pista de vídeo disponible en el flujo",
+        "noAudioTrackInStream": "No hay pista de audio disponible en el flujo",
+        "noVideoTrackForPeer": "No hay pista de vídeo disponible para las conexiones del par",
+        "replacingTrack": "Error al reemplazar la pista: __message__",
+        "userNotFound": "¡No se encontró el usuario __username__!",
+        "offerCreateFailed": "Error al crear una oferta",
+        "answerCreateFailed": "Error al crear una respuesta",
+        "remoteDescriptionFailed": "Error al establecer la descripción remota",
+        "addIceCandidateFailed": "Error al añadir candidato ICE",
+        "noStreamInOnTrack": "No hay flujo disponible en el evento ontrack",
+        "noCameraAvailable": "No hay cámara disponible",
+        "noMicrophoneAvailable": "No hay micrófono disponible",
+        "refreshDevicesFailed": "No se pudieron actualizar los dispositivos",
+        "changeCameraFailed": "No se pudo cambiar la cámara",
+        "changeMicrophoneFailed": "No se pudo cambiar el micrófono",
+        "audioOutputNotSupported": "La selección de salida de audio no está soportada en este navegador",
+        "changeSpeakerFailed": "No se pudo cambiar el altavoz",
+        "noDevicesToTest": "No hay dispositivos disponibles para probar",
+        "deviceTestFailed": "La prueba de dispositivos falló: __message__",
+        "getUserMediaNotFound": "No se encontró cámara o micrófono. Aún puedes unirte con los dispositivos disponibles",
+        "getUserMediaInUse": "El dispositivo ya está en uso por otra aplicación",
+        "getUserMediaConstraints": "No se pueden encontrar dispositivos que coincidan con los requisitos. Prueba con otros dispositivos",
+        "getUserMediaPermissionDenied": "Permiso denegado. Permite el acceso a la cámara/micrófono en la configuración del navegador",
+        "getUserMediaAborted": "La operación se abortó inesperadamente",
+        "getUserMediaSecurity": "Error de seguridad: revisa tu conexión o la configuración del navegador",
+        "getUserMediaDefault": "No se puede obtener el stream; asegúrate de estar en un contexto TLS seguro (HTTPS) e inténtalo de nuevo",
+        "getUserMediaHelp": "<br/>Consulta los errores comunes de <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia</a>"
     },
     "settings": {
         "language": "Idioma",
@@ -75,17 +129,67 @@
         "testDevices": "Probar Dispositivos",
         "refresh": "Actualizar",
         "saveMessages": "Guardar Mensajes",
-        "clearAll": "Borrar Todo"
+        "clearAll": "Borrar Todo",
+        "noCamerasFound": "No se encontraron cámaras",
+        "noMicrophonesFound": "No se encontraron micrófonos",
+        "noSpeakersFound": "No se encontraron altavoces"
     },
     "chat": {
         "addEmoji": "Agregar emoji",
         "typeMessage": "Escribe un mensaje...",
-        "sendMessage": "Enviar mensaje"
+        "sendMessage": "Enviar mensaje",
+        "me": "Yo",
+        "cannotSendNoUsers": "No se puede enviar el mensaje: no hay usuarios conectados",
+        "newMessageFrom": "Nuevo mensaje de __username__",
+        "noMessagesToSave": "No hay mensajes de chat para guardar",
+        "savedAs": "Mensajes de chat guardados como __filename__",
+        "noMessagesToClear": "No hay mensajes de chat para borrar",
+        "clearTitle": "Borrar mensajes del chat",
+        "clearConfirm": "¿Seguro que quieres borrar todos los mensajes del chat? Esta acción no se puede deshacer",
+        "clearConfirmYes": "Sí, borrar todo",
+        "cleared": "Mensajes del chat borrados correctamente"
     },
     "api": {
         "unauthorized": "Acceso no autorizado",
         "invalidApiKey": "Clave de API inválida",
         "serverError": "Error del servidor",
         "notFound": "Recurso no encontrado"
+    },
+    "common": {
+        "yes": "Sí",
+        "no": "No",
+        "exit": "Salir"
+    },
+    "host": {
+        "protectedTitle": "Anfitrión protegido",
+        "enterPassword": "Por favor, introduce la contraseña del anfitrión:",
+        "passwordPlaceholder": "Introduce tu contraseña",
+        "submit": "Enviar",
+        "passwordEmpty": "La contraseña no puede estar vacía",
+        "accessGrantedTitle": "Acceso concedido",
+        "accessGrantedText": "¡Contraseña validada correctamente!",
+        "invalidPasswordTitle": "Contraseña inválida",
+        "invalidPasswordText": "Por favor, inténtalo de nuevo. (__attempts__/__maxRetries__ intentos)",
+        "tooManyAttemptsTitle": "Demasiados intentos",
+        "tooManyAttemptsText": "Has excedido el número máximo de intentos. Inténtalo de nuevo más tarde",
+        "joinError": "Ocurrió un error al unirse al anfitrión"
+    },
+    "file": {
+        "dataChannelNotReady": "El canal de datos no está listo para transferir archivos",
+        "dataChannelError": "Ocurrió un error en el canal de datos",
+        "onlyActiveParticipant": "Solo puedes enviar archivos al participante activo de la llamada",
+        "onlyUserInCall": "Solo puedes enviar archivos al usuario con el que estás en llamada",
+        "dataChannelNotReadyTryAgain": "El canal de datos no está listo. Inténtalo de nuevo cuando la llamada esté totalmente conectada",
+        "failedToSend": "No se pudo enviar el archivo",
+        "tooLarge": "Archivo demasiado grande. El tamaño máximo permitido es __maxSizeMb__ MB",
+        "sent": "Archivo \"__filename__\" enviado",
+        "sendError": "Error al enviar el archivo por el canal de datos",
+        "cancelled": "Transferencia de archivos cancelada",
+        "cancelledByRemote": "Transferencia de archivos cancelada por el remoto",
+        "sendToUser": "Enviar archivo a __username__",
+        "newFileFrom": "Nuevo archivo de __username__",
+        "sentFileLabel": " envió el archivo: ",
+        "sending": "Enviando: __filename__",
+        "receiving": "Recibiendo: __filename__"
     }
 }

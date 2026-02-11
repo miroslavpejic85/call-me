@@ -19,7 +19,13 @@
         "users": "Users",
         "chat": "Chat",
         "searchUsers": "Search users...",
-        "closeSidebar": "Close sidebar"
+        "closeSidebar": "Close sidebar",
+        "callingUser": "You are calling __username__.<br/>Please wait for them to answer",
+        "acceptCallFrom": "Do you want to accept call from __username__ ?",
+        "hangupWith": "Hang up call with __username__",
+        "callUser": "Call __username__",
+        "videoOff": "Video Off",
+        "videoDisabled": "Video Disabled"
     },
     "controls": {
         "microphone": "Microphone",
@@ -35,7 +41,9 @@
         "swapCamera": "Swap camera",
         "toggleScreen": "Toggle screen",
         "toggleUsers": "Toggle users",
-        "leave": "Leave"
+        "leave": "Leave",
+        "startScreenShare": "Start screen sharing",
+        "stopScreenShare": "Stop screen sharing"
     },
     "messages": {
         "microphoneEnabled": "Microphone enabled",
@@ -49,13 +57,59 @@
         "permissionDenied": "Permission denied",
         "error": "An error occurred",
         "copied": "Copied to clipboard",
-        "invalidPassword": "Invalid password"
+        "invalidPassword": "Invalid password",
+        "shareRoomText": "Join my Call-me room!",
+        "roomCopied": "Room copied to clipboard __text__",
+        "devicesRefreshed": "Devices refreshed successfully",
+        "cameraChanged": "Camera changed successfully",
+        "microphoneChanged": "Microphone changed successfully",
+        "speakerChanged": "Speaker changed successfully",
+        "deviceTestCompleted": "Device test completed successfully"
     },
     "errors": {
         "noUsername": "Username is required",
         "connectionLost": "Connection lost",
         "mediaDevices": "Could not access media devices",
-        "noSupport": "Your browser does not support this feature"
+        "noSupport": "Your browser does not support this feature",
+        "socketError": "Socket error",
+        "enumerateDevicesFailed": "Error enumerating devices",
+        "noUserSelected": "No user selected",
+        "cannotCallSelf": "You cannot call yourself",
+        "copyToClipboardFailed": "Failed to copy to clipboard",
+        "screenShareFailed": "Screen sharing failed",
+        "screenSharePermissionDenied": "Screen sharing permission denied",
+        "screenShareNotSupported": "Screen sharing not supported in this browser",
+        "screenShareStartFailed": "Failed to start screen sharing",
+        "screenShareStopFailed": "Failed to stop screen sharing",
+        "noOriginalStreamAvailable": "No original stream available",
+        "swapCameraFailed": "Failed to swap the camera",
+        "noVideoTrackInStream": "No video track available in the stream",
+        "noAudioTrackInStream": "No audio track available in the stream",
+        "noVideoTrackForPeer": "No video track available for peer connections",
+        "replacingTrack": "Replacing track error: __message__",
+        "userNotFound": "Username __username__ not found!",
+        "offerCreateFailed": "Error when creating an offer",
+        "answerCreateFailed": "Error when creating an answer",
+        "remoteDescriptionFailed": "Error when setting remote description",
+        "addIceCandidateFailed": "Error when adding ICE candidate",
+        "noStreamInOnTrack": "No stream available in the ontrack event",
+        "noCameraAvailable": "No camera available",
+        "noMicrophoneAvailable": "No microphone available",
+        "refreshDevicesFailed": "Failed to refresh devices",
+        "changeCameraFailed": "Failed to change camera",
+        "changeMicrophoneFailed": "Failed to change microphone",
+        "audioOutputNotSupported": "Audio output selection not supported in this browser",
+        "changeSpeakerFailed": "Failed to change speaker",
+        "noDevicesToTest": "No devices available to test",
+        "deviceTestFailed": "Device test failed: __message__",
+        "getUserMediaNotFound": "No camera or microphone found. You can still join with available devices",
+        "getUserMediaInUse": "Device is already in use by another application",
+        "getUserMediaConstraints": "Cannot find devices matching the requirements. Try with different devices",
+        "getUserMediaPermissionDenied": "Permission denied. Please allow access to camera/microphone in your browser settings",
+        "getUserMediaAborted": "Operation aborted unexpectedly",
+        "getUserMediaSecurity": "Security error: Check your connection or browser settings",
+        "getUserMediaDefault": "Can't get stream, make sure you are in a secure TLS context (HTTPS) and try again",
+        "getUserMediaHelp": "<br/>Check the common <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia errors</a>"
     },
     "settings": {
         "language": "Language",
@@ -75,17 +129,67 @@
         "testDevices": "Test Devices",
         "refresh": "Refresh",
         "saveMessages": "Save Messages",
-        "clearAll": "Clear All"
+        "clearAll": "Clear All",
+        "noCamerasFound": "No cameras found",
+        "noMicrophonesFound": "No microphones found",
+        "noSpeakersFound": "No speakers found"
     },
     "chat": {
         "addEmoji": "Add emoji",
         "typeMessage": "Type a message...",
-        "sendMessage": "Send message"
+        "sendMessage": "Send message",
+        "me": "Me",
+        "cannotSendNoUsers": "Cannot send message: no users are currently connected",
+        "newMessageFrom": "New message from __username__",
+        "noMessagesToSave": "No chat messages to save",
+        "savedAs": "Chat messages saved as __filename__",
+        "noMessagesToClear": "No chat messages to clear",
+        "clearTitle": "Clear Chat Messages",
+        "clearConfirm": "Are you sure you want to clear all chat messages? This action cannot be undone",
+        "clearConfirmYes": "Yes, Clear All",
+        "cleared": "Chat messages cleared successfully"
     },
     "api": {
         "unauthorized": "Unauthorized access",
         "invalidApiKey": "Invalid API key",
         "serverError": "Server error",
         "notFound": "Resource not found"
+    },
+    "common": {
+        "yes": "Yes",
+        "no": "No",
+        "exit": "Exit"
+    },
+    "host": {
+        "protectedTitle": "Host Protected",
+        "enterPassword": "Please enter the host password:",
+        "passwordPlaceholder": "Enter your password",
+        "submit": "Submit",
+        "passwordEmpty": "Password cannot be empty",
+        "accessGrantedTitle": "Access Granted",
+        "accessGrantedText": "Password validated successfully!",
+        "invalidPasswordTitle": "Invalid Password",
+        "invalidPasswordText": "Please try again. (__attempts__/__maxRetries__ attempts)",
+        "tooManyAttemptsTitle": "Too Many Attempts",
+        "tooManyAttemptsText": "You have exceeded the maximum number of attempts. Please try again later",
+        "joinError": "An error occurred while joining the host"
+    },
+    "file": {
+        "dataChannelNotReady": "Data channel not ready for file transfer",
+        "dataChannelError": "Data channel error occurred",
+        "onlyActiveParticipant": "You can send files only to the active call participant",
+        "onlyUserInCall": "You can send files only to the user you are in a call with",
+        "dataChannelNotReadyTryAgain": "Data channel not ready. Try again after the call is fully connected",
+        "failedToSend": "Failed to send file",
+        "tooLarge": "File too large. Maximum allowed size is __maxSizeMb__ MB",
+        "sent": "File \"__filename__\" sent",
+        "sendError": "Error sending file over data channel",
+        "cancelled": "File transfer cancelled",
+        "cancelledByRemote": "File transfer cancelled by remote",
+        "sendToUser": "Send file to __username__",
+        "newFileFrom": "New file from __username__",
+        "sentFileLabel": " sent file: ",
+        "sending": "Sending: __filename__",
+        "receiving": "Receiving: __filename__"
     }
 }

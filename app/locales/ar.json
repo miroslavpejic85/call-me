@@ -19,7 +19,13 @@
         "users": "المستخدمون",
         "chat": "الدردشة",
         "searchUsers": "البحث عن المستخدمين...",
-        "closeSidebar": "إغلاق الشريط الجانبي"
+        "closeSidebar": "إغلاق الشريط الجانبي",
+        "callingUser": "أنت تتصل بـ __username__.<br/>يرجى الانتظار حتى يجيب",
+        "acceptCallFrom": "هل تريد قبول المكالمة من __username__ ؟",
+        "hangupWith": "إنهاء المكالمة مع __username__",
+        "callUser": "اتصل بـ __username__",
+        "videoOff": "الفيديو متوقف",
+        "videoDisabled": "الفيديو معطّل"
     },
     "controls": {
         "microphone": "الميكروفون",
@@ -35,7 +41,9 @@
         "swapCamera": "تبديل الكاميرا",
         "toggleScreen": "تبديل الشاشة",
         "toggleUsers": "تبديل المستخدمين",
-        "leave": "مغادرة"
+        "leave": "مغادرة",
+        "startScreenShare": "بدء مشاركة الشاشة",
+        "stopScreenShare": "إيقاف مشاركة الشاشة"
     },
     "messages": {
         "microphoneEnabled": "تم تفعيل الميكروفون",
@@ -49,13 +57,59 @@
         "permissionDenied": "تم رفض الإذن",
         "error": "حدث خطأ",
         "copied": "تم النسخ إلى الحافظة",
-        "invalidPassword": "كلمة مرور غير صحيحة"
+        "invalidPassword": "كلمة مرور غير صحيحة",
+        "shareRoomText": "انضم إلى غرفة Call-me الخاصة بي!",
+        "roomCopied": "تم نسخ الغرفة إلى الحافظة __text__",
+        "devicesRefreshed": "تم تحديث الأجهزة بنجاح",
+        "cameraChanged": "تم تغيير الكاميرا بنجاح",
+        "microphoneChanged": "تم تغيير الميكروفون بنجاح",
+        "speakerChanged": "تم تغيير مكبر الصوت بنجاح",
+        "deviceTestCompleted": "اكتمل اختبار الأجهزة بنجاح"
     },
     "errors": {
         "noUsername": "اسم المستخدم مطلوب",
         "connectionLost": "انقطع الاتصال",
         "mediaDevices": "تعذر الوصول إلى أجهزة الوسائط",
-        "noSupport": "متصفحك لا يدعم هذه الميزة"
+        "noSupport": "متصفحك لا يدعم هذه الميزة",
+        "socketError": "خطأ في المقبس",
+        "enumerateDevicesFailed": "خطأ أثناء تعداد الأجهزة",
+        "noUserSelected": "لم يتم تحديد أي مستخدم",
+        "cannotCallSelf": "لا يمكنك الاتصال بنفسك",
+        "copyToClipboardFailed": "فشل النسخ إلى الحافظة",
+        "screenShareFailed": "فشلت مشاركة الشاشة",
+        "screenSharePermissionDenied": "تم رفض إذن مشاركة الشاشة",
+        "screenShareNotSupported": "مشاركة الشاشة غير مدعومة في هذا المتصفح",
+        "screenShareStartFailed": "فشل بدء مشاركة الشاشة",
+        "screenShareStopFailed": "فشل إيقاف مشاركة الشاشة",
+        "noOriginalStreamAvailable": "لا يوجد بث أصلي متاح",
+        "swapCameraFailed": "فشل تبديل الكاميرا",
+        "noVideoTrackInStream": "لا توجد مسار فيديو متاح في البث",
+        "noAudioTrackInStream": "لا توجد مسار صوت متاح في البث",
+        "noVideoTrackForPeer": "لا توجد مسار فيديو متاح لاتصالات النظير",
+        "replacingTrack": "خطأ في استبدال المسار: __message__",
+        "userNotFound": "لم يتم العثور على اسم المستخدم __username__!",
+        "offerCreateFailed": "حدث خطأ عند إنشاء العرض",
+        "answerCreateFailed": "حدث خطأ عند إنشاء الإجابة",
+        "remoteDescriptionFailed": "حدث خطأ عند تعيين الوصف البعيد",
+        "addIceCandidateFailed": "حدث خطأ عند إضافة مرشح ICE",
+        "noStreamInOnTrack": "لا يوجد بث متاح في حدث ontrack",
+        "noCameraAvailable": "لا توجد كاميرا متاحة",
+        "noMicrophoneAvailable": "لا يوجد ميكروفون متاح",
+        "refreshDevicesFailed": "فشل تحديث الأجهزة",
+        "changeCameraFailed": "فشل تغيير الكاميرا",
+        "changeMicrophoneFailed": "فشل تغيير الميكروفون",
+        "audioOutputNotSupported": "اختيار إخراج الصوت غير مدعوم في هذا المتصفح",
+        "changeSpeakerFailed": "فشل تغيير مكبر الصوت",
+        "noDevicesToTest": "لا توجد أجهزة متاحة للاختبار",
+        "deviceTestFailed": "فشل اختبار الجهاز: __message__",
+        "getUserMediaNotFound": "لم يتم العثور على كاميرا أو ميكروفون. لا يزال بإمكانك الانضمام باستخدام الأجهزة المتاحة",
+        "getUserMediaInUse": "الجهاز مستخدم بالفعل بواسطة تطبيق آخر",
+        "getUserMediaConstraints": "تعذر العثور على أجهزة تطابق المتطلبات. جرّب أجهزة مختلفة",
+        "getUserMediaPermissionDenied": "تم رفض الإذن. يرجى السماح بالوصول إلى الكاميرا/الميكروفون في إعدادات المتصفح",
+        "getUserMediaAborted": "تم إلغاء العملية بشكل غير متوقع",
+        "getUserMediaSecurity": "خطأ أمني: تحقق من اتصالك أو إعدادات المتصفح",
+        "getUserMediaDefault": "تعذر الحصول على البث؛ تأكد من أنك في سياق TLS آمن (HTTPS) ثم حاول مرة أخرى",
+        "getUserMediaHelp": "<br/>تحقق من <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">أخطاء getUserMedia</a> الشائعة"
     },
     "settings": {
         "language": "اللغة",
@@ -75,17 +129,67 @@
         "testDevices": "اختبار الأجهزة",
         "refresh": "تحديث",
         "saveMessages": "حفظ الرسائل",
-        "clearAll": "مسح الكل"
+        "clearAll": "مسح الكل",
+        "noCamerasFound": "لم يتم العثور على كاميرات",
+        "noMicrophonesFound": "لم يتم العثور على ميكروفونات",
+        "noSpeakersFound": "لم يتم العثور على مكبرات صوت"
     },
     "chat": {
         "addEmoji": "إضافة إيموجي",
         "typeMessage": "اكتب رسالة...",
-        "sendMessage": "إرسال رسالة"
+        "sendMessage": "إرسال رسالة",
+        "me": "أنا",
+        "cannotSendNoUsers": "لا يمكن إرسال الرسالة: لا يوجد مستخدمون متصلون حاليًا",
+        "newMessageFrom": "رسالة جديدة من __username__",
+        "noMessagesToSave": "لا توجد رسائل دردشة لحفظها",
+        "savedAs": "تم حفظ رسائل الدردشة باسم __filename__",
+        "noMessagesToClear": "لا توجد رسائل دردشة لمسحها",
+        "clearTitle": "مسح رسائل الدردشة",
+        "clearConfirm": "هل أنت متأكد أنك تريد مسح جميع رسائل الدردشة؟ لا يمكن التراجع عن هذا الإجراء",
+        "clearConfirmYes": "نعم، امسح الكل",
+        "cleared": "تم مسح رسائل الدردشة بنجاح"
     },
     "api": {
         "unauthorized": "وصول غير مصرح به",
         "invalidApiKey": "مفتاح API غير صالح",
         "serverError": "خطأ في الخادم",
         "notFound": "المورد غير موجود"
+    },
+    "common": {
+        "yes": "نعم",
+        "no": "لا",
+        "exit": "خروج"
+    },
+    "host": {
+        "protectedTitle": "المضيف محمي",
+        "enterPassword": "يرجى إدخال كلمة مرور المضيف:",
+        "passwordPlaceholder": "أدخل كلمة المرور",
+        "submit": "إرسال",
+        "passwordEmpty": "لا يمكن أن تكون كلمة المرور فارغة",
+        "accessGrantedTitle": "تم منح الوصول",
+        "accessGrantedText": "تم التحقق من كلمة المرور بنجاح!",
+        "invalidPasswordTitle": "كلمة مرور غير صحيحة",
+        "invalidPasswordText": "يرجى المحاولة مرة أخرى. (__attempts__/__maxRetries__ محاولة)",
+        "tooManyAttemptsTitle": "محاولات كثيرة",
+        "tooManyAttemptsText": "لقد تجاوزت الحد الأقصى لعدد المحاولات. يرجى المحاولة لاحقًا",
+        "joinError": "حدث خطأ أثناء الانضمام إلى المضيف"
+    },
+    "file": {
+        "dataChannelNotReady": "قناة البيانات غير جاهزة لنقل الملفات",
+        "dataChannelError": "حدث خطأ في قناة البيانات",
+        "onlyActiveParticipant": "يمكنك إرسال الملفات فقط إلى المشارك النشط في المكالمة",
+        "onlyUserInCall": "يمكنك إرسال الملفات فقط إلى المستخدم الذي أنت في مكالمة معه",
+        "dataChannelNotReadyTryAgain": "قناة البيانات غير جاهزة. حاول مرة أخرى بعد اتصال المكالمة بالكامل",
+        "failedToSend": "فشل إرسال الملف",
+        "tooLarge": "الملف كبير جدًا. الحد الأقصى المسموح به هو __maxSizeMb__ ميجابايت",
+        "sent": "تم إرسال الملف \"__filename__\"",
+        "sendError": "خطأ أثناء إرسال الملف عبر قناة البيانات",
+        "cancelled": "تم إلغاء نقل الملف",
+        "cancelledByRemote": "تم إلغاء نقل الملف من الطرف البعيد",
+        "sendToUser": "إرسال ملف إلى __username__",
+        "newFileFrom": "ملف جديد من __username__",
+        "sentFileLabel": " أرسل ملفًا: ",
+        "sending": "جارٍ الإرسال: __filename__",
+        "receiving": "جارٍ الاستلام: __filename__"
     }
 }

@@ -19,7 +19,13 @@
         "users": "ユーザー",
         "chat": "チャット",
         "searchUsers": "ユーザーを検索...",
-        "closeSidebar": "サイドバーを閉じる"
+        "closeSidebar": "サイドバーを閉じる",
+        "callingUser": "__username__ に発信しています。<br/>応答するまでお待ちください。",
+        "acceptCallFrom": "__username__ からの通話を受けますか？",
+        "hangupWith": "__username__ との通話を終了",
+        "callUser": "__username__ に発信",
+        "videoOff": "ビデオオフ",
+        "videoDisabled": "ビデオ無効"
     },
     "controls": {
         "microphone": "マイク",
@@ -35,7 +41,9 @@
         "swapCamera": "カメラを切り替え",
         "toggleScreen": "画面を切り替え",
         "toggleUsers": "ユーザーを切り替え",
-        "leave": "退室"
+        "leave": "退室",
+        "startScreenShare": "画面共有を開始",
+        "stopScreenShare": "画面共有を停止"
     },
     "messages": {
         "microphoneEnabled": "マイクを有効にしました",
@@ -49,13 +57,59 @@
         "permissionDenied": "権限が拒否されました",
         "error": "エラーが発生しました",
         "copied": "クリップボードにコピーしました",
-        "invalidPassword": "パスワードが無効です"
+        "invalidPassword": "パスワードが無効です",
+        "shareRoomText": "私のCall-meルームに参加して！",
+        "roomCopied": "ルームをクリップボードにコピーしました __text__",
+        "devicesRefreshed": "デバイスを正常に更新しました",
+        "cameraChanged": "カメラを正常に変更しました",
+        "microphoneChanged": "マイクを正常に変更しました",
+        "speakerChanged": "スピーカーを正常に変更しました",
+        "deviceTestCompleted": "デバイステストが正常に完了しました"
     },
     "errors": {
         "noUsername": "ユーザー名は必須です",
         "connectionLost": "接続が切断されました",
         "mediaDevices": "メディアデバイスにアクセスできませんでした",
-        "noSupport": "お使いのブラウザはこの機能をサポートしていません"
+        "noSupport": "お使いのブラウザはこの機能をサポートしていません",
+        "socketError": "ソケットエラー",
+        "enumerateDevicesFailed": "デバイスの列挙中にエラーが発生しました",
+        "noUserSelected": "ユーザーが選択されていません。",
+        "cannotCallSelf": "自分自身に発信できません。",
+        "copyToClipboardFailed": "クリップボードへのコピーに失敗しました",
+        "screenShareFailed": "画面共有に失敗しました",
+        "screenSharePermissionDenied": "画面共有の許可が拒否されました",
+        "screenShareNotSupported": "このブラウザでは画面共有がサポートされていません",
+        "screenShareStartFailed": "画面共有の開始に失敗しました",
+        "screenShareStopFailed": "画面共有の停止に失敗しました",
+        "noOriginalStreamAvailable": "元のストリームが利用できません",
+        "swapCameraFailed": "カメラの切り替えに失敗しました。",
+        "noVideoTrackInStream": "ストリームにビデオトラックがありません。",
+        "noAudioTrackInStream": "ストリームにオーディオトラックがありません。",
+        "noVideoTrackForPeer": "ピア接続用のビデオトラックがありません。",
+        "replacingTrack": "トラックの置き換えエラー: __message__",
+        "userNotFound": "ユーザー名 __username__ が見つかりません！",
+        "offerCreateFailed": "オファー作成時にエラーが発生しました。",
+        "answerCreateFailed": "アンサー作成時にエラーが発生しました。",
+        "remoteDescriptionFailed": "リモート記述の設定中にエラーが発生しました。",
+        "addIceCandidateFailed": "ICE candidate の追加中にエラーが発生しました。",
+        "noStreamInOnTrack": "ontrack イベントにストリームがありません。",
+        "noCameraAvailable": "利用可能なカメラがありません",
+        "noMicrophoneAvailable": "利用可能なマイクがありません",
+        "refreshDevicesFailed": "デバイスの更新に失敗しました",
+        "changeCameraFailed": "カメラの変更に失敗しました",
+        "changeMicrophoneFailed": "マイクの変更に失敗しました",
+        "audioOutputNotSupported": "このブラウザではオーディオ出力の選択がサポートされていません",
+        "changeSpeakerFailed": "スピーカーの変更に失敗しました",
+        "noDevicesToTest": "テストできるデバイスがありません",
+        "deviceTestFailed": "デバイステストに失敗しました: __message__",
+        "getUserMediaNotFound": "カメラまたはマイクが見つかりません。利用可能なデバイスで参加できます。",
+        "getUserMediaInUse": "デバイスは別のアプリケーションで使用中です",
+        "getUserMediaConstraints": "要件に一致するデバイスが見つかりません。別のデバイスで試してください。",
+        "getUserMediaPermissionDenied": "許可が拒否されました。ブラウザ設定でカメラ/マイクへのアクセスを許可してください。",
+        "getUserMediaAborted": "操作が予期せず中断されました",
+        "getUserMediaSecurity": "セキュリティエラー: 接続またはブラウザ設定を確認してください",
+        "getUserMediaDefault": "ストリームを取得できません。安全な TLS (HTTPS) コンテキストであることを確認して再試行してください",
+        "getUserMediaHelp": "<br/>一般的な <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia エラー</a> を確認してください。"
     },
     "settings": {
         "language": "言語",
@@ -75,17 +129,67 @@
         "testDevices": "デバイスをテスト",
         "refresh": "更新",
         "saveMessages": "メッセージを保存",
-        "clearAll": "すべてクリア"
+        "clearAll": "すべてクリア",
+        "noCamerasFound": "カメラが見つかりません",
+        "noMicrophonesFound": "マイクが見つかりません",
+        "noSpeakersFound": "スピーカーが見つかりません"
     },
     "chat": {
         "addEmoji": "絵文字を追加",
         "typeMessage": "メッセージを入力...",
-        "sendMessage": "メッセージを送信"
+        "sendMessage": "メッセージを送信",
+        "me": "私",
+        "cannotSendNoUsers": "メッセージを送信できません: 現在接続中のユーザーがいません",
+        "newMessageFrom": "__username__ から新しいメッセージ",
+        "noMessagesToSave": "保存するチャットメッセージはありません",
+        "savedAs": "チャットメッセージを __filename__ として保存しました",
+        "noMessagesToClear": "クリアするチャットメッセージはありません",
+        "clearTitle": "チャットメッセージをクリア",
+        "clearConfirm": "すべてのチャットメッセージをクリアしますか？この操作は元に戻せません。",
+        "clearConfirmYes": "はい、すべてクリア",
+        "cleared": "チャットメッセージを正常にクリアしました"
     },
     "api": {
         "unauthorized": "未承認のアクセス",
         "invalidApiKey": "無効な API キー",
         "serverError": "サーバーエラー",
         "notFound": "リソースが見つかりません"
+    },
+    "common": {
+        "yes": "はい",
+        "no": "いいえ",
+        "exit": "終了"
+    },
+    "host": {
+        "protectedTitle": "ホストは保護されています",
+        "enterPassword": "ホストのパスワードを入力してください:",
+        "passwordPlaceholder": "パスワードを入力",
+        "submit": "送信",
+        "passwordEmpty": "パスワードは空にできません",
+        "accessGrantedTitle": "アクセスが許可されました",
+        "accessGrantedText": "パスワードが正常に確認されました!",
+        "invalidPasswordTitle": "無効なパスワード",
+        "invalidPasswordText": "もう一度お試しください。(__attempts__/__maxRetries__ 回)",
+        "tooManyAttemptsTitle": "試行回数が多すぎます",
+        "tooManyAttemptsText": "最大試行回数を超えました。しばらくしてから再度お試しください。",
+        "joinError": "ホストに参加中にエラーが発生しました。"
+    },
+    "file": {
+        "dataChannelNotReady": "ファイル転送のためのデータチャネルが準備できていません",
+        "dataChannelError": "データチャネルエラーが発生しました",
+        "onlyActiveParticipant": "ファイルは通話のアクティブ参加者にのみ送信できます",
+        "onlyUserInCall": "ファイルは通話中のユーザーにのみ送信できます",
+        "dataChannelNotReadyTryAgain": "データチャネルが準備できていません。通話が完全に接続されてから再試行してください。",
+        "failedToSend": "ファイルの送信に失敗しました",
+        "tooLarge": "ファイルが大きすぎます。最大サイズは __maxSizeMb__ MB です。",
+        "sent": "ファイル \"__filename__\" を送信しました",
+        "sendError": "データチャネル経由でのファイル送信エラー",
+        "cancelled": "ファイル転送がキャンセルされました",
+        "cancelledByRemote": "相手によってファイル転送がキャンセルされました",
+        "sendToUser": "__username__ にファイルを送信",
+        "newFileFrom": "__username__ から新しいファイル",
+        "sentFileLabel": " がファイルを送信: ",
+        "sending": "送信中: __filename__",
+        "receiving": "受信中: __filename__"
     }
 }

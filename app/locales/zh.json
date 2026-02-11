@@ -19,7 +19,13 @@
         "users": "用户",
         "chat": "聊天",
         "searchUsers": "搜索用户...",
-        "closeSidebar": "关闭侧边栏"
+        "closeSidebar": "关闭侧边栏",
+        "callingUser": "你正在呼叫 __username__。<br/>请等待对方接听。",
+        "acceptCallFrom": "是否接受来自 __username__ 的通话？",
+        "hangupWith": "挂断与 __username__ 的通话",
+        "callUser": "呼叫 __username__",
+        "videoOff": "视频已关闭",
+        "videoDisabled": "视频已禁用"
     },
     "controls": {
         "microphone": "麦克风",
@@ -35,7 +41,9 @@
         "swapCamera": "切换摄像头",
         "toggleScreen": "切换屏幕",
         "toggleUsers": "切换用户",
-        "leave": "离开"
+        "leave": "离开",
+        "startScreenShare": "开始共享屏幕",
+        "stopScreenShare": "停止共享屏幕"
     },
     "messages": {
         "microphoneEnabled": "麦克风已开启",
@@ -49,13 +57,59 @@
         "permissionDenied": "权限被拒绝",
         "error": "发生错误",
         "copied": "已复制到剪贴板",
-        "invalidPassword": "密码无效"
+        "invalidPassword": "密码无效",
+        "shareRoomText": "加入我的 Call-me 房间！",
+        "roomCopied": "房间已复制到剪贴板 __text__",
+        "devicesRefreshed": "设备刷新成功",
+        "cameraChanged": "摄像头切换成功",
+        "microphoneChanged": "麦克风切换成功",
+        "speakerChanged": "扬声器切换成功",
+        "deviceTestCompleted": "设备测试完成"
     },
     "errors": {
         "noUsername": "必须填写用户名",
         "connectionLost": "连接已断开",
         "mediaDevices": "无法访问媒体设备",
-        "noSupport": "您的浏览器不支持此功能"
+        "noSupport": "您的浏览器不支持此功能",
+        "socketError": "套接字错误",
+        "enumerateDevicesFailed": "枚举设备时出错",
+        "noUserSelected": "未选择用户。",
+        "cannotCallSelf": "你不能呼叫自己。",
+        "copyToClipboardFailed": "复制到剪贴板失败",
+        "screenShareFailed": "共享屏幕失败",
+        "screenSharePermissionDenied": "共享屏幕权限被拒绝",
+        "screenShareNotSupported": "此浏览器不支持共享屏幕",
+        "screenShareStartFailed": "无法开始共享屏幕",
+        "screenShareStopFailed": "无法停止共享屏幕",
+        "noOriginalStreamAvailable": "没有可用的原始流",
+        "swapCameraFailed": "切换摄像头失败。",
+        "noVideoTrackInStream": "流中没有可用的视频轨道。",
+        "noAudioTrackInStream": "流中没有可用的音频轨道。",
+        "noVideoTrackForPeer": "对等连接没有可用的视频轨道。",
+        "replacingTrack": "替换轨道错误: __message__",
+        "userNotFound": "未找到用户名 __username__！",
+        "offerCreateFailed": "创建 offer 时出错。",
+        "answerCreateFailed": "创建 answer 时出错。",
+        "remoteDescriptionFailed": "设置远端描述时出错。",
+        "addIceCandidateFailed": "添加 ICE candidate 时出错。",
+        "noStreamInOnTrack": "ontrack 事件中没有可用的流。",
+        "noCameraAvailable": "没有可用的摄像头",
+        "noMicrophoneAvailable": "没有可用的麦克风",
+        "refreshDevicesFailed": "刷新设备失败",
+        "changeCameraFailed": "切换摄像头失败",
+        "changeMicrophoneFailed": "切换麦克风失败",
+        "audioOutputNotSupported": "此浏览器不支持选择音频输出",
+        "changeSpeakerFailed": "切换扬声器失败",
+        "noDevicesToTest": "没有可测试的设备",
+        "deviceTestFailed": "设备测试失败: __message__",
+        "getUserMediaNotFound": "未找到摄像头或麦克风。你仍然可以使用可用设备加入。",
+        "getUserMediaInUse": "设备已被其他应用占用",
+        "getUserMediaConstraints": "找不到满足要求的设备。请尝试使用其他设备。",
+        "getUserMediaPermissionDenied": "权限被拒绝。请在浏览器设置中允许访问摄像头/麦克风。",
+        "getUserMediaAborted": "操作意外中止",
+        "getUserMediaSecurity": "安全错误: 请检查你的连接或浏览器设置",
+        "getUserMediaDefault": "无法获取流，请确保处于安全的 TLS (HTTPS) 环境中并重试",
+        "getUserMediaHelp": "<br/>查看常见的 <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia 错误</a>。"
     },
     "settings": {
         "language": "语言",
@@ -75,17 +129,67 @@
         "testDevices": "测试设备",
         "refresh": "刷新",
         "saveMessages": "保存消息",
-        "clearAll": "全部清除"
+        "clearAll": "全部清除",
+        "noCamerasFound": "未找到摄像头",
+        "noMicrophonesFound": "未找到麦克风",
+        "noSpeakersFound": "未找到扬声器"
     },
     "chat": {
         "addEmoji": "添加表情",
         "typeMessage": "输入消息...",
-        "sendMessage": "发送消息"
+        "sendMessage": "发送消息",
+        "me": "我",
+        "cannotSendNoUsers": "无法发送消息: 当前没有用户连接",
+        "newMessageFrom": "来自 __username__ 的新消息",
+        "noMessagesToSave": "没有可保存的聊天消息",
+        "savedAs": "聊天消息已保存为 __filename__",
+        "noMessagesToClear": "没有可清除的聊天消息",
+        "clearTitle": "清除聊天消息",
+        "clearConfirm": "确定要清除所有聊天消息吗？此操作无法撤销。",
+        "clearConfirmYes": "是，全部清除",
+        "cleared": "聊天消息已成功清除"
     },
     "api": {
         "unauthorized": "未授权访问",
         "invalidApiKey": "API 密钥无效",
         "serverError": "服务器错误",
         "notFound": "资源未找到"
+    },
+    "common": {
+        "yes": "是",
+        "no": "否",
+        "exit": "退出"
+    },
+    "host": {
+        "protectedTitle": "主机已保护",
+        "enterPassword": "请输入主机密码:",
+        "passwordPlaceholder": "请输入你的密码",
+        "submit": "提交",
+        "passwordEmpty": "密码不能为空",
+        "accessGrantedTitle": "访问已授予",
+        "accessGrantedText": "密码验证成功!",
+        "invalidPasswordTitle": "密码无效",
+        "invalidPasswordText": "请重试。(__attempts__/__maxRetries__ 次)",
+        "tooManyAttemptsTitle": "尝试次数过多",
+        "tooManyAttemptsText": "你已超过最大尝试次数。请稍后再试。",
+        "joinError": "加入主机时发生错误。"
+    },
+    "file": {
+        "dataChannelNotReady": "数据通道尚未准备好进行文件传输",
+        "dataChannelError": "数据通道发生错误",
+        "onlyActiveParticipant": "你只能向当前通话的活动参与者发送文件",
+        "onlyUserInCall": "你只能向正在通话的用户发送文件",
+        "dataChannelNotReadyTryAgain": "数据通道尚未准备好。请在通话完全连接后重试。",
+        "failedToSend": "文件发送失败",
+        "tooLarge": "文件过大。最大允许大小为 __maxSizeMb__ MB。",
+        "sent": "文件 \"__filename__\" 已发送",
+        "sendError": "通过数据通道发送文件时出错",
+        "cancelled": "文件传输已取消",
+        "cancelledByRemote": "文件传输已被对方取消",
+        "sendToUser": "发送文件给 __username__",
+        "newFileFrom": "来自 __username__ 的新文件",
+        "sentFileLabel": " 发送了文件: ",
+        "sending": "发送中: __filename__",
+        "receiving": "接收中: __filename__"
     }
 }

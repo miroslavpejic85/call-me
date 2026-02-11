@@ -19,7 +19,13 @@
         "users": "Пользователи",
         "chat": "Чат",
         "searchUsers": "Поиск пользователей...",
-        "closeSidebar": "Закрыть боковую панель"
+        "closeSidebar": "Закрыть боковую панель",
+        "callingUser": "Вы звоните __username__.<br/>Пожалуйста, дождитесь ответа",
+        "acceptCallFrom": "Хотите принять звонок от __username__ ?",
+        "hangupWith": "Завершить звонок с __username__",
+        "callUser": "Позвонить __username__",
+        "videoOff": "Видео выключено",
+        "videoDisabled": "Видео отключено"
     },
     "controls": {
         "microphone": "Микрофон",
@@ -35,7 +41,9 @@
         "swapCamera": "Сменить камеру",
         "toggleScreen": "Вкл/выкл экран",
         "toggleUsers": "Показать/скрыть пользователей",
-        "leave": "Выйти"
+        "leave": "Выйти",
+        "startScreenShare": "Начать демонстрацию экрана",
+        "stopScreenShare": "Остановить демонстрацию экрана"
     },
     "messages": {
         "microphoneEnabled": "Микрофон включён",
@@ -49,13 +57,59 @@
         "permissionDenied": "Доступ запрещён",
         "error": "Произошла ошибка",
         "copied": "Скопировано в буфер обмена",
-        "invalidPassword": "Неверный пароль"
+        "invalidPassword": "Неверный пароль",
+        "shareRoomText": "Присоединяйтесь к моей комнате Call-me!",
+        "roomCopied": "Комната скопирована в буфер обмена __text__",
+        "devicesRefreshed": "Устройства успешно обновлены",
+        "cameraChanged": "Камера успешно изменена",
+        "microphoneChanged": "Микрофон успешно изменён",
+        "speakerChanged": "Динамик успешно изменён",
+        "deviceTestCompleted": "Проверка устройств успешно завершена"
     },
     "errors": {
         "noUsername": "Имя пользователя обязательно",
         "connectionLost": "Соединение потеряно",
         "mediaDevices": "Не удалось получить доступ к медиа-устройствам",
-        "noSupport": "Ваш браузер не поддерживает эту функцию"
+        "noSupport": "Ваш браузер не поддерживает эту функцию",
+        "socketError": "Ошибка сокета",
+        "enumerateDevicesFailed": "Ошибка при перечислении устройств",
+        "noUserSelected": "Пользователь не выбран",
+        "cannotCallSelf": "Вы не можете позвонить самому себе",
+        "copyToClipboardFailed": "Не удалось скопировать в буфер обмена",
+        "screenShareFailed": "Демонстрация экрана не удалась",
+        "screenSharePermissionDenied": "Доступ к демонстрации экрана запрещён",
+        "screenShareNotSupported": "Демонстрация экрана не поддерживается в этом браузере",
+        "screenShareStartFailed": "Не удалось начать демонстрацию экрана",
+        "screenShareStopFailed": "Не удалось остановить демонстрацию экрана",
+        "noOriginalStreamAvailable": "Оригинальный поток недоступен",
+        "swapCameraFailed": "Не удалось переключить камеру",
+        "noVideoTrackInStream": "В потоке нет видеодорожки",
+        "noAudioTrackInStream": "В потоке нет аудиодорожки",
+        "noVideoTrackForPeer": "Нет видеодорожки для peer-соединений",
+        "replacingTrack": "Ошибка замены дорожки: __message__",
+        "userNotFound": "Пользователь __username__ не найден!",
+        "offerCreateFailed": "Ошибка при создании offer",
+        "answerCreateFailed": "Ошибка при создании answer",
+        "remoteDescriptionFailed": "Ошибка при установке удалённого описания",
+        "addIceCandidateFailed": "Ошибка при добавлении ICE-кандидата",
+        "noStreamInOnTrack": "В событии ontrack нет потока",
+        "noCameraAvailable": "Камера недоступна",
+        "noMicrophoneAvailable": "Микрофон недоступен",
+        "refreshDevicesFailed": "Не удалось обновить устройства",
+        "changeCameraFailed": "Не удалось изменить камеру",
+        "changeMicrophoneFailed": "Не удалось изменить микрофон",
+        "audioOutputNotSupported": "Выбор аудиовыхода не поддерживается в этом браузере",
+        "changeSpeakerFailed": "Не удалось изменить динамик",
+        "noDevicesToTest": "Нет устройств для тестирования",
+        "deviceTestFailed": "Тест устройства не удался: __message__",
+        "getUserMediaNotFound": "Камера или микрофон не найдены. Вы всё равно можете присоединиться с доступными устройствами",
+        "getUserMediaInUse": "Устройство уже используется другим приложением",
+        "getUserMediaConstraints": "Не удалось найти устройства, соответствующие требованиям. Попробуйте другие устройства",
+        "getUserMediaPermissionDenied": "Доступ запрещён. Разрешите доступ к камере/микрофону в настройках браузера",
+        "getUserMediaAborted": "Операция была неожиданно прервана",
+        "getUserMediaSecurity": "Ошибка безопасности: проверьте соединение или настройки браузера",
+        "getUserMediaDefault": "Не удаётся получить поток; убедитесь, что вы используете безопасный TLS-контекст (HTTPS), и попробуйте снова",
+        "getUserMediaHelp": "<br/>Проверьте распространённые <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">ошибки getUserMedia</a>"
     },
     "settings": {
         "language": "Язык",
@@ -75,17 +129,67 @@
         "testDevices": "Проверить устройства",
         "refresh": "Обновить",
         "saveMessages": "Сохранить сообщения",
-        "clearAll": "Очистить всё"
+        "clearAll": "Очистить всё",
+        "noCamerasFound": "Камеры не найдены",
+        "noMicrophonesFound": "Микрофоны не найдены",
+        "noSpeakersFound": "Динамики не найдены"
     },
     "chat": {
         "addEmoji": "Добавить эмодзи",
         "typeMessage": "Введите сообщение...",
-        "sendMessage": "Отправить сообщение"
+        "sendMessage": "Отправить сообщение",
+        "me": "Я",
+        "cannotSendNoUsers": "Нельзя отправить сообщение: сейчас нет подключённых пользователей",
+        "newMessageFrom": "Новое сообщение от __username__",
+        "noMessagesToSave": "Нет сообщений чата для сохранения",
+        "savedAs": "Сообщения чата сохранены как __filename__",
+        "noMessagesToClear": "Нет сообщений чата для очистки",
+        "clearTitle": "Очистить сообщения чата",
+        "clearConfirm": "Вы уверены, что хотите очистить все сообщения чата? Это действие нельзя отменить",
+        "clearConfirmYes": "Да, очистить всё",
+        "cleared": "Сообщения чата успешно очищены"
     },
     "api": {
         "unauthorized": "Доступ запрещён",
         "invalidApiKey": "Неверный API-ключ",
         "serverError": "Ошибка сервера",
         "notFound": "Ресурс не найден"
+    },
+    "common": {
+        "yes": "Да",
+        "no": "Нет",
+        "exit": "Выйти"
+    },
+    "host": {
+        "protectedTitle": "Хост защищён",
+        "enterPassword": "Введите пароль хоста:",
+        "passwordPlaceholder": "Введите пароль",
+        "submit": "Отправить",
+        "passwordEmpty": "Пароль не может быть пустым",
+        "accessGrantedTitle": "Доступ разрешён",
+        "accessGrantedText": "Пароль успешно подтверждён!",
+        "invalidPasswordTitle": "Неверный пароль",
+        "invalidPasswordText": "Попробуйте снова. (__attempts__/__maxRetries__ попыток)",
+        "tooManyAttemptsTitle": "Слишком много попыток",
+        "tooManyAttemptsText": "Вы превысили максимальное число попыток. Попробуйте позже",
+        "joinError": "Произошла ошибка при подключении к хосту"
+    },
+    "file": {
+        "dataChannelNotReady": "Данные не готовы для передачи файлов",
+        "dataChannelError": "Произошла ошибка канала данных",
+        "onlyActiveParticipant": "Вы можете отправлять файлы только активному участнику звонка",
+        "onlyUserInCall": "Вы можете отправлять файлы только пользователю, с которым вы сейчас в звонке",
+        "dataChannelNotReadyTryAgain": "Канал данных не готов. Попробуйте снова после полного подключения звонка",
+        "failedToSend": "Не удалось отправить файл",
+        "tooLarge": "Файл слишком большой. Максимальный размер: __maxSizeMb__ МБ",
+        "sent": "Файл \"__filename__\" отправлен",
+        "sendError": "Ошибка отправки файла по каналу данных",
+        "cancelled": "Передача файла отменена",
+        "cancelledByRemote": "Передача файла отменена удалённой стороной",
+        "sendToUser": "Отправить файл пользователю __username__",
+        "newFileFrom": "Новый файл от __username__",
+        "sentFileLabel": " отправил файл: ",
+        "sending": "Отправка: __filename__",
+        "receiving": "Получение: __filename__"
     }
 }
