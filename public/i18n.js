@@ -48,11 +48,13 @@ async function initI18n() {
     // Determine which locale to use
     const savedLocale = localStorage.getItem('locale');
     const browserLocale = navigator.language.split('-')[0]; // Get 'en' from 'en-US'
-    
-    i18n.currentLocale = 
-        (savedLocale && supportedLocales.includes(savedLocale)) ? savedLocale :
-        supportedLocales.includes(browserLocale) ? browserLocale :
-        i18n.defaultLocale;
+
+    i18n.currentLocale =
+        savedLocale && supportedLocales.includes(savedLocale)
+            ? savedLocale
+            : supportedLocales.includes(browserLocale)
+              ? browserLocale
+              : i18n.defaultLocale;
 
     // Load translations, set up language selector, and translate the page
     await loadTranslations(i18n.currentLocale);
@@ -276,9 +278,7 @@ function showTranslatedAlert(titleKey, textKey, icon = 'info') {
 }
 
 // Initialize i18n when DOM is ready
-(document.readyState === 'loading' 
-    ? document.addEventListener('DOMContentLoaded', initI18n) 
-    : initI18n());
+document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', initI18n) : initI18n();
 
 // Re-translate when dynamic content is added (for mobile compatibility)
 if (typeof MutationObserver !== 'undefined') {

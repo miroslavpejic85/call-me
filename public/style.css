@@ -1103,13 +1103,7 @@ input {
     gap: 6px;
     flex: 1;
     min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.sidebar-tabs::-webkit-scrollbar {
-    display: none;
+    overflow: hidden;
 }
 
 .sidebar-tab {
@@ -1126,9 +1120,17 @@ input {
     display: flex;
     align-items: center;
     gap: 8px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+    justify-content: center;
     overflow: visible;
+}
+
+.sidebar-tab span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .sidebar-tab::before {
@@ -1240,7 +1242,7 @@ input {
     display: none;
     flex: 1;
     flex-direction: column;
-    height: calc(100vh - 60px);
+    min-height: 0;
 }
 
 .tab-content.active {
@@ -1796,22 +1798,22 @@ input {
     }
 
     .tab-content {
-        height: calc(100dvh - 60px);
+        min-height: 0;
     }
 
     .sidebar-tabs {
         flex: 1;
-        justify-content: flex-start;
-        overflow-x: auto;
+        justify-content: space-between;
+        overflow: hidden;
     }
 
     .sidebar-tab {
-        flex: 0 0 auto;
+        flex: 1 1 0;
+        min-width: 0;
         text-align: center;
         padding: 8px 8px;
         font-size: 0.8rem;
         gap: 4px;
-        min-width: fit-content;
     }
 
     .sidebar-tab span {
