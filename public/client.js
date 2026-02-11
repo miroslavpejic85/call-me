@@ -2014,7 +2014,7 @@ function renderUserList() {
 
         if (isInActiveCall) {
             // Show hang-up button only if in active call (user has answered)
-            actionBtnEl.className = 'btn btn-custom btn-danger btn-s hangup-user-btn';
+            actionBtnEl.className = 'btn btn-custom btn-danger btn-m hangup-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone-slash"></i>';
             actionBtnEl.title = `Hang up call with ${user}`;
             actionBtnEl.addEventListener('click', (e) => {
@@ -2028,7 +2028,7 @@ function renderUserList() {
             });
         } else {
             // Show call button if not in active call
-            actionBtnEl.className = 'btn btn-custom btn-warning btn-s call-user-btn';
+            actionBtnEl.className = 'btn btn-custom btn-warning btn-m call-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone"></i>';
             actionBtnEl.title = `Call ${user}`;
             actionBtnEl.addEventListener('click', (e) => {
@@ -2044,7 +2044,7 @@ function renderUserList() {
 
         // Send file button
         const sendFileBtn = document.createElement('button');
-        sendFileBtn.className = 'btn btn-custom btn-secondary btn-s';
+        sendFileBtn.className = 'btn btn-custom btn-secondary btn-m';
         sendFileBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
         sendFileBtn.style.marginRight = '10px';
         sendFileBtn.style.cursor = 'pointer';
