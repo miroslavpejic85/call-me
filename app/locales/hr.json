@@ -112,6 +112,8 @@
         "getUserMediaHelp": "<br/>Provjerite uobičajene <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia pogreške</a>"
     },
     "settings": {
+        "generalTitle": "Općenito",
+        "hideLocalVideo": "Sakrij lokalni video",
         "language": "Jezik",
         "selectLanguage": "Odaberite jezik",
         "mediaDevicesTitle": "Medijski uređaji",

@@ -45,7 +45,7 @@ const audioOutputSelect = document.getElementById('audioOutputSelect');
 const testDevicesBtn = document.getElementById('testDevicesBtn');
 const refreshDevicesBtn = document.getElementById('refreshDevicesBtn');
 const shareRoomBtn = document.getElementById('shareRoomBtn');
-const hideBtn = document.getElementById('hideBtn');
+const hideLocalVideoToggle = document.getElementById('hideLocalVideoToggle');
 const swapCameraBtn = document.getElementById('swapCameraBtn');
 const videoBtn = document.getElementById('videoBtn');
 const audioBtn = document.getElementById('audioBtn');
@@ -491,7 +491,7 @@ function handleListeners() {
     shareRoomBtn.addEventListener('click', async () => {
         await handleShareRoomClick();
     });
-    hideBtn.addEventListener('click', toggleLocalVideo);
+    hideLocalVideoToggle.addEventListener('change', toggleLocalVideo);
     videoBtn.addEventListener('click', handleVideoClick);
     audioBtn.addEventListener('click', handleAudioClick);
     screenShareBtn.addEventListener('click', handleScreenShareClick);
@@ -687,13 +687,6 @@ async function copyToClipboard(text, showError = true) {
 // Toggle local video visibility
 function toggleLocalVideo() {
     localVideoContainer.classList.toggle('hide');
-    // Stop video and audio if they are currently active
-    if (!videoBtn.classList.contains('btn-danger')) {
-        videoBtn.click();
-    }
-    if (!audioBtn.classList.contains('btn-danger')) {
-        audioBtn.click();
-    }
 }
 
 // Handle call button click

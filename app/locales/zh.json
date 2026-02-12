@@ -112,6 +112,8 @@
         "getUserMediaHelp": "<br/>查看常见的 <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">getUserMedia 错误</a>。"
     },
     "settings": {
+        "generalTitle": "常规",
+        "hideLocalVideo": "隐藏本地视频",
         "language": "语言",
         "selectLanguage": "选择语言",
         "mediaDevicesTitle": "媒体设备",

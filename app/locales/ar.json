@@ -112,6 +112,8 @@
         "getUserMediaHelp": "<br/>تحقق من <a href=\"https://blog.addpipe.com/common-getusermedia-errors\" target=\"_blank\">أخطاء getUserMedia</a> الشائعة"
     },
     "settings": {
+        "generalTitle": "عام",
+        "hideLocalVideo": "إخفاء الفيديو المحلي",
         "language": "اللغة",
         "selectLanguage": "اختر اللغة",
         "mediaDevicesTitle": "أجهزة الوسائط",
