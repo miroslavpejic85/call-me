@@ -1061,7 +1061,7 @@ input {
     display: flex;
     top: 0;
     right: 0;
-    width: 600px;
+    width: clamp(320px, 90vw, 500px);
     height: 100%;
     background: var(--glass-bg-strong);
     flex-direction: column;
@@ -1112,7 +1112,7 @@ input {
     background: none;
     border: 2px solid transparent;
     color: var(--text-secondary);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     padding: 10px 14px;
     cursor: pointer;
@@ -1124,15 +1124,22 @@ input {
     gap: 8px;
     flex: 1 1 0;
     min-width: 0;
-    white-space: normal;
+    white-space: nowrap;
     justify-content: center;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .sidebar-tab span {
     min-width: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+.sidebar-tab i,
+.sidebar-tab .chat-notification {
+    flex-shrink: 0;
 }
 
 .sidebar-tab::before {
@@ -1819,7 +1826,10 @@ input {
     }
 
     .sidebar-tab span {
-        display: inline;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .sidebar-tab i {
