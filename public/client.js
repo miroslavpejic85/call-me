@@ -325,6 +325,22 @@ function handleLocalStorage() {
     usernameIn.value = localStorage.callMeUsername
         ? localStorage.callMeUsername
         : 'Guest' + Math.floor(Math.random() * 10000);
+
+    // Restore media toggle states
+    if (localStorage.callMeJoinVideo !== undefined) {
+        joinVideoToggle.checked = localStorage.callMeJoinVideo === 'true';
+    }
+    if (localStorage.callMeJoinAudio !== undefined) {
+        joinAudioToggle.checked = localStorage.callMeJoinAudio === 'true';
+    }
+
+    // Persist toggle changes
+    joinVideoToggle.addEventListener('change', () => {
+        localStorage.callMeJoinVideo = joinVideoToggle.checked;
+    });
+    joinAudioToggle.addEventListener('change', () => {
+        localStorage.callMeJoinAudio = joinAudioToggle.checked;
+    });
 }
 
 // Handle Room direct join

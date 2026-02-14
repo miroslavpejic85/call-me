@@ -274,8 +274,8 @@ button {
 .media-toggles {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-    max-width: 320px;
+    gap: 10px;
+    max-width: 340px;
     margin: 0 auto;
 }
 
@@ -283,66 +283,77 @@ button {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-sm);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--glass-border);
+    padding: 12px var(--spacing-md);
+    border-radius: var(--border-radius);
+    background: rgba(30, 35, 50, 0.5);
+    border: 2px solid rgba(16, 185, 129, 0.35);
     cursor: pointer;
     transition: all var(--transition-base);
     user-select: none;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .media-toggle-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--glass-border-hover);
+    background: rgba(30, 35, 50, 0.7);
+    border-color: rgba(16, 185, 129, 0.6);
+    transform: translateY(-1px);
+    box-shadow:
+        0 4px 16px rgba(16, 185, 129, 0.2),
+        0 0 0 3px rgba(16, 185, 129, 0.08);
 }
 
 .media-toggle-item:has(input:not(:checked)) {
-    opacity: 0.6;
+    background: rgba(30, 35, 50, 0.5);
+    border-color: rgba(239, 68, 68, 0.35);
 }
 
 .media-toggle-item:has(input:not(:checked)):hover {
-    opacity: 0.8;
+    background: rgba(30, 35, 50, 0.7);
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow:
+        0 4px 16px rgba(239, 68, 68, 0.2),
+        0 0 0 3px rgba(239, 68, 68, 0.08);
 }
 
 .media-toggle-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: var(--border-radius-sm);
-    background: rgba(59, 130, 246, 0.15);
-    color: var(--primary-light);
-    font-size: var(--font-size-base);
+    background: rgba(16, 185, 129, 0.18);
+    color: var(--success-color);
+    font-size: var(--font-size-lg);
     flex-shrink: 0;
     transition: all var(--transition-base);
 }
 
 .media-toggle-item:has(input:not(:checked)) .media-toggle-icon {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239, 68, 68, 0.18);
     color: var(--danger-color);
 }
 
 .media-toggle-label {
     flex: 1;
     text-align: left;
-    color: var(--text-secondary);
+    color: var(--text-color);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     transition: color var(--transition-base);
 }
 
-.media-toggle-item:has(input:checked) .media-toggle-label {
-    color: var(--text-color);
+.media-toggle-item:has(input:not(:checked)) .media-toggle-label {
+    color: var(--text-secondary);
 }
 
 /* Toggle switch */
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 24px;
+    width: 46px;
+    height: 26px;
     flex-shrink: 0;
 }
 
@@ -356,36 +367,37 @@ button {
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
+    background: rgba(239, 68, 68, 0.4);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 26px;
     transition: var(--transition-base);
 }
 
 .switch .slider::before {
     content: '';
     position: absolute;
-    height: 18px;
-    width: 18px;
+    height: 20px;
+    width: 20px;
     left: 2px;
     bottom: 2px;
-    background: var(--text-muted);
+    background: #fff;
     border-radius: 50%;
     transition: var(--transition-base);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .switch input:checked + .slider {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+    background: var(--success-color);
+    border-color: var(--success-color);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .switch input:checked + .slider::before {
     transform: translateX(20px);
-    background: #fff;
 }
 
 .switch input:focus + .slider {
-    box-shadow: 0 0 4px var(--primary-color);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
 }
 
 /* Video Styles */
