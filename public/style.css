@@ -899,7 +899,10 @@ input {
 
 /* Modern Input Styling */
 #usernameIn {
+    display: block;
     width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
     padding: 14px 18px;
     font-size: 16px;
     color: var(--text-color);
