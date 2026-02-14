@@ -6,6 +6,8 @@
         "title": "サインイン",
         "username": "ユーザー名を入力",
         "button": "サインイン",
+        "camera": "カメラ",
+        "microphone": "マイク",
         "enterUsername": "ユーザー名を入力してください"
     },
     "room": {

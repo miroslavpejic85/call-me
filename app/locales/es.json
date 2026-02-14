@@ -6,6 +6,8 @@
         "title": "Iniciar Sesión",
         "username": "Ingrese nombre de usuario",
         "button": "Iniciar Sesión",
+        "camera": "Cámara",
+        "microphone": "Micrófono",
         "enterUsername": "Por favor ingrese su nombre de usuario"
     },
     "room": {

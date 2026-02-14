@@ -19,6 +19,8 @@ const githubDiv = document.getElementById('githubDiv');
 const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
 const signInBtn = document.getElementById('signInBtn');
+const joinVideoToggle = document.getElementById('joinVideoToggle');
+const joinAudioToggle = document.getElementById('joinAudioToggle');
 const roomPage = document.getElementById('roomPage');
 const exitSidebarBtn = document.getElementById('exitSidebarBtn');
 const userSidebar = document.getElementById('userSidebar');
@@ -1270,6 +1272,22 @@ async function handleSignIn(data) {
             // Initialize device settings after getting media
             await initializeDeviceSettings();
             handleVideoMirror(localVideo, myStream);
+
+            // Apply initial media toggles from sign-in card
+            if (!joinVideoToggle.checked) {
+                const vt = stream.getVideoTracks()[0];
+                if (vt) {
+                    vt.stop();
+                    vt.enabled = false;
+                }
+                videoBtn.classList.add('btn-danger');
+                showCameraOffOverlay('local', true);
+            }
+            if (!joinAudioToggle.checked) {
+                const at = stream.getAudioTracks()[0];
+                if (at) at.enabled = false;
+                audioBtn.classList.add('btn-danger');
+            }
 
             // Update UI based on available devices
             updateUIForAvailableDevices();

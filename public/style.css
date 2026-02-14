@@ -270,6 +270,124 @@ button {
     text-align: center !important;
 }
 
+/* Media toggle switches on sign-in card */
+.media-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.media-toggle-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    user-select: none;
+}
+
+.media-toggle-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--glass-border-hover);
+}
+
+.media-toggle-item:has(input:not(:checked)) {
+    opacity: 0.6;
+}
+
+.media-toggle-item:has(input:not(:checked)):hover {
+    opacity: 0.8;
+}
+
+.media-toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--border-radius-sm);
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--primary-light);
+    font-size: var(--font-size-base);
+    flex-shrink: 0;
+    transition: all var(--transition-base);
+}
+
+.media-toggle-item:has(input:not(:checked)) .media-toggle-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger-color);
+}
+
+.media-toggle-label {
+    flex: 1;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-base);
+}
+
+.media-toggle-item:has(input:checked) .media-toggle-label {
+    color: var(--text-color);
+}
+
+/* Toggle switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    transition: var(--transition-base);
+}
+
+.switch .slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: var(--transition-base);
+}
+
+.switch input:checked + .slider {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #fff;
+}
+
+.switch input:focus + .slider {
+    box-shadow: 0 0 4px var(--primary-color);
+}
+
 /* Video Styles */
 video {
     width: 100%;

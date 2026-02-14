@@ -6,6 +6,8 @@
         "title": "Prijava",
         "username": "Unesite korisničko ime",
         "button": "Prijavi se",
+        "camera": "Kamera",
+        "microphone": "Mikrofon",
         "enterUsername": "Molimo unesite svoje korisničko ime"
     },
     "room": {

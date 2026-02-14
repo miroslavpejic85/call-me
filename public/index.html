@@ -78,6 +78,29 @@
                                     required
                                 />
                             </div>
+                            <!-- Media toggles -->
+                            <div class="media-toggles mb-3">
+                                <label class="media-toggle-item" for="joinAudioToggle">
+                                    <div class="media-toggle-icon">
+                                        <i class="fas fa-microphone"></i>
+                                    </div>
+                                    <span class="media-toggle-label" data-i18n="signIn.microphone">Microphone</span>
+                                    <div class="switch">
+                                        <input id="joinAudioToggle" type="checkbox" checked />
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                                <label class="media-toggle-item" for="joinVideoToggle">
+                                    <div class="media-toggle-icon">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <span class="media-toggle-label" data-i18n="signIn.camera">Camera</span>
+                                    <div class="switch">
+                                        <input id="joinVideoToggle" type="checkbox" checked />
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                            </div>
                             <!-- Sign-in button -->
                             <button id="signInBtn" class="btn btn-primary" data-i18n="signIn.button">Sign In</button>
                         </div>

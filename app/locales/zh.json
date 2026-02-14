@@ -6,6 +6,8 @@
         "title": "登录",
         "username": "请输入用户名",
         "button": "登录",
+        "camera": "摄像头",
+        "microphone": "麦克风",
         "enterUsername": "请输入您的用户名"
     },
     "room": {

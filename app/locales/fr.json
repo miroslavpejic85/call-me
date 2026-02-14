@@ -6,6 +6,8 @@
         "title": "Se Connecter",
         "username": "Entrez le nom d'utilisateur",
         "button": "Se Connecter",
+        "camera": "Caméra",
+        "microphone": "Microphone",
         "enterUsername": "Veuillez entrer votre nom d'utilisateur"
     },
     "room": {

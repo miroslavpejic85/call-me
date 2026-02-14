@@ -6,6 +6,8 @@
         "title": "Anmelden",
         "username": "Benutzernamen eingeben",
         "button": "Anmelden",
+        "camera": "Kamera",
+        "microphone": "Mikrofon",
         "enterUsername": "Bitte geben Sie Ihren Benutzernamen ein"
     },
     "room": {

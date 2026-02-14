@@ -6,6 +6,8 @@
         "title": "Accedi",
         "username": "Inserisci nome utente",
         "button": "Accedi",
+        "camera": "Fotocamera",
+        "microphone": "Microfono",
         "enterUsername": "Inserisci il tuo nome utente"
     },
     "room": {
