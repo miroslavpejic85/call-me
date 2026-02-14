@@ -72,6 +72,7 @@ let camera = 'user';
 let stream;
 let isScreenSharing = false;
 let originalStream = null; // Store original camera stream
+let wasCameraOffBeforeScreenShare = false; // Track camera state before screen share
 
 // User list state
 let userSignedIn = false;
@@ -694,22 +695,115 @@ function handleCallBtnClick() {
     handleUserClickToCall(selectedUser);
 }
 
-// Toggle video stream
-function handleVideoClick() {
+// Find the video sender reliably — works even when sender.track is null (camera off)
+function findVideoSender() {
+    if (!thisConnection) return null;
+    // First try direct match
+    const direct = thisConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
+    if (direct) return direct;
+    // Fallback: use transceivers (receiver.track.kind is always set even when sender.track is null)
+    const transceiver = thisConnection
+        .getTransceivers()
+        .find((t) => t.receiver && t.receiver.track && t.receiver.track.kind === 'video');
+    return transceiver ? transceiver.sender : null;
+}
+
+// Toggle video stream — actually stop/restart the camera to release hardware (turn off LED)
+async function handleVideoClick() {
+    // During screen sharing, toggle the screen share track visibility instead of camera
+    if (isScreenSharing) {
+        const screenTrack = stream.getVideoTracks()[0];
+        if (!screenTrack) return;
+
+        screenTrack.enabled = !screenTrack.enabled;
+        videoBtn.classList.toggle('btn-danger');
+        showCameraOffOverlay('local', !screenTrack.enabled);
+
+        // Update peer connection
+        if (thisConnection) {
+            const videoSender = findVideoSender();
+            if (videoSender) {
+                try {
+                    await videoSender.replaceTrack(screenTrack.enabled ? screenTrack : null);
+                } catch (error) {
+                    console.warn('Failed to toggle screen share track on peer:', error);
+                }
+            }
+        }
+
+        sendMediaStatusToServer();
+        sendMsg({ type: 'remoteVideo', enabled: screenTrack.enabled });
+        return;
+    }
+
+    // Normal camera toggle (not screen sharing)
     const videoTrack = stream.getVideoTracks()[0];
-    videoTrack.enabled = !videoTrack.enabled;
-    videoBtn.classList.toggle('btn-danger');
+    const isCameraOn = videoTrack && videoTrack.readyState === 'live' && videoTrack.enabled;
 
-    // Show/hide camera off overlay for local video
-    showCameraOffOverlay('local', !videoTrack.enabled);
+    if (isCameraOn) {
+        // Stop the camera track to release the hardware and turn off the LED
+        videoTrack.stop();
+        videoTrack.enabled = false;
+        videoBtn.classList.add('btn-danger');
+        showCameraOffOverlay('local', true);
 
-    // Send media status to server
-    sendMediaStatusToServer();
+        // Replace the track on the peer connection with null to stop sending video
+        if (thisConnection) {
+            const videoSender = findVideoSender();
+            if (videoSender) {
+                try {
+                    await videoSender.replaceTrack(null);
+                } catch (error) {
+                    console.warn('Failed to replace video track with null:', error);
+                }
+            }
+        }
 
-    sendMsg({
-        type: 'remoteVideo',
-        enabled: videoTrack.enabled,
-    });
+        // Send media status to server
+        sendMediaStatusToServer();
+        sendMsg({ type: 'remoteVideo', enabled: false });
+    } else {
+        // Re-acquire camera to restart the hardware
+        try {
+            const constraints = {
+                video: selectedDevices.videoInput ? { deviceId: { exact: selectedDevices.videoInput } } : true,
+                audio: false,
+            };
+            const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+            const newVideoTrack = newStream.getVideoTracks()[0];
+
+            if (!newVideoTrack) {
+                throw new Error('No video track found in new stream');
+            }
+
+            // Replace the old stopped track in the stream
+            const oldVideoTrack = stream.getVideoTracks()[0];
+            if (oldVideoTrack) {
+                stream.removeTrack(oldVideoTrack);
+            }
+            stream.addTrack(newVideoTrack);
+            localVideo.srcObject = stream;
+            handleVideoMirror(localVideo, stream);
+
+            // Update peer connection with the new track
+            if (thisConnection) {
+                const videoSender = findVideoSender();
+                if (videoSender) {
+                    await videoSender.replaceTrack(newVideoTrack);
+                }
+            }
+
+            videoBtn.classList.remove('btn-danger');
+            showCameraOffOverlay('local', false);
+
+            // Send media status to server
+            sendMediaStatusToServer();
+            sendMsg({ type: 'remoteVideo', enabled: true });
+        } catch (error) {
+            console.error('Failed to restart camera:', error);
+            handleError(t('errors.cameraRestartFailed') || 'Failed to restart camera');
+        }
+    }
 }
 
 // Toggle audio stream
@@ -766,9 +860,8 @@ async function startScreenSharing() {
         // Store original camera stream
         originalStream = stream;
 
-        // Store original video enabled state
-        const originalVideoTrack = originalStream.getVideoTracks()[0];
-        const wasVideoEnabled = originalVideoTrack ? originalVideoTrack.enabled : true;
+        // Determine if camera was off (track stopped) before screen share
+        wasCameraOffBeforeScreenShare = videoBtn && videoBtn.classList.contains('btn-danger');
 
         // Get screen share stream
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -785,10 +878,10 @@ async function startScreenSharing() {
             screenStream.addTrack(audioTrack);
         }
 
-        // Apply original video enabled state to screen share track
+        // Screen share video respects camera state: if camera was off, start with screen share hidden
         const screenVideoTrack = screenStream.getVideoTracks()[0];
         if (screenVideoTrack) {
-            screenVideoTrack.enabled = wasVideoEnabled;
+            screenVideoTrack.enabled = !wasCameraOffBeforeScreenShare;
         }
 
         // Update stream and local video
@@ -798,19 +891,17 @@ async function startScreenSharing() {
         localVideo.classList.add('screen-share'); // Apply screen share styling
         localVideo.classList.remove('camera-feed');
 
-        // Show/hide camera off overlay based on video state
-        showCameraOffOverlay('local', !wasVideoEnabled);
+        // Show/hide camera off overlay based on camera state
+        showCameraOffOverlay('local', wasCameraOffBeforeScreenShare);
 
         console.log('Local video classes after screen share start:', localVideo.className);
-        console.log('Screen share video enabled state:', wasVideoEnabled);
+        console.log('Camera was off before screen share:', wasCameraOffBeforeScreenShare);
 
-        // Update peer connection if it exists
+        // Update peer connection if it exists (use helper to find sender even when track is null)
         if (thisConnection) {
-            const videoSender = thisConnection
-                .getSenders()
-                .find((sender) => sender.track && sender.track.kind === 'video');
+            const videoSender = findVideoSender();
             if (videoSender) {
-                await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+                await videoSender.replaceTrack(wasCameraOffBeforeScreenShare ? null : screenStream.getVideoTracks()[0]);
             }
         }
 
@@ -821,16 +912,15 @@ async function startScreenSharing() {
         screenShareBtn.title = t('controls.stopScreenShare');
         screenShareBtn.innerHTML = '<i class="fas fa-stop"></i>';
 
+        // Keep video button state matching camera state
+        if (wasCameraOffBeforeScreenShare) {
+            videoBtn.classList.add('btn-danger');
+        } else {
+            videoBtn.classList.remove('btn-danger');
+        }
+
         // Send screen sharing status to server
         sendMediaStatusToServer();
-
-        // Ensure UI button state matches actual video state
-        if (!wasVideoEnabled) {
-            // If video was disabled before screen sharing, keep the video button in disabled state
-            if (!videoBtn.classList.contains('btn-danger')) {
-                videoBtn.classList.add('btn-danger');
-            }
-        }
 
         // Listen for screen share end (user clicks browser's stop sharing)
         screenStream.getVideoTracks()[0].onended = () => {
@@ -859,9 +949,8 @@ async function stopScreenSharing() {
             return;
         }
 
-        // Store screen share video enabled state to restore to camera
-        const screenVideoTrack = stream.getVideoTracks()[0];
-        const currentVideoEnabled = screenVideoTrack ? screenVideoTrack.enabled : true;
+        // Use stored flag for camera state (video button now reflects screen share, not camera)
+        const wasCameraOff = wasCameraOffBeforeScreenShare;
 
         // Stop screen share tracks
         if (stream) {
@@ -875,10 +964,17 @@ async function stopScreenSharing() {
         // Restore original camera stream
         stream = originalStream;
 
-        // Apply the video enabled state from screen share to camera
         const cameraVideoTrack = stream.getVideoTracks()[0];
-        if (cameraVideoTrack) {
-            cameraVideoTrack.enabled = currentVideoEnabled;
+
+        if (wasCameraOff) {
+            // Camera was off before screen share — keep it off (track is already stopped)
+            // Don't try to set .enabled on a stopped track
+            console.log('Camera was off before screen share, keeping it off');
+        } else {
+            // Camera was on — ensure track is enabled
+            if (cameraVideoTrack && cameraVideoTrack.readyState === 'live') {
+                cameraVideoTrack.enabled = true;
+            }
         }
 
         localVideo.srcObject = stream;
@@ -886,19 +982,23 @@ async function stopScreenSharing() {
         localVideo.classList.remove('screen-share'); // Remove screen share styling
         localVideo.classList.add('camera-feed'); // Apply camera feed styling
 
-        // Show/hide camera off overlay based on video state
-        showCameraOffOverlay('local', !currentVideoEnabled);
+        // Show/hide camera off overlay based on camera state
+        showCameraOffOverlay('local', wasCameraOff);
 
         console.log('Local video classes after screen share stop:', localVideo.className);
-        console.log('Restored camera video enabled state:', currentVideoEnabled);
+        console.log('Camera was off before screen share:', wasCameraOff);
 
         // Update peer connection if it exists
         if (thisConnection) {
-            const videoSender = thisConnection
-                .getSenders()
-                .find((sender) => sender.track && sender.track.kind === 'video');
-            if (videoSender && originalStream.getVideoTracks()[0]) {
-                await videoSender.replaceTrack(originalStream.getVideoTracks()[0]);
+            const videoSender = findVideoSender();
+            if (videoSender) {
+                if (wasCameraOff) {
+                    // Camera was off — send null to peer
+                    await videoSender.replaceTrack(null);
+                } else if (cameraVideoTrack && cameraVideoTrack.readyState === 'live') {
+                    // Camera was on — send camera track to peer
+                    await videoSender.replaceTrack(cameraVideoTrack);
+                }
             }
         }
 
@@ -914,6 +1014,7 @@ async function stopScreenSharing() {
 
         // Reset original stream reference
         originalStream = null;
+        wasCameraOffBeforeScreenShare = false;
 
         // Ensure UI button state matches actual video state
         checkVideoAudioStatus();
@@ -1031,7 +1132,7 @@ async function refreshPeerVideoStreams(newStream) {
         return;
     }
 
-    const videoSender = thisConnection.getSenders().find((sender) => sender.track && sender.track.kind === 'video');
+    const videoSender = findVideoSender();
     if (videoSender) {
         try {
             await videoSender.replaceTrack(videoTrack);
@@ -1045,7 +1146,9 @@ async function refreshPeerVideoStreams(newStream) {
 function checkVideoAudioStatus() {
     if (videoBtn.classList.contains('btn-danger')) {
         const videoTrack = stream.getVideoTracks()[0];
-        videoTrack.enabled = false;
+        if (videoTrack && videoTrack.readyState === 'live') {
+            videoTrack.enabled = false;
+        }
         // Show camera off overlay for local video
         showCameraOffOverlay('local', true);
     } else {
@@ -1054,7 +1157,9 @@ function checkVideoAudioStatus() {
     }
     if (audioBtn.classList.contains('btn-danger')) {
         const audioTrack = stream.getAudioTracks()[0];
-        audioTrack.enabled = false;
+        if (audioTrack) {
+            audioTrack.enabled = false;
+        }
     }
 }
 
@@ -1414,6 +1519,7 @@ async function handleAnswer(data) {
             connectedUser = pendingUser;
             pendingUser = null;
             updateUsernameDisplay();
+            renderUserList(); // Update UI to show hang-up button for caller
         }
     } catch (error) {
         handleError(t('errors.remoteDescriptionFailed'), error);
@@ -2600,12 +2706,12 @@ async function initializeDeviceSettings() {
             const videoTrack = stream.getVideoTracks()[0];
             const audioTrack = stream.getAudioTracks()[0];
 
-            if (videoTrack) {
+            if (videoTrack && videoTrack.readyState === 'live') {
                 const videoSettings = videoTrack.getSettings();
                 selectedDevices.videoInput = videoSettings.deviceId;
             }
 
-            if (audioTrack) {
+            if (audioTrack && audioTrack.readyState === 'live') {
                 const audioSettings = audioTrack.getSettings();
                 selectedDevices.audioInput = audioSettings.deviceId;
             }
@@ -2640,7 +2746,8 @@ function populateDeviceSelects() {
     if (videoSelect) {
         videoSelect.innerHTML = '';
         // Check if we actually have camera access by checking the stream
-        const hasCamera = stream && stream.getVideoTracks().length > 0;
+        // A stopped track (readyState === 'ended') still counts — the device was available
+        const hasCamera = stream && stream.getVideoTracks().length > 0 && availableDevices.videoInputs.length > 0;
 
         if (!hasCamera) {
             videoSelect.innerHTML = `<option value="">${t('settings.noCamerasFound')}</option>`;
@@ -2707,7 +2814,8 @@ function populateDeviceSelects() {
 
 // Update UI elements based on available devices
 function updateUIForAvailableDevices() {
-    const hasCamera = stream && stream.getVideoTracks().length > 0;
+    // A stopped track (readyState 'ended') still counts — the device was available at start
+    const hasCamera = stream && stream.getVideoTracks().length > 0 && availableDevices.videoInputs.length > 0;
     const hasMic = stream && stream.getAudioTracks().length > 0;
 
     // Handle video button and local video
@@ -2753,18 +2861,23 @@ async function refreshDevices(showToast = true) {
     }
 
     try {
-        // Try to request permissions for available devices (don't fail if one is missing)
-        try {
-            await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        } catch (e) {
-            // Try video only
+        // Only request permissions if we don't already have an active stream
+        // This prevents re-opening the camera (turning on LED) when it was turned off
+        const hasLiveVideoTrack = stream && stream.getVideoTracks().some((t) => t.readyState === 'live');
+        const hasLiveAudioTrack = stream && stream.getAudioTracks().some((t) => t.readyState === 'live');
+
+        if (!hasLiveVideoTrack && !hasLiveAudioTrack) {
+            // No live tracks — we need to request permission to enumerate labeled devices
+            // Use audio-only to avoid turning on the camera LED
             try {
-                await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            } catch (videoError) {
-                // Try audio only as fallback
+                const tempStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                tempStream.getTracks().forEach((t) => t.stop());
+            } catch (e) {
+                // If audio also fails, try video but stop it immediately
                 try {
-                    await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-                } catch (audioError) {
+                    const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    tempStream.getTracks().forEach((t) => t.stop());
+                } catch (videoError) {
                     console.warn('No media devices available for permission request');
                 }
             }
@@ -2816,6 +2929,10 @@ async function handleAudioOutputDeviceChange() {
 
 async function updateVideoStream() {
     try {
+        // Determine if camera was on before the switch
+        const oldVideoTrack = stream ? stream.getVideoTracks()[0] : null;
+        const wasCameraOff = videoBtn && videoBtn.classList.contains('btn-danger');
+
         const constraints = {
             video: { deviceId: selectedDevices.videoInput ? { exact: selectedDevices.videoInput } : true },
             audio: false,
@@ -2828,35 +2945,53 @@ async function updateVideoStream() {
             throw new Error('No video track found in new stream');
         }
 
-        // Preserve previous video enabled state
-        let wasVideoEnabled = true;
-        if (stream && stream.getVideoTracks().length > 0) {
-            wasVideoEnabled = stream.getVideoTracks()[0].enabled;
-        } else if (videoBtn && videoBtn.classList.contains('btn-danger')) {
-            wasVideoEnabled = false;
-        }
-        // Apply preserved enabled state to new track
-        videoTrack.enabled = wasVideoEnabled;
-
-        // Update peer connection if it exists
-        if (thisConnection) {
-            const sender = thisConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
-            if (sender) {
-                await sender.replaceTrack(videoTrack);
-            } else {
-                // If no sender exists, add the track
-                thisConnection.addTrack(videoTrack, stream);
-            }
-        }
-
-        // Update local video and stream
-        if (stream) {
-            const oldVideoTrack = stream.getVideoTracks()[0];
-            if (oldVideoTrack) {
-                stream.removeTrack(oldVideoTrack);
+        // Remove old track from stream
+        if (stream && oldVideoTrack) {
+            stream.removeTrack(oldVideoTrack);
+            if (oldVideoTrack.readyState === 'live') {
                 oldVideoTrack.stop();
             }
-            stream.addTrack(videoTrack);
+        }
+
+        if (wasCameraOff) {
+            // Camera was off — stop the newly acquired track to keep LED off,
+            // but still add it to stream so the device selection is remembered
+            videoTrack.stop();
+            videoTrack.enabled = false;
+            if (stream) {
+                stream.addTrack(videoTrack);
+            }
+
+            // Replace peer track with null to ensure nothing is sent
+            if (thisConnection) {
+                const sender = findVideoSender();
+                if (sender) {
+                    await sender.replaceTrack(null);
+                }
+            }
+
+            // Update local video element
+            if (localVideo) {
+                localVideo.srcObject = stream;
+            }
+
+            videoBtn && videoBtn.classList.add('btn-danger');
+            showCameraOffOverlay('local', true);
+        } else {
+            // Camera was on — keep the new track live
+            if (stream) {
+                stream.addTrack(videoTrack);
+            }
+
+            // Update peer connection
+            if (thisConnection) {
+                const sender = findVideoSender();
+                if (sender) {
+                    await sender.replaceTrack(videoTrack);
+                } else {
+                    thisConnection.addTrack(videoTrack, stream);
+                }
+            }
 
             // Update local video element
             if (localVideo) {
@@ -2864,18 +2999,12 @@ async function updateVideoStream() {
                 handleVideoMirror(localVideo, stream);
             }
 
-            // Reflect video state in UI and overlays
-            if (wasVideoEnabled) {
-                videoBtn && videoBtn.classList.remove('btn-danger');
-                showCameraOffOverlay('local', false);
-            } else {
-                videoBtn && videoBtn.classList.add('btn-danger');
-                showCameraOffOverlay('local', true);
-            }
-
-            // Notify server about media status change so remote user is aware
-            sendMediaStatusToServer();
+            videoBtn && videoBtn.classList.remove('btn-danger');
+            showCameraOffOverlay('local', false);
         }
+
+        // Notify server about media status change so remote user is aware
+        sendMediaStatusToServer();
 
         // Stop other tracks from the temporary stream
         newStream.getAudioTracks().forEach((track) => track.stop());
