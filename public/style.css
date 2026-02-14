@@ -674,8 +674,8 @@ video::-webkit-media-controls {
 /* Hide Local Video on Mobile */
 @media (max-width: 768px) {
     #localVideoContainer {
-        width: 120px;
-        height: 90px;
+        width: 150px;
+        height: 112px;
         top: 15px;
         left: 15px;
         z-index: 100 !important; /* Ensure local video stays on top on mobile */
@@ -803,8 +803,8 @@ video::-webkit-media-controls {
 /* Landscape orientation for mobile */
 @media (max-width: 768px) and (orientation: landscape) {
     #localVideoContainer {
-        width: 100px;
-        height: 75px;
+        width: 120px;
+        height: 90px;
         top: 10px;
         left: 10px;
         z-index: 100 !important; /* Ensure local video stays on top in landscape */
@@ -829,8 +829,8 @@ video::-webkit-media-controls {
 /* Very small screens */
 @media (max-width: 480px) {
     #localVideoContainer {
-        width: 100px;
-        height: 75px;
+        width: 130px;
+        height: 98px;
         top: 10px;
         z-index: 100 !important; /* Ensure local video stays on top on small screens */
         left: 10px;
