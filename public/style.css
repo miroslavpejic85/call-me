@@ -276,7 +276,7 @@ video {
     height: auto;
     border: none;
     border-radius: var(--border-radius);
-    object-fit: cover; /* Default for camera feeds */
+    object-fit: contain; /* Show full content without cropping */
     cursor: pointer;
     display: block;
     max-width: 100%;
@@ -290,12 +290,12 @@ video.screen-share,
     background: #000 !important; /* Black background for letterboxing */
 }
 
-/* Camera feed specific styling (default) */
+/* Camera feed specific styling */
 video.camera-feed,
 #localVideo.camera-feed,
 #remoteVideo.camera-feed {
-    object-fit: cover !important; /* Fill container, may crop edges */
-    background: transparent !important;
+    object-fit: contain !important; /* Show full content without cropping */
+    background: #000 !important; /* Black background for letterboxing */
 }
 
 video:hover {
