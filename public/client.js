@@ -119,6 +119,7 @@ let fileTransferStatusEl = null;
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
     userInfo = getUserInfo(userAgent);
+    await initI18n();
     handleConfig();
     handleToolTip();
     handleLocalStorage();

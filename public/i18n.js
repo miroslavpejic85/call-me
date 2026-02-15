@@ -293,8 +293,7 @@ function showTranslatedAlert(titleKey, textKey, icon = 'info') {
     }
 }
 
-// Initialize i18n when DOM is ready
-document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', initI18n) : initI18n();
+// i18n is initialized explicitly from client.js via: await initI18n();
 
 // Re-translate when dynamic content is added (for mobile compatibility)
 if (typeof MutationObserver !== 'undefined') {
