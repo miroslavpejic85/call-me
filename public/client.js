@@ -2205,7 +2205,7 @@ function renderUserList() {
 
         // Send file button
         const sendFileBtn = document.createElement('button');
-        sendFileBtn.className = 'btn btn-custom btn-secondary btn-m';
+        sendFileBtn.className = 'btn btn-custom btn-success btn-m';
         sendFileBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
         sendFileBtn.style.marginRight = '10px';
         sendFileBtn.style.cursor = 'pointer';
