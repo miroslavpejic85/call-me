@@ -1074,6 +1074,16 @@ async function swapCamera() {
         if (videoTrack) {
             videoTrack.stop();
         }
+
+        // Update selectedDevices.videoInput so video toggle re-acquires the correct camera
+        const newVideoTrack = newStream.getVideoTracks()[0];
+        if (newVideoTrack) {
+            const newSettings = newVideoTrack.getSettings();
+            if (newSettings.deviceId) {
+                selectedDevices.videoInput = newSettings.deviceId;
+            }
+        }
+
         // Refresh video streams
         refreshLocalVideoStream(newStream);
         await refreshPeerVideoStreams(newStream);
