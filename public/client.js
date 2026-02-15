@@ -2148,6 +2148,11 @@ async function waitForDataChannelDrain() {
 
 // Select user by value in the user list
 function renderUserList() {
+    // Dispose existing Bootstrap tooltips before clearing the list
+    userList.querySelectorAll('[data-toggle="tooltip"]').forEach((el) => {
+        const tip = bootstrap.Tooltip.getInstance(el);
+        if (tip) tip.dispose();
+    });
     userList.innerHTML = '';
     filteredUsers.forEach((user) => {
         const li = document.createElement('li');
@@ -2162,8 +2167,6 @@ function renderUserList() {
         const actionBtnEl = document.createElement('button');
         actionBtnEl.style.marginRight = '10px';
         actionBtnEl.style.cursor = 'pointer';
-        actionBtnEl.setAttribute('data-toggle', 'tooltip');
-        actionBtnEl.setAttribute('data-placement', 'top');
 
         if (isInActiveCall) {
             // Show hang-up button only if in active call (user has answered)
@@ -2201,8 +2204,6 @@ function renderUserList() {
         sendFileBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
         sendFileBtn.style.marginRight = '10px';
         sendFileBtn.style.cursor = 'pointer';
-        sendFileBtn.setAttribute('data-toggle', 'tooltip');
-        sendFileBtn.setAttribute('data-placement', 'top');
         sendFileBtn.title = t('file.sendToUser', { username: user });
         sendFileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -2250,6 +2251,17 @@ function renderUserList() {
         });
         userList.appendChild(li);
     });
+
+    // Initialize Bootstrap tooltips on dynamically created buttons (skip on mobile)
+    if (!userInfo.device.isMobile) {
+        const tooltipEls = userList.querySelectorAll('[title]');
+        tooltipEls.forEach((el) => {
+            el.setAttribute('data-toggle', 'tooltip');
+            el.setAttribute('data-placement', 'top');
+            const tip = new bootstrap.Tooltip(el);
+            el.addEventListener('click', () => tip.hide());
+        });
+    }
 }
 
 // Filter user list based on search input
