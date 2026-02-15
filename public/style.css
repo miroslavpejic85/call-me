@@ -1324,6 +1324,36 @@ input {
     display: none;
 }
 
+/* Participant Count Badge */
+.participant-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    z-index: 1;
+    padding: 0 4px;
+    animation: bounce 0.5s ease-out;
+}
+
+.participant-count.hidden {
+    display: none;
+}
+
+#sidebarBtn {
+    overflow: visible !important;
+}
+
 @keyframes pulse {
     0%,
     100% {

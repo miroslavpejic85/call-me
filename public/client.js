@@ -34,6 +34,7 @@ const usersContent = document.getElementById('usersContent');
 const chatContent = document.getElementById('chatContent');
 const settingsContent = document.getElementById('settingsContent');
 const chatNotification = document.getElementById('chatNotification');
+const participantCount = document.getElementById('participantCount');
 const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
@@ -1224,6 +1225,7 @@ function handleNotFound(data) {
     // Remove from user list if present
     allConnectedUsers = allConnectedUsers.filter((u) => u !== username);
     filterUserList(userSearchInput.value || '');
+    updateParticipantCount();
 }
 
 // Handle sign-in response from the server
@@ -1579,6 +1581,7 @@ function handleUsers(data) {
     const currentUsers = data.users.filter((u) => u !== userName);
     allConnectedUsers = currentUsers;
     filterUserList(userSearchInput.value || '');
+    updateParticipantCount();
     if (userSignedIn) {
         currentUsers.forEach((u) => {
             if (!prevUsers.has(u)) {
@@ -2315,6 +2318,19 @@ function switchTab(tabName) {
             chatContent.classList.add('active');
         } else if (tabName === 'settings') {
             settingsContent.classList.add('active');
+        }
+    }
+}
+
+// Update participant count badge
+function updateParticipantCount() {
+    if (participantCount) {
+        const count = allConnectedUsers.length;
+        if (count > 0) {
+            participantCount.textContent = count > 99 ? '99+' : count.toString();
+            participantCount.classList.remove('hidden');
+        } else {
+            participantCount.classList.add('hidden');
         }
     }
 }
