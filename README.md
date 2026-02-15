@@ -23,6 +23,7 @@ This project allows you to:
 - `Use multiple languages`.
 - `Enable Host Protection` mode with a password.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
+- `End-to-End Encryption` for secure and private communications.
 
 ---
 
