@@ -535,6 +535,7 @@ function handleListeners() {
     // Language change event listener - reapply config after translation
     window.addEventListener('languageChanged', () => {
         handleConfig();
+        renderUserList();
     });
 
     // Sidebar toggle
