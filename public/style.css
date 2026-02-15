@@ -2179,10 +2179,22 @@ input {
     color: var(--danger-color) !important;
 }
 
-/* Toast variant: keep it subtle */
-.swal2-popup.swal2-toast {
+/* Toastify custom styles */
+.toastify-custom {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
+    cursor: default !important;
+    text-align: center;
+}
+
+.toastify-custom .toast-close {
+    color: #fff !important;
+    opacity: 0.8;
+    padding-left: 8px;
+}
+
+.toastify-custom .toast-close:hover {
+    opacity: 1;
 }
 
 .swal2-timer-progress-bar {

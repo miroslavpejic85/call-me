@@ -642,7 +642,7 @@ function handleUserClickToCall(user) {
         from: userName,
         to: user,
     });
-    popupMsg(t('room.callingUser', { username: user }));
+    toast(t('room.callingUser', { username: user }));
     if (userSidebar.classList.contains('active')) {
         userSidebar.classList.remove('active');
     }
@@ -1761,37 +1761,58 @@ function handleLeave(disconnect = true) {
     }
 }
 
-// Display toast messages
+// Display toast messages using Toastify
 function toast(message, icon = 'info', position = 'top', timer = 3000) {
-    Swal.fire({
-        heightAuto: false,
-        scrollbarPadding: false,
-        position,
-        icon,
-        html: message,
-        timer,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        showClass: { popup: 'animate__animated animate__fadeInDown' },
-        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-    });
+    const backgroundMap = {
+        success: 'linear-gradient(to right, #10b981, #059669)',
+        warning: 'linear-gradient(to right, #f59e0b, #d97706)',
+        error: 'linear-gradient(to right, #ef4444, #dc2626)',
+        info: 'linear-gradient(to right, #3b82f6, #2563eb)',
+    };
+
+    const iconMap = {
+        success: '<i class="fas fa-check-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        error: '<i class="fas fa-times-circle"></i>',
+        info: '<i class="fas fa-info-circle"></i>',
+    };
+
+    const gravity = position === 'bottom' ? 'bottom' : 'top';
+    const toastIcon = iconMap[icon] || iconMap.info;
+    const background = backgroundMap[icon] || backgroundMap.info;
+
+    const node = document.createElement('span');
+    node.innerHTML = `${toastIcon}  ${message}`;
+    node.style.display = 'inline-flex';
+    node.style.alignItems = 'center';
+    node.style.gap = '8px';
+
+    Toastify({
+        node,
+        duration: timer,
+        gravity,
+        position: 'center',
+        escapeMarkup: false,
+        className: 'toastify-custom',
+        style: {
+            background,
+            borderRadius: 'var(--border-radius, 12px)',
+            fontFamily: 'inherit',
+            fontSize: '0.9rem',
+            padding: '12px 20px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            maxWidth: '400px',
+        },
+        close: timer > 3000,
+        stopOnFocus: true,
+    }).showToast();
 }
 
 // Handle and display errors
 function handleError(message, error = false, position = 'top', timer = 6000) {
     if (error) console.error(error);
 
-    Swal.fire({
-        heightAuto: false,
-        scrollbarPadding: false,
-        position,
-        icon: 'warning',
-        html: message,
-        timerProgressBar: true,
-        timer,
-        showClass: { popup: 'animate__animated animate__fadeInDown' },
-        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-    });
+    toast(message, 'warning', position, timer);
 
     sound('notify');
 }
