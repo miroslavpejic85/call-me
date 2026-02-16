@@ -555,7 +555,6 @@ video::-webkit-media-controls {
 #localVideo.screen-share {
     object-fit: contain !important;
     background: #000 !important;
-    border: 2px solid #ff6b35 !important; /* Orange border to indicate screen sharing */
 }
 
 /* Modern Username Labels - */
@@ -649,7 +648,6 @@ video::-webkit-media-controls {
 #remoteVideo.screen-share {
     object-fit: contain !important;
     background: #000 !important;
-    border: 2px solid #ff6b35 !important; /* Orange border to indicate screen sharing */
 }
 
 #remoteVideo:hover {
