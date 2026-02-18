@@ -11,8 +11,8 @@ This project enables easy one-to-one video calls directly from your web browser 
 This project allows you to:
 
 - `Sign in` with a username.
-- `Initiate video calls` by clicking the call button next to a recipient’s username.
 - `Set your preferred language`.
+- `Initiate video calls` by clicking the call button next to a recipient’s username.
 - `Switch between cameras, microphones, and speakers` during a call.
 - `Chat in real time` with participants.
 - `Hide your video` feed when needed.
