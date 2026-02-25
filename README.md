@@ -10,6 +10,7 @@ This project enables easy one-to-one video calls directly from your web browser 
 
 This project allows you to:
 
+- `End-to-End Encryption` for secure and private communications.
 - `Sign in` with a username.
 - `Set your preferred language`.
 - `Initiate video calls` by clicking the call button next to a recipient’s username.
@@ -23,7 +24,6 @@ This project allows you to:
 - `Hang up the call` when finished.
 - `Enable Host Protection` mode with a password.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
-- `End-to-End Encryption` for secure and private communications.
 
 ---
 
