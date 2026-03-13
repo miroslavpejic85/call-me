@@ -373,6 +373,18 @@ server.listen(port, () => {
     }
 });
 
+// Handle client errors (malformed/incomplete HTTP requests) gracefully
+server.on('clientError', (err, socket) => {
+    const msg =
+        err.code === 'HPE_HEADER_OVERFLOW' || err.message === 'Parse Error'
+            ? 'Client HTTP parse error'
+            : 'Client connection error';
+    log.warn(msg, { error: err.message, code: err.code });
+    if (socket && !socket.destroyed) {
+        socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+    }
+});
+
 // Handle WebSocket connections
 io.on('connection', handleConnection);
 
