@@ -11,7 +11,7 @@ This project enables easy one-to-one video calls directly from your web browser 
 This project allows you to:
 
 - `End-to-End Encryption` for secure and private communications.
-- `Sign in` with a username.
+- `Join` with a username or enter a name to `Call now`.
 - `Set your preferred language`.
 - `Initiate video calls` by clicking the call button next to a recipient’s username.
 - `Switch between cameras, microphones, and speakers` during a call.
