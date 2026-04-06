@@ -2584,10 +2584,12 @@ z-index:
 .direct-call-row {
     display: flex;
     gap: var(--spacing-sm);
+    min-width: 0;
 }
 
 .direct-call-row input {
     flex: 1;
+    min-width: 0;
     padding: 12px 16px;
     font-size: 15px;
     color: var(--text-color);
@@ -2623,6 +2625,7 @@ z-index:
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    flex-shrink: 0;
 }
 
 .btn-call-now:hover {
@@ -3002,5 +3005,74 @@ z-index:
     .direct-call-row .btn-call-now {
         width: 100%;
         justify-content: center;
+    }
+
+    /* Sign-in card: reduce padding on mobile */
+    .card-header {
+        padding: var(--spacing-md) !important;
+    }
+
+    .card-header h1 {
+        font-size: var(--font-size-xl) !important;
+    }
+
+    .card-body {
+        padding: var(--spacing-md) !important;
+    }
+
+    /* Attribution: prevent overlap with card on short viewports */
+    #attribution {
+        position: fixed;
+        bottom: var(--spacing-xs);
+        right: var(--spacing-xs);
+        font-size: 0.65rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        max-width: 60%;
+        z-index: 3;
+    }
+}
+
+/* Very small screens: further compact the sign-in card */
+@media (max-width: 480px) {
+    .card {
+        max-width: 95% !important;
+    }
+
+    .card-header {
+        padding: var(--spacing-sm) var(--spacing-md) !important;
+    }
+
+    .card-body {
+        padding: var(--spacing-sm) var(--spacing-md) !important;
+    }
+
+    .sign-in-subtitle {
+        font-size: var(--font-size-xs);
+    }
+
+    .media-toggle-item {
+        padding: 8px var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+
+    .media-toggle-icon {
+        width: 32px;
+        height: 32px;
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Landscape mobile: ensure card and attribution don't collide */
+@media (max-width: 768px) and (orientation: landscape) {
+    #signInPage {
+        overflow-y: auto;
+        max-height: 100vh;
+        padding-bottom: 32px;
+    }
+
+    #attribution {
+        position: fixed;
+        bottom: var(--spacing-xs);
+        right: var(--spacing-xs);
     }
 }
