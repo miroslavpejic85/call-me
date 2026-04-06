@@ -543,6 +543,7 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    document.getElementById('randomUsernameBtn').addEventListener('click', handleRandomUsername);
     document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
     usersTab.addEventListener('click', () => switchTab('users'));
     chatTab.addEventListener('click', () => switchTab('chat'));
@@ -792,6 +793,17 @@ async function handleShareRoomClick() {
     } else {
         await copyToClipboard(roomUrl);
     }
+}
+
+// Generate random username
+function handleRandomUsername() {
+    const adjectives = ['Cool', 'Fast', 'Bright', 'Swift', 'Bold', 'Calm', 'Lucky', 'Brave', 'Clever', 'Happy'];
+    const nouns = ['Fox', 'Eagle', 'Tiger', 'Wolf', 'Hawk', 'Lion', 'Bear', 'Panda', 'Falcon', 'Shark'];
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const num = Math.floor(Math.random() * 1000);
+    usernameIn.value = `${adj}${noun}${num}`;
+    usernameIn.focus();
 }
 
 // Copy username to clipboard

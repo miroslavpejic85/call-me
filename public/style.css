@@ -901,6 +901,31 @@ input {
     align-items: center;
 }
 
+.random-username-btn {
+    position: absolute;
+    right: 42px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px 8px;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.random-username-btn:hover {
+    color: var(--primary-light);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.random-username-btn:active {
+    transform: scale(0.9);
+}
+
 .copy-username-btn {
     position: absolute;
     right: 10px;
@@ -930,7 +955,7 @@ input {
 #usernameIn {
     display: block;
     width: 100%;
-    padding: 14px 42px 14px 18px;
+    padding: 14px 74px 14px 18px;
     font-size: 16px;
     color: var(--text-color);
     border: 2px solid var(--glass-border);
