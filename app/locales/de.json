@@ -77,6 +77,7 @@
         "invalidPassword": "Ungültiges Passwort",
         "shareRoomText": "Ruf mich auf Call-me an!",
         "roomCopied": "Anruflink in die Zwischenablage kopiert!",
+        "usernameCopied": "Benutzername '__username__' in die Zwischenablage kopiert!",
         "devicesRefreshed": "Geräte erfolgreich aktualisiert",
         "cameraChanged": "Kamera erfolgreich gewechselt",
         "microphoneChanged": "Mikrofon erfolgreich gewechselt",

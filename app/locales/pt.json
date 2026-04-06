@@ -77,6 +77,7 @@
         "invalidPassword": "Senha inválida",
         "shareRoomText": "Me ligue no Call-me!",
         "roomCopied": "Link de chamada copiado para a área de transferência!",
+        "usernameCopied": "Nome de usuário '__username__' copiado para a área de transferência!",
         "devicesRefreshed": "Dispositivos atualizados com sucesso",
         "cameraChanged": "Câmera alterada com sucesso",
         "microphoneChanged": "Microfone alterado com sucesso",

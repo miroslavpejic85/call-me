@@ -77,6 +77,7 @@
         "invalidPassword": "Neispravna lozinka",
         "shareRoomText": "Pozovi me na Call-me!",
         "roomCopied": "Link za poziv kopiran u ostavu!",
+        "usernameCopied": "Korisničko ime '__username__' kopirano u ostavu!",
         "devicesRefreshed": "Uređaji su uspešno osveženi",
         "cameraChanged": "Kamera je uspešno promenjena",
         "microphoneChanged": "Mikrofon je uspešno promenjen",

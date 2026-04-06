@@ -77,6 +77,7 @@
         "invalidPassword": "Contraseña inválida",
         "shareRoomText": "¡Llámame en Call-me!",
         "roomCopied": "¡Enlace de llamada copiado al portapapeles!",
+        "usernameCopied": "¡Nombre de usuario '__username__' copiado al portapapeles!",
         "devicesRefreshed": "Dispositivos actualizados correctamente",
         "cameraChanged": "Cámara cambiada correctamente",
         "microphoneChanged": "Micrófono cambiado correctamente",

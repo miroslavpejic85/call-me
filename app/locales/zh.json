@@ -77,6 +77,7 @@
         "invalidPassword": "密码无效",
         "shareRoomText": "在 Call-me 上呼叫我！",
         "roomCopied": "通话链接已复制到剪贴板！",
+        "usernameCopied": "用户名 '__username__' 已复制到剪贴板！",
         "devicesRefreshed": "设备刷新成功",
         "cameraChanged": "摄像头切换成功",
         "microphoneChanged": "麦克风切换成功",

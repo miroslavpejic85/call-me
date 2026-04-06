@@ -543,6 +543,7 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
     usersTab.addEventListener('click', () => switchTab('users'));
     chatTab.addEventListener('click', () => switchTab('chat'));
     settingsTab.addEventListener('click', () => switchTab('settings'));
@@ -790,6 +791,22 @@ async function handleShareRoomClick() {
         }
     } else {
         await copyToClipboard(roomUrl);
+    }
+}
+
+// Copy username to clipboard
+async function handleCopyUsername() {
+    const username = usernameIn.value.trim();
+    if (!username) {
+        toast(t('signIn.enterUsername'), 'warning', 'top', 2000);
+        usernameIn.focus();
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(username);
+        toast(t('messages.usernameCopied', { username }), 'success', 'top', 3000);
+    } catch (error) {
+        handleError(t('errors.copyToClipboardFailed'), error.message);
     }
 }
 

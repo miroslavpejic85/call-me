@@ -77,6 +77,7 @@
         "invalidPassword": "Password non valida",
         "shareRoomText": "Chiamami su Call-me!",
         "roomCopied": "Link di chiamata copiato negli appunti!",
+        "usernameCopied": "Nome utente '__username__' copiato negli appunti!",
         "devicesRefreshed": "Dispositivi aggiornati correttamente",
         "cameraChanged": "Fotocamera cambiata correttamente",
         "microphoneChanged": "Microfono cambiato correttamente",

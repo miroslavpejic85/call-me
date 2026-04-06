@@ -78,13 +78,23 @@
                             <!-- Sign-in Form -->
                             <div class="mb-3">
                                 <!-- Input field for entering the username -->
-                                <input
-                                    id="usernameIn"
-                                    type="text"
-                                    placeholder="Choose a display name"
-                                    data-i18n-placeholder="signIn.username"
-                                    required
-                                />
+                                <div class="username-input-wrapper">
+                                    <input
+                                        id="usernameIn"
+                                        type="text"
+                                        placeholder="Choose a display name"
+                                        data-i18n-placeholder="signIn.username"
+                                        required
+                                    />
+                                    <button
+                                        id="copyUsernameBtn"
+                                        class="copy-username-btn"
+                                        type="button"
+                                        title="Copy username"
+                                    >
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
                             </div>
                             <!-- Media toggles -->
                             <div class="media-toggles mb-3">

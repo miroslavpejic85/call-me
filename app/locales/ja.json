@@ -77,6 +77,7 @@
         "invalidPassword": "パスワードが無効です",
         "shareRoomText": "Call-meで電話してね！",
         "roomCopied": "通話リンクをクリップボードにコピーしました！",
+        "usernameCopied": "ユーザー名 '__username__' をクリップボードにコピーしました！",
         "devicesRefreshed": "デバイスを正常に更新しました",
         "cameraChanged": "カメラを正常に変更しました",
         "microphoneChanged": "マイクを正常に変更しました",

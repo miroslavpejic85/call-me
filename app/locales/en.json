@@ -78,6 +78,7 @@
         "invalidPassword": "Invalid password",
         "shareRoomText": "Call me on Call-me!",
         "roomCopied": "Call link copied to clipboard!",
+        "usernameCopied": "Username '__username__' copied to clipboard!",
         "devicesRefreshed": "Devices refreshed successfully",
         "cameraChanged": "Camera changed successfully",
         "microphoneChanged": "Microphone changed successfully",

@@ -894,11 +894,43 @@ input {
     text-align: center;
 }
 
+/* Username input wrapper */
+.username-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.copy-username-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px 8px;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-username-btn:hover {
+    color: var(--primary-light);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.copy-username-btn:active {
+    transform: scale(0.9);
+}
+
 /* Modern Input Styling */
 #usernameIn {
     display: block;
     width: 100%;
-    padding: 14px 18px;
+    padding: 14px 42px 14px 18px;
     font-size: 16px;
     color: var(--text-color);
     border: 2px solid var(--glass-border);

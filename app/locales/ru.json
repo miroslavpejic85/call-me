@@ -77,6 +77,7 @@
         "invalidPassword": "Неверный пароль",
         "shareRoomText": "Позвоните мне на Call-me!",
         "roomCopied": "Ссылка для звонка скопирована в буфер обмена!",
+        "usernameCopied": "Имя пользователя '__username__' скопировано в буфер обмена!",
         "devicesRefreshed": "Устройства успешно обновлены",
         "cameraChanged": "Камера успешно изменена",
         "microphoneChanged": "Микрофон успешно изменён",

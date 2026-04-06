@@ -77,6 +77,7 @@
         "invalidPassword": "अमान्य पासवर्ड",
         "shareRoomText": "मुझे Call-me पर कॉल करें!",
         "roomCopied": "कॉल लिंक क्लिपबोर्ड पर कॉपी किया गया!",
+        "usernameCopied": "उपयोगकर्ता नाम '__username__' क्लिपबोर्ड पर कॉपी किया गया!",
         "devicesRefreshed": "डिवाइस सफलतापूर्वक रिफ्रेश किए गए",
         "cameraChanged": "कैमरा सफलतापूर्वक बदला गया",
         "microphoneChanged": "माइक्रोफ़ोन सफलतापूर्वक बदला गया",

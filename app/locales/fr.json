@@ -77,6 +77,7 @@
         "invalidPassword": "Mot de passe invalide",
         "shareRoomText": "Appelez-moi sur Call-me !",
         "roomCopied": "Lien d'appel copié dans le presse-papiers !",
+        "usernameCopied": "Nom d'utilisateur '__username__' copié dans le presse-papiers !",
         "devicesRefreshed": "Appareils actualisés avec succès",
         "cameraChanged": "Caméra changée avec succès",
         "microphoneChanged": "Microphone changé avec succès",
