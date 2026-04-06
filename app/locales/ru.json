@@ -3,12 +3,16 @@
     "appTitle": "Call-me — мгновенные видеозвонки",
     "appDescription": "Ваш выбор для мгновенных видеозвонков!",
     "signIn": {
-        "title": "Войти",
-        "username": "Введите имя пользователя",
-        "button": "Войти",
+        "title": "Присоединиться",
+        "username": "Выберите отображаемое имя",
+        "button": "Присоединиться",
         "camera": "Камера",
         "microphone": "Микрофон",
-        "enterUsername": "Пожалуйста, введите имя пользователя"
+        "enterUsername": "Пожалуйста, введите отображаемое имя",
+        "subtitle": "Мгновенные видеозвонки. Регистрация не нужна.",
+        "directCallLabel": "Или позвоните кому-то напрямую",
+        "directCallPlaceholder": "Введите имя для звонка",
+        "directCallButton": "Позвонить сейчас"
     },
     "room": {
         "sessionTime": "Время сессии",
@@ -27,7 +31,18 @@
         "hangupWith": "Завершить звонок с __username__",
         "callUser": "Позвонить __username__",
         "videoOff": "Видео выключено",
-        "videoDisabled": "Видео отключено"
+        "videoDisabled": "Видео отключено",
+        "noUsersOnline": "Пока нет других пользователей онлайн",
+        "shareToInvite": "Поделитесь ссылкой для приглашения!",
+        "noChatMessages": "Сообщений пока нет. Начните общение после подключения!",
+        "noActiveCall": "Выберите пользователя для начала видеозвонка",
+        "callingOverlay": "Вызов...",
+        "incomingCall": "Входящий звонок",
+        "cancelCall": "Отмена",
+        "callDeclined": "__username__ отклонил звонок",
+        "callBusy": "__username__ уже на другом звонке",
+        "callTimeout": "Нет ответа от __username__",
+        "usersOnline": "__count__ пользователь(ей) онлайн"
     },
     "controls": {
         "microphone": "Микрофон",
@@ -60,8 +75,8 @@
         "error": "Произошла ошибка",
         "copied": "Скопировано в буфер обмена",
         "invalidPassword": "Неверный пароль",
-        "shareRoomText": "Присоединяйтесь к моей комнате Call-me!",
-        "roomCopied": "Комната скопирована в буфер обмена __text__",
+        "shareRoomText": "Позвоните мне на Call-me!",
+        "roomCopied": "Ссылка для звонка скопирована в буфер обмена!",
         "devicesRefreshed": "Устройства успешно обновлены",
         "cameraChanged": "Камера успешно изменена",
         "microphoneChanged": "Микрофон успешно изменён",

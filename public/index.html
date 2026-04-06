@@ -68,7 +68,12 @@
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="card-header"><h1 id="appName" data-i18n="appName">Call-me</h1></div>
+                        <div class="card-header">
+                            <h1 id="appName" data-i18n="appName">Call-me</h1>
+                            <p class="sign-in-subtitle" data-i18n="signIn.subtitle">
+                                Instant Video Calls. No signup needed.
+                            </p>
+                        </div>
                         <div class="card-body">
                             <!-- Sign-in Form -->
                             <div class="mb-3">
@@ -76,7 +81,7 @@
                                 <input
                                     id="usernameIn"
                                     type="text"
-                                    placeholder="Enter username"
+                                    placeholder="Choose a display name"
                                     data-i18n-placeholder="signIn.username"
                                     required
                                 />
@@ -105,7 +110,27 @@
                                 </label>
                             </div>
                             <!-- Sign-in button -->
-                            <button id="signInBtn" class="btn btn-primary" data-i18n="signIn.button">Sign In</button>
+                            <button id="signInBtn" class="btn btn-primary" data-i18n="signIn.button">Join</button>
+
+                            <!-- Direct call section -->
+                            <div class="direct-call-section">
+                                <div class="direct-call-divider">
+                                    <span data-i18n="signIn.directCallLabel">Or call someone directly</span>
+                                </div>
+                                <div class="direct-call-row">
+                                    <input
+                                        id="directCallInput"
+                                        type="text"
+                                        placeholder="Enter name to call"
+                                        data-i18n-placeholder="signIn.directCallPlaceholder"
+                                        autocomplete="off"
+                                    />
+                                    <button id="directCallBtn" class="btn btn-call-now">
+                                        <i class="fas fa-phone"></i>
+                                        <span data-i18n="signIn.directCallButton">Call Now</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,6 +141,42 @@
         <div id="roomPage" class="container">
             <!-- Session time -->
             <span id="sessionTime">0s</span>
+
+            <!-- Calling overlay (outgoing) -->
+            <div id="callingOverlay" class="calling-overlay">
+                <div class="calling-overlay-content">
+                    <div class="calling-pulse-ring"></div>
+                    <i class="fas fa-phone calling-icon"></i>
+                    <p class="calling-status" data-i18n="room.callingOverlay">Calling...</p>
+                    <p id="callingUsername" class="calling-username"></p>
+                    <span id="callingTimer" class="calling-timer">0s</span>
+                    <button id="cancelCallBtn" class="btn btn-danger btn-cancel-call" data-i18n="room.cancelCall">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Incoming call overlay -->
+            <div id="incomingCallOverlay" class="incoming-call-overlay">
+                <div class="incoming-call-content">
+                    <div class="incoming-call-ring-outer"></div>
+                    <div class="incoming-call-ring-inner"></div>
+                    <div class="incoming-call-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <p class="incoming-call-label" data-i18n="room.incomingCall">Incoming call</p>
+                    <p id="incomingCallUsername" class="incoming-call-username"></p>
+                    <div id="incomingCallTimer" class="incoming-call-timer"></div>
+                    <div class="incoming-call-actions">
+                        <button id="declineCallBtn" class="btn-call-action btn-decline" title="Decline">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                        <button id="acceptCallBtn" class="btn-call-action btn-accept" title="Accept">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Remote video container (video from the other user) -->
             <div id="remoteVideoContainer">

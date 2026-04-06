@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Videochiamate Istantanee",
     "appDescription": "La tua scelta per videochiamate istantanee!",
     "signIn": {
-        "title": "Accedi",
-        "username": "Inserisci nome utente",
-        "button": "Accedi",
+        "title": "Entra",
+        "username": "Scegli un nome visualizzato",
+        "button": "Entra",
         "camera": "Fotocamera",
         "microphone": "Microfono",
-        "enterUsername": "Inserisci il tuo nome utente"
+        "enterUsername": "Inserisci il tuo nome visualizzato",
+        "subtitle": "Videochiamate istantanee. Nessuna registrazione necessaria.",
+        "directCallLabel": "Oppure chiama qualcuno direttamente",
+        "directCallPlaceholder": "Inserisci un nome da chiamare",
+        "directCallButton": "Chiama ora"
     },
     "room": {
         "sessionTime": "Tempo di Sessione",
@@ -27,7 +31,18 @@
         "hangupWith": "Riaggancia la chiamata con __username__",
         "callUser": "Chiama __username__",
         "videoOff": "Video disattivato",
-        "videoDisabled": "Video disabilitato"
+        "videoDisabled": "Video disabilitato",
+        "noUsersOnline": "Nessun altro utente online al momento",
+        "shareToInvite": "Condividi il tuo link di chiamata per invitare qualcuno!",
+        "noChatMessages": "Nessun messaggio ancora. Inizia a chattare una volta connesso!",
+        "noActiveCall": "Seleziona un utente per avviare una videochiamata",
+        "callingOverlay": "Chiamata in corso...",
+        "incomingCall": "Chiamata in arrivo",
+        "cancelCall": "Annulla",
+        "callDeclined": "__username__ ha rifiutato la chiamata",
+        "callBusy": "__username__ è in un'altra chiamata",
+        "callTimeout": "Nessuna risposta da __username__",
+        "usersOnline": "__count__ utente/i online"
     },
     "controls": {
         "microphone": "Microfono",
@@ -60,8 +75,8 @@
         "error": "Si è verificato un errore",
         "copied": "Copiato negli appunti",
         "invalidPassword": "Password non valida",
-        "shareRoomText": "Unisciti alla mia stanza Call-me!",
-        "roomCopied": "Stanza copiata negli appunti __text__",
+        "shareRoomText": "Chiamami su Call-me!",
+        "roomCopied": "Link di chiamata copiato negli appunti!",
         "devicesRefreshed": "Dispositivi aggiornati correttamente",
         "cameraChanged": "Fotocamera cambiata correttamente",
         "microphoneChanged": "Microfono cambiato correttamente",

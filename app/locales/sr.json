@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Trenutni video pozivi",
     "appDescription": "Vaš izbor za trenutne video pozive!",
     "signIn": {
-        "title": "Prijava",
-        "username": "Unesite korisničko ime",
-        "button": "Prijavi se",
+        "title": "Pridruži se",
+        "username": "Izaberite ime za prikaz",
+        "button": "Pridruži se",
         "camera": "Камера",
         "microphone": "Микрофон",
-        "enterUsername": "Molimo unesite svoje korisničko ime"
+        "enterUsername": "Molimo unesite svoje ime za prikaz",
+        "subtitle": "Trenutni video pozivi. Bez registracije.",
+        "directCallLabel": "Ili pozovite nekoga direktno",
+        "directCallPlaceholder": "Unesite ime za poziv",
+        "directCallButton": "Pozovi odmah"
     },
     "room": {
         "sessionTime": "Trajanje sesije",
@@ -27,7 +31,18 @@
         "hangupWith": "Prekini poziv sa __username__",
         "callUser": "Pozovi __username__",
         "videoOff": "Video isključen",
-        "videoDisabled": "Video onemogućen"
+        "videoDisabled": "Video onemogućen",
+        "noUsersOnline": "Još nema drugih korisnika na mreži",
+        "shareToInvite": "Podelite svoj link za poziv da pozovete nekoga!",
+        "noChatMessages": "Još nema poruka. Počnite da ćaskate nakon povezivanja!",
+        "noActiveCall": "Izaberite korisnika za pokretanje video poziva",
+        "callingOverlay": "Pozivanje...",
+        "incomingCall": "Dolazni poziv",
+        "cancelCall": "Otkaži",
+        "callDeclined": "__username__ je odbio poziv",
+        "callBusy": "__username__ je na drugom pozivu",
+        "callTimeout": "Nema odgovora od __username__",
+        "usersOnline": "__count__ korisnik(a) na mreži"
     },
     "controls": {
         "microphone": "Mikrofon",
@@ -60,8 +75,8 @@
         "error": "Došlo je do greške",
         "copied": "Kopirano u ostavu",
         "invalidPassword": "Neispravna lozinka",
-        "shareRoomText": "Pridruži se mojoj Call-me sobi!",
-        "roomCopied": "Soba kopirana u ostavu __text__",
+        "shareRoomText": "Pozovi me na Call-me!",
+        "roomCopied": "Link za poziv kopiran u ostavu!",
         "devicesRefreshed": "Uređaji su uspešno osveženi",
         "cameraChanged": "Kamera je uspešno promenjena",
         "microphoneChanged": "Mikrofon je uspešno promenjen",

@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Videollamadas Instantáneas",
     "appDescription": "¡Tu opción para videollamadas instantáneas!",
     "signIn": {
-        "title": "Iniciar Sesión",
-        "username": "Ingrese nombre de usuario",
-        "button": "Iniciar Sesión",
+        "title": "Unirse",
+        "username": "Elige un nombre para mostrar",
+        "button": "Unirse",
         "camera": "Cámara",
         "microphone": "Micrófono",
-        "enterUsername": "Por favor ingrese su nombre de usuario"
+        "enterUsername": "Por favor ingrese su nombre para mostrar",
+        "subtitle": "Videollamadas instantáneas. Sin registro.",
+        "directCallLabel": "O llama a alguien directamente",
+        "directCallPlaceholder": "Ingresa un nombre para llamar",
+        "directCallButton": "Llamar ahora"
     },
     "room": {
         "sessionTime": "Tiempo de Sesión",
@@ -27,7 +31,18 @@
         "hangupWith": "Colgar la llamada con __username__",
         "callUser": "Llamar a __username__",
         "videoOff": "Vídeo desactivado",
-        "videoDisabled": "Vídeo deshabilitado"
+        "videoDisabled": "Vídeo deshabilitado",
+        "noUsersOnline": "Aún no hay otros usuarios en línea",
+        "shareToInvite": "¡Comparte tu enlace de llamada para invitar a alguien!",
+        "noChatMessages": "¡Aún no hay mensajes. Empieza a chatear una vez conectado!",
+        "noActiveCall": "Selecciona un usuario para iniciar una videollamada",
+        "callingOverlay": "Llamando...",
+        "incomingCall": "Llamada entrante",
+        "cancelCall": "Cancelar",
+        "callDeclined": "__username__ rechazó la llamada",
+        "callBusy": "__username__ está en otra llamada",
+        "callTimeout": "Sin respuesta de __username__",
+        "usersOnline": "__count__ usuario(s) en línea"
     },
     "controls": {
         "microphone": "Micrófono",
@@ -60,8 +75,8 @@
         "error": "Ocurrió un error",
         "copied": "Copiado al portapapeles",
         "invalidPassword": "Contraseña inválida",
-        "shareRoomText": "¡Únete a mi sala de Call-me!",
-        "roomCopied": "Sala copiada al portapapeles __text__",
+        "shareRoomText": "¡Llámame en Call-me!",
+        "roomCopied": "¡Enlace de llamada copiado al portapapeles!",
         "devicesRefreshed": "Dispositivos actualizados correctamente",
         "cameraChanged": "Cámara cambiada correctamente",
         "microphoneChanged": "Micrófono cambiado correctamente",

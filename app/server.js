@@ -261,9 +261,9 @@ app.get('/join/', (req, res) => {
             return unauthorized(res);
         }
 
-        const isValidCall = isValidUsername(user);
+        const isValidCall = call ? isValidUsername(call) : true;
         log.debug('isValidCall', { call: call, valid: isValidCall });
-        if (!isValidCall) {
+        if (call && !isValidCall) {
             return unauthorized(res);
         }
 
@@ -515,11 +515,15 @@ function handleConnection(socket) {
                 break;
             case 'offerDecline':
                 log.warn(`User ${name} declined your call`);
-                sendError(recipientSocket || socket, `User ${name} declined your call`);
+                if (recipientSocket) {
+                    sendMsgTo(recipientSocket, { type: 'offerDecline', from: name });
+                }
                 break;
             case 'offerBusy':
                 log.warn(`User ${name} busy in another call`);
-                sendError(recipientSocket || socket, `User ${name} busy in another call.`);
+                if (recipientSocket) {
+                    sendMsgTo(recipientSocket, { type: 'offerBusy', from: name });
+                }
                 break;
             default:
                 log.warn(`Unknown offer type: ${type}`);

@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Sofortige Videoanrufe",
     "appDescription": "Ihre erste Wahl für sofortige Videoanrufe!",
     "signIn": {
-        "title": "Anmelden",
-        "username": "Benutzernamen eingeben",
-        "button": "Anmelden",
+        "title": "Beitreten",
+        "username": "Anzeigename wählen",
+        "button": "Beitreten",
         "camera": "Kamera",
         "microphone": "Mikrofon",
-        "enterUsername": "Bitte geben Sie Ihren Benutzernamen ein"
+        "enterUsername": "Bitte geben Sie Ihren Anzeigenamen ein",
+        "subtitle": "Sofortige Videoanrufe. Keine Anmeldung nötig.",
+        "directCallLabel": "Oder jemanden direkt anrufen",
+        "directCallPlaceholder": "Namen zum Anrufen eingeben",
+        "directCallButton": "Jetzt anrufen"
     },
     "room": {
         "sessionTime": "Sitzungszeit",
@@ -27,7 +31,18 @@
         "hangupWith": "Anruf mit __username__ auflegen",
         "callUser": "__username__ anrufen",
         "videoOff": "Video aus",
-        "videoDisabled": "Video deaktiviert"
+        "videoDisabled": "Video deaktiviert",
+        "noUsersOnline": "Noch keine anderen Benutzer online",
+        "shareToInvite": "Teile deinen Anruflink, um jemanden einzuladen!",
+        "noChatMessages": "Noch keine Nachrichten. Starte einen Chat nach der Verbindung!",
+        "noActiveCall": "Wähle einen Benutzer, um einen Videoanruf zu starten",
+        "callingOverlay": "Anruf läuft...",
+        "incomingCall": "Eingehender Anruf",
+        "cancelCall": "Abbrechen",
+        "callDeclined": "__username__ hat den Anruf abgelehnt",
+        "callBusy": "__username__ führt bereits ein anderes Gespräch",
+        "callTimeout": "Keine Antwort von __username__",
+        "usersOnline": "__count__ Benutzer online"
     },
     "controls": {
         "microphone": "Mikrofon",
@@ -60,8 +75,8 @@
         "error": "Ein Fehler ist aufgetreten",
         "copied": "In die Zwischenablage kopiert",
         "invalidPassword": "Ungültiges Passwort",
-        "shareRoomText": "Tritt meinem Call-me-Raum bei!",
-        "roomCopied": "Raum in die Zwischenablage kopiert __text__",
+        "shareRoomText": "Ruf mich auf Call-me an!",
+        "roomCopied": "Anruflink in die Zwischenablage kopiert!",
         "devicesRefreshed": "Geräte erfolgreich aktualisiert",
         "cameraChanged": "Kamera erfolgreich gewechselt",
         "microphoneChanged": "Mikrofon erfolgreich gewechselt",

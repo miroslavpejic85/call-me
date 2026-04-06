@@ -3,12 +3,16 @@
     "appTitle": "Call-me - तुरंत वीडियो कॉल",
     "appDescription": "तुरंत वीडियो कॉल के लिए आपका पसंदीदा विकल्प!",
     "signIn": {
-        "title": "साइन इन",
-        "username": "उपयोगकर्ता नाम दर्ज करें",
-        "button": "साइन इन",
+        "title": "शामिल हों",
+        "username": "एक डिस्प्ले नाम चुनें",
+        "button": "शामिल हों",
         "camera": "कैमरा",
-        "microphone": "माइक्रोफ़ोन",
-        "enterUsername": "कृपया अपना उपयोगकर्ता नाम दर्ज करें"
+        "microphone": "माइक्रोવोन",
+        "enterUsername": "कृपया अपना डिस्प्ले नाम दर्ज करें",
+        "subtitle": "तुरंत वीडियो कॉल। साइनअप की ज़रूरत नहीं।",
+        "directCallLabel": "या किसी को सीधे कॉल करें",
+        "directCallPlaceholder": "कॉल करने के लिए नाम दर्ज करें",
+        "directCallButton": "अभी कॉल करें"
     },
     "room": {
         "sessionTime": "सत्र समय",
@@ -27,7 +31,18 @@
         "hangupWith": "__username__ के साथ कॉल समाप्त करें",
         "callUser": "__username__ को कॉल करें",
         "videoOff": "वीडियो बंद",
-        "videoDisabled": "वीडियो अक्षम"
+        "videoDisabled": "वीडियो अक्षम",
+        "noUsersOnline": "अभी कोई अन्य उपयोगकर्ता ऑनलाइन नहीं है",
+        "shareToInvite": "किसी को आमंत्रित करने के लिए अपना कॉल लिंक साझा करें!",
+        "noChatMessages": "अभी कोई संदेश नहीं। कनेक्ट होने के बाद चैट शुरू करें!",
+        "noActiveCall": "वीडियो कॉल शुरू करने के लिए एक उपयोगकर्ता चुनें",
+        "callingOverlay": "कॉल हो रहा है...",
+        "incomingCall": "आने वाली कॉल",
+        "cancelCall": "रद्द करें",
+        "callDeclined": "__username__ ने कॉल अस्वीकार कर दी",
+        "callBusy": "__username__ दूसरी कॉल पर है",
+        "callTimeout": "__username__ से कोई जवाब नहीं",
+        "usersOnline": "__count__ उपयोगकर्ता ऑनलाइन"
     },
     "controls": {
         "microphone": "माइक्रोफ़ोन",
@@ -60,8 +75,8 @@
         "error": "एक त्रुटि हुई",
         "copied": "क्लिपबोर्ड पर कॉपी किया गया",
         "invalidPassword": "अमान्य पासवर्ड",
-        "shareRoomText": "मेरे Call-me रूम में शामिल हों!",
-        "roomCopied": "रूम क्लिपबोर्ड पर कॉपी किया गया __text__",
+        "shareRoomText": "मुझे Call-me पर कॉल करें!",
+        "roomCopied": "कॉल लिंक क्लिपबोर्ड पर कॉपी किया गया!",
         "devicesRefreshed": "डिवाइस सफलतापूर्वक रिफ्रेश किए गए",
         "cameraChanged": "कैमरा सफलतापूर्वक बदला गया",
         "microphoneChanged": "माइक्रोफ़ोन सफलतापूर्वक बदला गया",

@@ -3,12 +3,16 @@
     "appTitle": "Call-me - 即时视频通话",
     "appDescription": "即时视频通话的首选！",
     "signIn": {
-        "title": "登录",
-        "username": "请输入用户名",
-        "button": "登录",
+        "title": "加入",
+        "username": "选择显示名称",
+        "button": "加入",
         "camera": "摄像头",
         "microphone": "麦克风",
-        "enterUsername": "请输入您的用户名"
+        "enterUsername": "请输入您的显示名称",
+        "subtitle": "即时视频通话。无需注册。",
+        "directCallLabel": "或直接呼叫某人",
+        "directCallPlaceholder": "输入要呼叫的名称",
+        "directCallButton": "立即通话"
     },
     "room": {
         "sessionTime": "会话时长",
@@ -27,7 +31,18 @@
         "hangupWith": "挂断与 __username__ 的通话",
         "callUser": "呼叫 __username__",
         "videoOff": "视频已关闭",
-        "videoDisabled": "视频已禁用"
+        "videoDisabled": "视频已禁用",
+        "noUsersOnline": "目前没有其他用户在线",
+        "shareToInvite": "分享您的通话链接来邀请他人！",
+        "noChatMessages": "还没有消息。连接后开始聊天！",
+        "noActiveCall": "选择一个用户开始视频通话",
+        "callingOverlay": "正在呼叫...",
+        "incomingCall": "来电",
+        "cancelCall": "取消",
+        "callDeclined": "__username__ 拒绝了通话",
+        "callBusy": "__username__ 正在其他通话中",
+        "callTimeout": "__username__ 没有应答",
+        "usersOnline": "__count__ 个用户在线"
     },
     "controls": {
         "microphone": "麦克风",
@@ -60,8 +75,8 @@
         "error": "发生错误",
         "copied": "已复制到剪贴板",
         "invalidPassword": "密码无效",
-        "shareRoomText": "加入我的 Call-me 房间！",
-        "roomCopied": "房间已复制到剪贴板 __text__",
+        "shareRoomText": "在 Call-me 上呼叫我！",
+        "roomCopied": "通话链接已复制到剪贴板！",
         "devicesRefreshed": "设备刷新成功",
         "cameraChanged": "摄像头切换成功",
         "microphoneChanged": "麦克风切换成功",

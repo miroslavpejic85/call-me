@@ -3,12 +3,16 @@
     "appTitle": "Call-me - 即時ビデオ通話",
     "appDescription": "即時ビデオ通話に最適！",
     "signIn": {
-        "title": "サインイン",
-        "username": "ユーザー名を入力",
-        "button": "サインイン",
+        "title": "参加",
+        "username": "表示名を選択",
+        "button": "参加",
         "camera": "カメラ",
         "microphone": "マイク",
-        "enterUsername": "ユーザー名を入力してください"
+        "enterUsername": "表示名を入力してください",
+        "subtitle": "即時ビデオ通話。登録不要。",
+        "directCallLabel": "または直接電話をかける",
+        "directCallPlaceholder": "通話相手の名前を入力",
+        "directCallButton": "今すぐ電話"
     },
     "room": {
         "sessionTime": "セッション時間",
@@ -27,7 +31,18 @@
         "hangupWith": "__username__ との通話を終了",
         "callUser": "__username__ に発信",
         "videoOff": "ビデオオフ",
-        "videoDisabled": "ビデオ無効"
+        "videoDisabled": "ビデオ無効",
+        "noUsersOnline": "他のユーザーはまだオンラインではありません",
+        "shareToInvite": "通話リンクを共有して招待しましょう！",
+        "noChatMessages": "まだメッセージはありません。接続後にチャットを始めましょう！",
+        "noActiveCall": "ユーザーを選択してビデオ通話を開始",
+        "callingOverlay": "発信中...",
+        "incomingCall": "着信",
+        "cancelCall": "キャンセル",
+        "callDeclined": "__username__ が通話を拒否しました",
+        "callBusy": "__username__ は他の通話中です",
+        "callTimeout": "__username__ から応答がありません",
+        "usersOnline": "__count__ 人のユーザーがオンライン"
     },
     "controls": {
         "microphone": "マイク",
@@ -60,8 +75,8 @@
         "error": "エラーが発生しました",
         "copied": "クリップボードにコピーしました",
         "invalidPassword": "パスワードが無効です",
-        "shareRoomText": "私のCall-meルームに参加して！",
-        "roomCopied": "ルームをクリップボードにコピーしました __text__",
+        "shareRoomText": "Call-meで電話してね！",
+        "roomCopied": "通話リンクをクリップボードにコピーしました！",
         "devicesRefreshed": "デバイスを正常に更新しました",
         "cameraChanged": "カメラを正常に変更しました",
         "microphoneChanged": "マイクを正常に変更しました",

@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Instant Video Calls",
     "appDescription": "Your Go-To for Instant Video Calls!",
     "signIn": {
-        "title": "Sign In",
-        "username": "Enter username",
-        "button": "Sign In",
+        "title": "Join",
+        "username": "Choose a display name",
+        "button": "Join",
         "camera": "Camera",
         "microphone": "Microphone",
-        "enterUsername": "Please enter your username"
+        "enterUsername": "Please enter your display name",
+        "subtitle": "Instant Video Calls. No signup needed.",
+        "directCallLabel": "Or call someone directly",
+        "directCallPlaceholder": "Enter name to call",
+        "directCallButton": "Call Now"
     },
     "room": {
         "sessionTime": "Session Time",
@@ -27,7 +31,19 @@
         "hangupWith": "Hang up call with __username__",
         "callUser": "Call __username__",
         "videoOff": "Video Off",
-        "videoDisabled": "Video Disabled"
+        "videoDisabled": "Video Disabled",
+        "noUsersOnline": "No other users online yet",
+        "shareToInvite": "Share your call link to invite someone!",
+        "noChatMessages": "No messages yet. Start chatting once connected!",
+        "noActiveCall": "Select a user to start a video call",
+        "callingOverlay": "Calling...",
+        "incomingCall": "Incoming call",
+        "cancelCall": "Cancel",
+        "callDeclined": "__username__ declined the call",
+        "callBusy": "__username__ is on another call",
+        "callTimeout": "No answer from __username__",
+        "connecting": "Connecting...",
+        "usersOnline": "__count__ user(s) online"
     },
     "controls": {
         "microphone": "Microphone",
@@ -60,8 +76,8 @@
         "error": "An error occurred",
         "copied": "Copied to clipboard",
         "invalidPassword": "Invalid password",
-        "shareRoomText": "Join my Call-me room!",
-        "roomCopied": "Room copied to clipboard __text__",
+        "shareRoomText": "Call me on Call-me!",
+        "roomCopied": "Call link copied to clipboard!",
         "devicesRefreshed": "Devices refreshed successfully",
         "cameraChanged": "Camera changed successfully",
         "microphoneChanged": "Microphone changed successfully",

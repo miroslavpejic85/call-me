@@ -1812,7 +1812,7 @@ input {
 
 /* Settings Section */
 .settings-section {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
     background: rgba(15, 20, 25, 0.4);
     height: 100%;
     overflow-y: auto;
@@ -2070,7 +2070,7 @@ input {
     }
 
     .settings-section {
-        padding: 16px;
+        padding: var(--spacing-md) var(--spacing-lg);
     }
 
     .settings-title {
@@ -2484,4 +2484,466 @@ z-index:
     - 5. userSidebar
     - 6. file-transfer-status
     - 7. SweetAlert2
+    - 8. callingOverlay
 */
+
+/*--------------------------------------------------------------
+# Sign-In Subtitle
+--------------------------------------------------------------*/
+
+.sign-in-subtitle {
+    margin: 8px 0 0 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-secondary);
+    opacity: 0.85;
+}
+
+/*--------------------------------------------------------------
+# Direct Call Section (Sign-In Page)
+--------------------------------------------------------------*/
+
+.direct-call-section {
+    margin-top: var(--spacing-lg);
+}
+
+.direct-call-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.direct-call-divider::before,
+.direct-call-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--glass-border);
+}
+
+.direct-call-row {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.direct-call-row input {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: var(--text-color);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: rgba(30, 35, 50, 0.5);
+    transition: all var(--transition-base);
+    font-weight: var(--font-weight-medium);
+    outline: none;
+}
+
+.direct-call-row input::placeholder {
+    color: var(--text-muted);
+    font-weight: var(--font-weight-normal);
+}
+
+.direct-call-row input:focus {
+    border-color: var(--primary-color);
+    background: rgba(30, 35, 50, 0.8);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.btn-call-now {
+    background: linear-gradient(135deg, var(--success-color), var(--success-hover)) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 12px 20px !important;
+    border-radius: var(--border-radius) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    cursor: pointer;
+    transition: all var(--transition-base) !important;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-call-now:hover {
+    background: linear-gradient(135deg, var(--success-hover), #047857) !important;
+    transform: translateY(-2px) !important;
+    box-shadow:
+        var(--shadow-md),
+        0 0 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/*--------------------------------------------------------------
+# Calling Overlay
+--------------------------------------------------------------*/
+
+.calling-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 150;
+    background: rgba(15, 20, 25, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.calling-overlay-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.calling-pulse-ring {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    animation: callingPulse 1.5s ease-out infinite;
+    position: absolute;
+}
+
+.calling-icon {
+    font-size: 2.5rem;
+    color: var(--primary-light);
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 130, 246, 0.15);
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    position: relative;
+}
+
+.calling-status {
+    color: var(--text-color);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+}
+
+.calling-username {
+    color: var(--primary-light);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.calling-timer {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.btn-cancel-call {
+    margin-top: var(--spacing-md);
+    padding: 10px 32px !important;
+    border-radius: 24px !important;
+    font-size: var(--font-size-base) !important;
+}
+
+@keyframes callingPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+        border-color: var(--primary-color);
+    }
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+        border-color: var(--primary-light);
+    }
+}
+
+/*--------------------------------------------------------------
+# Incoming Call Overlay
+--------------------------------------------------------------*/
+
+.incoming-call-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 160;
+    background: rgba(10, 12, 18, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.incoming-call-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.incoming-call-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.2));
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--primary-light);
+    position: relative;
+    z-index: 2;
+}
+
+.incoming-call-ring-outer,
+.incoming-call-ring-inner {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--success-color);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.incoming-call-ring-outer {
+    animation: incomingRing 2s ease-out infinite;
+}
+
+.incoming-call-ring-inner {
+    animation: incomingRing 2s ease-out 0.5s infinite;
+}
+
+.incoming-call-label {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: var(--spacing-md) 0 0 0;
+}
+
+.incoming-call-username {
+    color: var(--text-color);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.incoming-call-timer {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: var(--spacing-sm) 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.incoming-call-timer::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+    animation: incomingTimerBar 10s linear forwards;
+    transform-origin: left;
+}
+
+.incoming-call-actions {
+    display: flex;
+    gap: 40px;
+    margin-top: var(--spacing-md);
+}
+
+.btn-call-action {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-call-action:hover {
+    transform: scale(1.1);
+}
+
+.btn-call-action:active {
+    transform: scale(0.95);
+}
+
+.btn-decline {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+}
+
+.btn-decline:hover {
+    box-shadow: 0 6px 28px rgba(239, 68, 68, 0.5);
+}
+
+.btn-accept {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+    animation: acceptPulse 1.5s ease-in-out infinite;
+}
+
+.btn-accept:hover {
+    box-shadow: 0 6px 28px rgba(16, 185, 129, 0.5);
+    animation: none;
+}
+
+@keyframes incomingRing {
+    0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateX(-50%) scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes acceptPulse {
+    0%,
+    100% {
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(16, 185, 129, 0.7);
+    }
+}
+
+@keyframes incomingTimerBar {
+    0% {
+        transform: scaleX(1);
+    }
+    100% {
+        transform: scaleX(0);
+    }
+}
+
+/*--------------------------------------------------------------
+# Empty States
+--------------------------------------------------------------*/
+
+.user-list-empty {
+    text-align: center;
+    padding: 40px 20px !important;
+    color: var(--text-muted);
+    cursor: default !important;
+    border-left: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.user-list-empty:hover {
+    background: none !important;
+    transform: none !important;
+    border-left-color: transparent !important;
+}
+
+.user-list-empty div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.user-list-empty i {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+    opacity: 0.5;
+}
+
+.user-list-empty p {
+    margin: 4px 0;
+    font-size: var(--font-size-sm);
+    width: 100%;
+}
+
+.user-list-empty p:last-child {
+    font-size: 0.85rem;
+}
+
+.chat-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.chat-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+    opacity: 0.5;
+}
+
+.chat-empty-state p {
+    margin: 4px 0;
+    font-size: var(--font-size-sm);
+}
+
+/*--------------------------------------------------------------
+# Online User Count (Sign-In Page)
+--------------------------------------------------------------*/
+
+.online-count {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--success-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    opacity: 0.9;
+}
+
+.online-count .online-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success-color);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@media (max-width: 768px) {
+    .direct-call-row {
+        flex-direction: column;
+    }
+
+    .direct-call-row .btn-call-now {
+        width: 100%;
+        justify-content: center;
+    }
+}

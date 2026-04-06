@@ -61,6 +61,18 @@ const remoteVideoDisabled = document.getElementById('remoteVideoDisabled');
 const localUsername = document.getElementById('localUsername');
 const remoteUsername = document.getElementById('remoteUsername');
 const remoteVideo = document.getElementById('remoteVideo');
+const directCallInput = document.getElementById('directCallInput');
+const directCallBtn = document.getElementById('directCallBtn');
+
+const callingOverlay = document.getElementById('callingOverlay');
+const callingUsername = document.getElementById('callingUsername');
+const callingTimer = document.getElementById('callingTimer');
+const cancelCallBtn = document.getElementById('cancelCallBtn');
+const incomingCallOverlay = document.getElementById('incomingCallOverlay');
+const incomingCallUsername = document.getElementById('incomingCallUsername');
+const incomingCallTimer = document.getElementById('incomingCallTimer');
+const acceptCallBtn = document.getElementById('acceptCallBtn');
+const declineCallBtn = document.getElementById('declineCallBtn');
 
 // Ensure app is defined, even if config.js is not loaded
 const app = window.myAppConfig || {};
@@ -70,6 +82,10 @@ let userInfo;
 let userName;
 let connectedUser;
 let pendingUser; // Track outgoing call target
+let callingTimerId = null; // Timer for calling overlay
+let callingElapsed = 0; // Seconds elapsed while calling
+let incomingCallData = null; // Pending incoming call data
+let incomingCallTimerId = null; // Auto-decline timer for incoming call
 let thisConnection;
 let camera = 'user';
 let stream;
@@ -449,6 +465,12 @@ function handleMessage(data) {
             }
             offerCreate();
             break;
+        case 'offerDecline':
+            handleOfferDecline(data);
+            break;
+        case 'offerBusy':
+            handleOfferBusy(data);
+            break;
         case 'offer':
             handleOffer(data);
             break;
@@ -534,6 +556,14 @@ function handleListeners() {
     emojiBtn.addEventListener('click', handleEmojiClick);
     saveChatBtn.addEventListener('click', handleSaveChatClick);
     clearChatBtn.addEventListener('click', handleClearChatClick);
+
+    // Direct call listeners
+    directCallBtn.addEventListener('click', handleDirectCallClick);
+    directCallInput.addEventListener('keyup', (e) => handleKeyUp(e, handleDirectCallClick));
+    cancelCallBtn.addEventListener('click', handleCancelCall);
+    acceptCallBtn.addEventListener('click', handleAcceptIncomingCall);
+    declineCallBtn.addEventListener('click', handleDeclineIncomingCall);
+
     // Language change event listener - reapply config after translation
     window.addEventListener('languageChanged', () => {
         handleConfig();
@@ -645,7 +675,7 @@ function handleUserClickToCall(user) {
         from: userName,
         to: user,
     });
-    toast(t('room.callingUser', { username: user }));
+    showCallingOverlay(user);
     if (userSidebar.classList.contains('active')) {
         userSidebar.classList.remove('active');
     }
@@ -674,6 +704,75 @@ function handleSignInClick() {
         });
         localStorage.callMeUsername = userName;
     }
+}
+
+// Handle direct call button click (sign in + auto-call)
+function handleDirectCallClick() {
+    const myName = usernameIn.value.trim();
+    const callTarget = directCallInput ? directCallInput.value.trim() : '';
+    if (!myName) {
+        handleError(t('signIn.enterUsername'));
+        usernameIn.focus();
+        return;
+    }
+    if (!callTarget) {
+        handleError(t('errors.noUserSelected'));
+        if (directCallInput) directCallInput.focus();
+        return;
+    }
+    // Store call target for after sign-in
+    userName = myName;
+    localStorage.callMeUsername = myName;
+    sendMsg({
+        type: 'signIn',
+        name: myName,
+    });
+    // After sign-in completes, auto-call the target user
+    const waitForSignIn = setInterval(() => {
+        if (userSignedIn) {
+            clearInterval(waitForSignIn);
+            setTimeout(() => handleUserClickToCall(callTarget), 1500);
+        }
+    }, 200);
+    // Safety timeout to avoid infinite loop
+    setTimeout(() => clearInterval(waitForSignIn), 15000);
+}
+
+// Show calling overlay
+function showCallingOverlay(targetUser) {
+    if (!callingOverlay) return;
+    callingElapsed = 0;
+    if (callingUsername) callingUsername.textContent = targetUser;
+    if (callingTimer) callingTimer.textContent = '0s';
+    callingOverlay.style.display = 'flex';
+
+    if (callingTimerId) clearInterval(callingTimerId);
+    callingTimerId = setInterval(() => {
+        callingElapsed++;
+        if (callingTimer) callingTimer.textContent = callingElapsed + 's';
+    }, 1000);
+}
+
+// Hide calling overlay
+function hideCallingOverlay() {
+    if (!callingOverlay) return;
+    callingOverlay.style.display = 'none';
+    if (callingTimerId) {
+        clearInterval(callingTimerId);
+        callingTimerId = null;
+    }
+    callingElapsed = 0;
+}
+
+// Handle cancel call button click
+function handleCancelCall() {
+    hideCallingOverlay();
+    if (pendingUser) {
+        // Notify the remote user that the call was cancelled
+        sendMsg({ type: 'leave', name: pendingUser });
+        pendingUser = null;
+    }
+    toast(t('messages.callEnded'), 'info', 'top', 2000);
 }
 
 // Share Room click handler
@@ -1231,11 +1330,30 @@ function handlePing(data) {
 // Handle user not found from the server
 function handleNotFound(data) {
     const { username } = data;
+    hideCallingOverlay();
     handleError(t('errors.userNotFound', { username }));
     // Remove from user list if present
     allConnectedUsers = allConnectedUsers.filter((u) => u !== username);
     filterUserList(userSearchInput.value || '');
     updateParticipantCount();
+}
+
+// Handle call declined by remote user
+function handleOfferDecline(data) {
+    const { from } = data;
+    hideCallingOverlay();
+    pendingUser = null;
+    toast(t('room.callDeclined', { username: from }), 'warning', 'top', 4000);
+    sound('notify');
+}
+
+// Handle remote user busy in another call
+function handleOfferBusy(data) {
+    const { from } = data;
+    hideCallingOverlay();
+    pendingUser = null;
+    toast(t('room.callBusy', { username: from }), 'warning', 'top', 4000);
+    sound('notify');
 }
 
 // Handle sign-in response from the server
@@ -1499,37 +1617,67 @@ function offerAccept(data) {
         return;
     }
 
-    Swal.fire({
-        heightAuto: false,
-        scrollbarPadding: false,
-        position: 'top',
-        imageUrl: 'assets/ring.png',
-        imageWidth: 284,
-        imageHeight: 120,
-        text: t('room.acceptCallFrom', { username: data.from }),
-        showDenyButton: true,
-        confirmButtonText: t('common.yes'),
-        denyButtonText: t('common.no'),
-        timerProgressBar: true,
-        timer: 10000,
-        showClass: { popup: 'animate__animated animate__fadeInDown' },
-        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Apply caller's media status before accepting the call
-            if (data.callerMediaStatus) {
-                applyCallerMediaStatus(data.callerMediaStatus);
-            }
-
-            data.type = 'offerCreate';
-            socket.recipient = data.from;
-        } else {
-            data.type = 'offerDecline';
-        }
-        sendMsg({ ...data });
-    });
-
+    incomingCallData = data;
+    showIncomingCallOverlay(data.from);
     sound('ring');
+}
+
+// Show incoming call overlay
+function showIncomingCallOverlay(callerName) {
+    if (!incomingCallOverlay) return;
+    if (incomingCallUsername) incomingCallUsername.textContent = callerName;
+
+    // Reset timer bar animation
+    if (incomingCallTimer) {
+        incomingCallTimer.style.animation = 'none';
+        incomingCallTimer.offsetHeight; // Force reflow
+        incomingCallTimer.style.animation = '';
+    }
+
+    incomingCallOverlay.style.display = 'flex';
+
+    // Auto-decline after 10 seconds
+    if (incomingCallTimerId) clearTimeout(incomingCallTimerId);
+    incomingCallTimerId = setTimeout(() => {
+        handleDeclineIncomingCall();
+    }, 10000);
+}
+
+// Hide incoming call overlay
+function hideIncomingCallOverlay() {
+    if (!incomingCallOverlay) return;
+    incomingCallOverlay.style.display = 'none';
+    if (incomingCallTimerId) {
+        clearTimeout(incomingCallTimerId);
+        incomingCallTimerId = null;
+    }
+    incomingCallData = null;
+}
+
+// Handle accept incoming call
+function handleAcceptIncomingCall() {
+    if (!incomingCallData) return;
+    const data = incomingCallData;
+    hideIncomingCallOverlay();
+
+    // Apply caller's media status before accepting the call
+    if (data.callerMediaStatus) {
+        applyCallerMediaStatus(data.callerMediaStatus);
+    }
+
+    data.type = 'offerCreate';
+    socket.recipient = data.from;
+    sendMsg({ ...data });
+}
+
+// Handle decline incoming call
+function handleDeclineIncomingCall() {
+    if (!incomingCallData) return;
+    const data = incomingCallData;
+    hideIncomingCallOverlay();
+
+    data.type = 'offerDecline';
+    sendMsg({ ...data });
 }
 
 // Handle incoming offer
@@ -1562,6 +1710,7 @@ async function handleAnswer(data) {
     const { answer } = data;
     try {
         await thisConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        hideCallingOverlay();
         // Set connectedUser from pendingUser after call is accepted
         if (pendingUser) {
             connectedUser = pendingUser;
@@ -1570,6 +1719,7 @@ async function handleAnswer(data) {
             renderUserList(); // Update UI to show hang-up button for caller
         }
     } catch (error) {
+        hideCallingOverlay();
         handleError(t('errors.remoteDescriptionFailed'), error);
     }
 }
@@ -1723,6 +1873,8 @@ function disconnectConnection() {
 
 // Handle leaving the room
 function handleLeave(disconnect = true) {
+    hideCallingOverlay();
+    hideIncomingCallOverlay();
     if (disconnect) {
         // Stop screen sharing if active
         if (isScreenSharing) {
@@ -2169,6 +2321,22 @@ function renderUserList() {
         if (tip) tip.dispose();
     });
     userList.innerHTML = '';
+
+    // Show empty state if no users (only after sign-in)
+    if (filteredUsers.length === 0 && userSignedIn) {
+        const emptyLi = document.createElement('li');
+        emptyLi.className = 'user-list-empty';
+        emptyLi.innerHTML = `
+            <div>
+                <i class="fas fa-users"></i>
+                <p>${t('room.noUsersOnline')}</p>
+                <p>${t('room.shareToInvite')}</p>
+            </div>
+        `;
+        userList.appendChild(emptyLi);
+        return;
+    }
+
     filteredUsers.forEach((user) => {
         const li = document.createElement('li');
         li.tabIndex = 0;
@@ -2309,6 +2477,10 @@ function switchTab(tabName) {
             // Clear unread messages when switching to chat
             unreadMessages = 0;
             updateChatNotification();
+            // Show empty state if no messages
+            if (chatMessages && chatMessages.children.length === 0) {
+                showChatEmptyState();
+            }
         } else if (tabName === 'settings') {
             settingsTab.classList.add('active');
             // Refresh devices when switching to settings
@@ -2376,6 +2548,10 @@ if (chatForm && chatInput) {
 }
 
 function addChatMessage(msg, isSelf = false) {
+    // Remove empty state if present
+    const emptyState = chatMessages.querySelector('.chat-empty-state');
+    if (emptyState) emptyState.remove();
+
     const div = document.createElement('div');
     div.className = 'chat-message';
     if (isSelf) {
@@ -2790,7 +2966,23 @@ function handleClearChatClick() {
 }
 
 function thereAreChatMessages() {
-    return chatMessages.children.length > 0;
+    // Exclude the empty state element from the count
+    const children = Array.from(chatMessages.children);
+    return children.some((el) => !el.classList.contains('chat-empty-state'));
+}
+
+// Show chat empty state placeholder
+function showChatEmptyState() {
+    if (!chatMessages) return;
+    const existing = chatMessages.querySelector('.chat-empty-state');
+    if (existing) return;
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'chat-empty-state';
+    emptyDiv.innerHTML = `
+        <i class="fas fa-comments"></i>
+        <p>${t('room.noChatMessages')}</p>
+    `;
+    chatMessages.appendChild(emptyDiv);
 }
 
 // Device Management Functions

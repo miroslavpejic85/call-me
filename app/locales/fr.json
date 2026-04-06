@@ -3,12 +3,16 @@
     "appTitle": "Call-me - Appels Vidéo Instantanés",
     "appDescription": "Votre solution pour les appels vidéo instantanés!",
     "signIn": {
-        "title": "Se Connecter",
-        "username": "Entrez le nom d'utilisateur",
-        "button": "Se Connecter",
+        "title": "Rejoindre",
+        "username": "Choisissez un nom d'affichage",
+        "button": "Rejoindre",
         "camera": "Caméra",
         "microphone": "Microphone",
-        "enterUsername": "Veuillez entrer votre nom d'utilisateur"
+        "enterUsername": "Veuillez entrer votre nom d'affichage",
+        "subtitle": "Appels vidéo instantanés. Aucune inscription nécessaire.",
+        "directCallLabel": "Ou appelez quelqu'un directement",
+        "directCallPlaceholder": "Entrez un nom à appeler",
+        "directCallButton": "Appeler maintenant"
     },
     "room": {
         "sessionTime": "Temps de Session",
@@ -27,7 +31,18 @@
         "hangupWith": "Raccrocher avec __username__",
         "callUser": "Appeler __username__",
         "videoOff": "Vidéo coupée",
-        "videoDisabled": "Vidéo désactivée"
+        "videoDisabled": "Vidéo désactivée",
+        "noUsersOnline": "Aucun autre utilisateur en ligne pour le moment",
+        "shareToInvite": "Partagez votre lien d'appel pour inviter quelqu'un !",
+        "noChatMessages": "Pas encore de messages. Commencez à discuter une fois connecté !",
+        "noActiveCall": "Sélectionnez un utilisateur pour démarrer un appel vidéo",
+        "callingOverlay": "Appel en cours...",
+        "incomingCall": "Appel entrant",
+        "cancelCall": "Annuler",
+        "callDeclined": "__username__ a refusé l'appel",
+        "callBusy": "__username__ est déjà en ligne",
+        "callTimeout": "Pas de réponse de __username__",
+        "usersOnline": "__count__ utilisateur(s) en ligne"
     },
     "controls": {
         "microphone": "Microphone",
@@ -60,8 +75,8 @@
         "error": "Une erreur s'est produite",
         "copied": "Copié dans le presse-papiers",
         "invalidPassword": "Mot de passe invalide",
-        "shareRoomText": "Rejoignez ma salle Call-me !",
-        "roomCopied": "Salle copiée dans le presse-papiers __text__",
+        "shareRoomText": "Appelez-moi sur Call-me !",
+        "roomCopied": "Lien d'appel copié dans le presse-papiers !",
         "devicesRefreshed": "Appareils actualisés avec succès",
         "cameraChanged": "Caméra changée avec succès",
         "microphoneChanged": "Microphone changé avec succès",

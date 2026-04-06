@@ -3,12 +3,16 @@
     "appTitle": "Call-me - مكالمات فيديو فورية",
     "appDescription": "خيارك للمكالمات المرئية الفورية!",
     "signIn": {
-        "title": "تسجيل الدخول",
-        "username": "أدخل اسم المستخدم",
-        "button": "تسجيل الدخول",
+        "title": "انضمام",
+        "username": "اختر اسم العرض",
+        "button": "انضمام",
         "camera": "الكاميرا",
         "microphone": "الميكروفون",
-        "enterUsername": "يرجى إدخال اسم المستخدم"
+        "enterUsername": "يرجى إدخال اسم العرض",
+        "subtitle": "مكالمات فيديو فورية. لا حاجة للتسجيل.",
+        "directCallLabel": "أو اتصل بشخص مباشرة",
+        "directCallPlaceholder": "أدخل اسمًا للاتصال",
+        "directCallButton": "اتصل الآن"
     },
     "room": {
         "sessionTime": "مدة الجلسة",
@@ -27,7 +31,18 @@
         "hangupWith": "إنهاء المكالمة مع __username__",
         "callUser": "اتصل بـ __username__",
         "videoOff": "الفيديو متوقف",
-        "videoDisabled": "الفيديو معطّل"
+        "videoDisabled": "الفيديو معطّل",
+        "noUsersOnline": "لا يوجد مستخدمون آخرون متصلون بعد",
+        "shareToInvite": "شارك رابط الاتصال لدعوة شخص ما!",
+        "noChatMessages": "لا توجد رسائل بعد. ابدأ المحادثة بعد الاتصال!",
+        "noActiveCall": "اختر مستخدمًا لبدء مكالمة فيديو",
+        "callingOverlay": "جارٍ الاتصال...",
+        "incomingCall": "مكالمة واردة",
+        "cancelCall": "إلغاء",
+        "callDeclined": "رفض __username__ المكالمة",
+        "callBusy": "__username__ في مكالمة أخرى",
+        "callTimeout": "لا يوجد رد من __username__",
+        "usersOnline": "__count__ مستخدم(ين) متصل"
     },
     "controls": {
         "microphone": "الميكروفون",
@@ -60,8 +75,8 @@
         "error": "حدث خطأ",
         "copied": "تم النسخ إلى الحافظة",
         "invalidPassword": "كلمة مرور غير صحيحة",
-        "shareRoomText": "انضم إلى غرفة Call-me الخاصة بي!",
-        "roomCopied": "تم نسخ الغرفة إلى الحافظة __text__",
+        "shareRoomText": "اتصل بي على Call-me!",
+        "roomCopied": "تم نسخ رابط الاتصال إلى الحافظة!",
         "devicesRefreshed": "تم تحديث الأجهزة بنجاح",
         "cameraChanged": "تم تغيير الكاميرا بنجاح",
         "microphoneChanged": "تم تغيير الميكروفون بنجاح",

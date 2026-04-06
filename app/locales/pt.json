@@ -4,11 +4,15 @@
     "appDescription": "Sua opção para chamadas de vídeo instantâneas!",
     "signIn": {
         "title": "Entrar",
-        "username": "Digite o nome de usuário",
+        "username": "Escolha um nome de exibição",
         "button": "Entrar",
         "camera": "Câmera",
         "microphone": "Microfone",
-        "enterUsername": "Por favor, digite seu nome de usuário"
+        "enterUsername": "Por favor, digite seu nome de exibição",
+        "subtitle": "Chamadas de vídeo instantâneas. Sem cadastro.",
+        "directCallLabel": "Ou ligue para alguém diretamente",
+        "directCallPlaceholder": "Digite um nome para ligar",
+        "directCallButton": "Ligar agora"
     },
     "room": {
         "sessionTime": "Tempo da sessão",
@@ -27,7 +31,18 @@
         "hangupWith": "Encerrar chamada com __username__",
         "callUser": "Ligar para __username__",
         "videoOff": "Vídeo desligado",
-        "videoDisabled": "Vídeo desativado"
+        "videoDisabled": "Vídeo desativado",
+        "noUsersOnline": "Nenhum outro usuário online ainda",
+        "shareToInvite": "Compartilhe seu link de chamada para convidar alguém!",
+        "noChatMessages": "Nenhuma mensagem ainda. Comece a conversar após conectar!",
+        "noActiveCall": "Selecione um usuário para iniciar uma chamada de vídeo",
+        "callingOverlay": "Ligando...",
+        "incomingCall": "Chamada recebida",
+        "cancelCall": "Cancelar",
+        "callDeclined": "__username__ recusou a chamada",
+        "callBusy": "__username__ está em outra chamada",
+        "callTimeout": "Sem resposta de __username__",
+        "usersOnline": "__count__ usuário(s) online"
     },
     "controls": {
         "microphone": "Microfone",
@@ -60,8 +75,8 @@
         "error": "Ocorreu um erro",
         "copied": "Copiado para a área de transferência",
         "invalidPassword": "Senha inválida",
-        "shareRoomText": "Entre na minha sala Call-me!",
-        "roomCopied": "Sala copiada para a área de transferência __text__",
+        "shareRoomText": "Me ligue no Call-me!",
+        "roomCopied": "Link de chamada copiado para a área de transferência!",
         "devicesRefreshed": "Dispositivos atualizados com sucesso",
         "cameraChanged": "Câmera alterada com sucesso",
         "microphoneChanged": "Microfone alterado com sucesso",
