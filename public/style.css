@@ -2522,6 +2522,7 @@ textarea:focus-visible {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     border: none;
+    width: 100%;
 }
 
 .btn-primary:hover {
