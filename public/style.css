@@ -228,7 +228,11 @@ button {
 }
 
 /* Room */
-#roomPage,
+#roomPage {
+    position: absolute;
+    display: none;
+}
+
 #signInPage {
     position: absolute;
     display: none;
@@ -265,7 +269,6 @@ button {
 }
 
 .card-header h1 {
-    font-size: var(--font-size-xl) !important;
     margin: 0 !important;
     font-size: var(--font-size-2xl) !important;
     font-weight: var(--font-weight-bold) !important;
@@ -1864,6 +1867,8 @@ input {
 .btn-send-chat {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     border: none;
+    width: auto !important;
+    flex: 0 0 auto;
     color: white;
     padding: 12px 18px;
     border-radius: var(--border-radius);
@@ -3118,8 +3123,9 @@ z-index:
 /* Landscape mobile: ensure card and attribution don't collide */
 @media (max-width: 768px) and (orientation: landscape) {
     #signInPage {
-        max-height: none;
+        max-height: 100vh;
         padding-bottom: 32px;
+        align-items: flex-start;
     }
 
     #attribution {
