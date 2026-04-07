@@ -1918,6 +1918,38 @@ input {
     justify-content: space-between;
 }
 
+#pushNotificationGroup {
+    display: none;
+}
+
+.push-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#pushTestBtn {
+    display: none;
+    padding: 4px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: var(--glass-bg);
+    color: var(--text-color);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+}
+
+#pushTestBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
 .toggle-switch {
     position: relative;
     display: inline-block;

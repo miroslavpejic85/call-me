@@ -152,7 +152,9 @@
         "clearAll": "すべてクリア",
         "noCamerasFound": "カメラが見つかりません",
         "noMicrophonesFound": "マイクが見つかりません",
-        "noSpeakersFound": "スピーカーが見つかりません"
+        "noSpeakersFound": "スピーカーが見つかりません",
+        "pushNotifications": "プッシュ通知",
+        "testPush": "テスト"
     },
     "chat": {
         "addEmoji": "絵文字を追加",
@@ -211,5 +213,14 @@
         "sentFileLabel": " がファイルを送信: ",
         "sending": "送信中: __filename__",
         "receiving": "受信中: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "着信",
+        "incomingCallBody": "__caller__ から着信があります",
+        "notificationSent": "__username__ はオフラインです。通知を送信しました — オンラインになるのを待っています...",
+        "enabled": "プッシュ通知が有効になりました",
+        "disabled": "プッシュ通知が無効になりました",
+        "permissionDenied": "通知の許可が拒否されました",
+        "testSent": "テスト通知を送信しました"
     }
 }

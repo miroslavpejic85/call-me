@@ -152,7 +152,9 @@
         "clearAll": "Очистить всё",
         "noCamerasFound": "Камеры не найдены",
         "noMicrophonesFound": "Микрофоны не найдены",
-        "noSpeakersFound": "Динамики не найдены"
+        "noSpeakersFound": "Динамики не найдены",
+        "pushNotifications": "Пуш-уведомления",
+        "testPush": "Тест"
     },
     "chat": {
         "addEmoji": "Добавить эмодзи",
@@ -211,5 +213,14 @@
         "sentFileLabel": " отправил файл: ",
         "sending": "Отправка: __filename__",
         "receiving": "Получение: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Входящий звонок",
+        "incomingCallBody": "__caller__ звонит вам",
+        "notificationSent": "__username__ не в сети. Уведомление отправлено — ожидание подключения...",
+        "enabled": "Пуш-уведомления включены",
+        "disabled": "Пуш-уведомления отключены",
+        "permissionDenied": "Разрешение на уведомления отклонено",
+        "testSent": "Тестовое уведомление отправлено"
     }
 }

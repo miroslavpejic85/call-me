@@ -152,7 +152,9 @@
         "clearAll": "全部清除",
         "noCamerasFound": "未找到摄像头",
         "noMicrophonesFound": "未找到麦克风",
-        "noSpeakersFound": "未找到扬声器"
+        "noSpeakersFound": "未找到扬声器",
+        "pushNotifications": "推送通知",
+        "testPush": "测试"
     },
     "chat": {
         "addEmoji": "添加表情",
@@ -211,5 +213,14 @@
         "sentFileLabel": " 发送了文件: ",
         "sending": "发送中: __filename__",
         "receiving": "接收中: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "来电",
+        "incomingCallBody": "__caller__ 正在呼叫您",
+        "notificationSent": "__username__ 离线。已发送通知 — 等待上线...",
+        "enabled": "推送通知已开启",
+        "disabled": "推送通知已关闭",
+        "permissionDenied": "通知权限被拒绝",
+        "testSent": "测试通知已发送"
     }
 }

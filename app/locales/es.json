@@ -152,7 +152,9 @@
         "clearAll": "Borrar Todo",
         "noCamerasFound": "No se encontraron cámaras",
         "noMicrophonesFound": "No se encontraron micrófonos",
-        "noSpeakersFound": "No se encontraron altavoces"
+        "noSpeakersFound": "No se encontraron altavoces",
+        "pushNotifications": "Notificaciones push",
+        "testPush": "Probar"
     },
     "chat": {
         "addEmoji": "Agregar emoji",
@@ -211,5 +213,14 @@
         "sentFileLabel": " envió el archivo: ",
         "sending": "Enviando: __filename__",
         "receiving": "Recibiendo: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Llamada entrante",
+        "incomingCallBody": "__caller__ te está llamando",
+        "notificationSent": "__username__ est\u00e1 desconectado. Se envi\u00f3 una notificaci\u00f3n \u2014 esperando a que se conecte...",
+        "enabled": "Notificaciones push activadas",
+        "disabled": "Notificaciones push desactivadas",
+        "permissionDenied": "Permiso de notificaciones denegado",
+        "testSent": "Notificación de prueba enviada"
     }
 }

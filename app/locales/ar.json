@@ -152,7 +152,9 @@
         "clearAll": "مسح الكل",
         "noCamerasFound": "لم يتم العثور على كاميرات",
         "noMicrophonesFound": "لم يتم العثور على ميكروفونات",
-        "noSpeakersFound": "لم يتم العثور على مكبرات صوت"
+        "noSpeakersFound": "لم يتم العثور على مكبرات صوت",
+        "pushNotifications": "إشعارات الدفع",
+        "testPush": "اختبار"
     },
     "chat": {
         "addEmoji": "إضافة إيموجي",
@@ -211,5 +213,14 @@
         "sentFileLabel": " أرسل ملفًا: ",
         "sending": "جارٍ الإرسال: __filename__",
         "receiving": "جارٍ الاستلام: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "مكالمة واردة",
+        "incomingCallBody": "__caller__ يتصل بك",
+        "notificationSent": "__username__ غير متصل. تم إرسال إشعار — في انتظار اتصاله...",
+        "enabled": "تم تفعيل الإشعارات",
+        "disabled": "تم تعطيل الإشعارات",
+        "permissionDenied": "تم رفض إذن الإشعارات",
+        "testSent": "تم إرسال إشعار تجريبي"
     }
 }

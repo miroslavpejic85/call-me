@@ -152,7 +152,9 @@
         "clearAll": "Alles Löschen",
         "noCamerasFound": "Keine Kameras gefunden",
         "noMicrophonesFound": "Keine Mikrofone gefunden",
-        "noSpeakersFound": "Keine Lautsprecher gefunden"
+        "noSpeakersFound": "Keine Lautsprecher gefunden",
+        "pushNotifications": "Push-Benachrichtigungen",
+        "testPush": "Test"
     },
     "chat": {
         "addEmoji": "Emoji hinzufügen",
@@ -211,5 +213,14 @@
         "sentFileLabel": " hat eine Datei gesendet: ",
         "sending": "Senden: __filename__",
         "receiving": "Empfangen: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Eingehender Anruf",
+        "incomingCallBody": "__caller__ ruft dich an",
+        "notificationSent": "__username__ ist offline. Eine Benachrichtigung wurde gesendet — warten auf Verbindung...",
+        "enabled": "Push-Benachrichtigungen aktiviert",
+        "disabled": "Push-Benachrichtigungen deaktiviert",
+        "permissionDenied": "Benachrichtigungsberechtigung verweigert",
+        "testSent": "Testbenachrichtigung gesendet"
     }
 }

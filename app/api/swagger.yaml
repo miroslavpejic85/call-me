@@ -58,6 +58,20 @@ paths:
                 '403':
                     description: 'Unauthorized!'
 
+    /vapidPublicKey:
+        get:
+            tags:
+                - 'push'
+            summary: 'Get VAPID public key'
+            description: 'Get the VAPID public key for Web Push subscription'
+            produces:
+                - 'application/json'
+            responses:
+                '200':
+                    description: 'VAPID public key'
+                    schema:
+                        $ref: '#/definitions/VapidPublicKeyResponse'
+
 securityDefinitions:
     secretApiKey:
         type: 'apiKey'
@@ -79,3 +93,13 @@ definitions:
             connected:
                 type: array
                 example: ['https://your.domain/join?user=call-me&call=miro']
+
+    VapidPublicKeyResponse:
+        type: 'object'
+        properties:
+            enabled:
+                type: boolean
+                example: true
+            vapidPublicKey:
+                type: string
+                example: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkPs-aP9IKV5O1BamVfGPpxtSkgUc_bUz41MXd8Aww'

@@ -153,7 +153,9 @@
         "clearAll": "Clear All",
         "noCamerasFound": "No cameras found",
         "noMicrophonesFound": "No microphones found",
-        "noSpeakersFound": "No speakers found"
+        "noSpeakersFound": "No speakers found",
+        "pushNotifications": "Push Notifications",
+        "testPush": "Test"
     },
     "chat": {
         "addEmoji": "Add emoji",
@@ -212,5 +214,14 @@
         "sentFileLabel": " sent file: ",
         "sending": "Sending: __filename__",
         "receiving": "Receiving: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Incoming Call",
+        "incomingCallBody": "__caller__ is calling you",
+        "notificationSent": "__username__ is offline. A notification was sent \u2014 waiting for them to come online...",
+        "enabled": "Push notifications enabled",
+        "disabled": "Push notifications disabled",
+        "permissionDenied": "Notification permission denied by browser",
+        "testSent": "Test notification sent"
     }
 }

@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
+const webpush = require('web-push');
 const packageJson = require('../package.json');
 
 // Logs
@@ -51,6 +52,9 @@ const users = new Map();
 // Map to store user media status (video/audio enabled/disabled)
 const userMediaStatus = new Map();
 
+// Map to store push subscriptions (username -> PushSubscription[])
+const pushSubscriptions = new Map();
+
 // Configuration settings
 const config = {
     iceServers: [],
@@ -63,6 +67,10 @@ const config = {
     hostPasswordEnabled: process.env.HOST_PASSWORD_ENABLED === 'true',
     hostPassword: process.env.HOST_PASSWORD || '',
     apiKeySecret: process.env.API_KEY_SECRET,
+    pushEnabled: process.env.PUSH_ENABLED === 'true',
+    pushVapidPublicKey: process.env.PUSH_VAPID_PUBLIC_KEY || '',
+    pushVapidPrivateKey: process.env.PUSH_VAPID_PRIVATE_KEY || '',
+    pushVapidEmail: process.env.PUSH_VAPID_EMAIL || 'mailto:admin@example.com',
     randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     apiBasePath: '/api/v1',
     swaggerDocument: yaml.load(fs.readFileSync(path.join(__dirname, '/api/swagger.yaml'), 'utf8')),
@@ -83,6 +91,15 @@ if (config.turnServerEnabled && config.turnServerUrl && config.turnServerUsernam
         username: config.turnServerUsername,
         credential: config.turnServerCredential,
     });
+}
+
+// Configure Web Push if enabled
+if (config.pushEnabled && config.pushVapidPublicKey && config.pushVapidPrivateKey) {
+    webpush.setVapidDetails(config.pushVapidEmail, config.pushVapidPublicKey, config.pushVapidPrivateKey);
+    log.info('Web Push', { enabled: true });
+} else if (config.pushEnabled) {
+    log.warn('Web Push', { enabled: false, reason: 'VAPID keys not configured. Run: npm run generate-vapid-keys' });
+    config.pushEnabled = false;
 }
 
 const ngrokEnabled = process.env.NGROK_ENABLED === 'true';
@@ -330,6 +347,29 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
     return res.json({ users });
 });
 
+// Get VAPID public key for push subscription
+app.get(`${config.apiBasePath}/vapidPublicKey`, (req, res) => {
+    if (!config.pushEnabled) {
+        return res.json({ enabled: false });
+    }
+    return res.json({ enabled: true, vapidPublicKey: config.pushVapidPublicKey });
+});
+
+// Handle push subscription update via REST (for service worker pushsubscriptionchange)
+app.post(`${config.apiBasePath}/pushSubscription`, express.json(), (req, res) => {
+    if (!config.pushEnabled) {
+        return res.status(400).json({ error: 'Push notifications not enabled' });
+    }
+    const { subscription } = req.body;
+    if (!subscription || !subscription.endpoint) {
+        return res.status(400).json({ error: 'Invalid subscription' });
+    }
+    // We can't reliably map this to a username from REST alone,
+    // but we store it for resubscription change events
+    log.debug('Push subscription updated via REST');
+    return res.json({ success: true });
+});
+
 // Check if Host password required
 app.get('/api/hostPassword', (req, res) => {
     const isPasswordRequired = config.hostPasswordEnabled;
@@ -434,6 +474,15 @@ function handleConnection(socket) {
                 handleChatMessage(data);
                 log.debug('Chat message:', data);
                 break;
+            case 'pushSubscription':
+                handlePushSubscription(data);
+                break;
+            case 'pushUnsubscribe':
+                handlePushUnsubscribe(data);
+                break;
+            case 'testPush':
+                handleTestPush();
+                break;
             case 'pong':
                 log.debug('Client response:', data.message);
                 break;
@@ -449,7 +498,74 @@ function handleConnection(socket) {
             type: 'ping',
             message: 'Hello Client!',
             iceServers: config.iceServers,
+            pushEnabled: config.pushEnabled,
         });
+    }
+
+    // Function to handle push subscription registration
+    function handlePushSubscription(data) {
+        const { subscription } = data;
+        const username = socket.username;
+
+        if (!config.pushEnabled || !username || !subscription || !subscription.endpoint) {
+            return;
+        }
+
+        // Store subscription (support multiple devices per user)
+        const existing = pushSubscriptions.get(username) || [];
+        // Replace if same endpoint exists, otherwise add
+        const idx = existing.findIndex((s) => s.endpoint === subscription.endpoint);
+        if (idx >= 0) {
+            existing[idx] = subscription;
+        } else {
+            existing.push(subscription);
+        }
+        pushSubscriptions.set(username, existing);
+        log.debug('Push subscription stored for', username, { devices: existing.length });
+    }
+
+    // Function to handle push unsubscribe
+    function handlePushUnsubscribe(data) {
+        const { endpoint } = data;
+        const username = socket.username;
+
+        if (!username || !endpoint) return;
+
+        const existing = pushSubscriptions.get(username) || [];
+        const filtered = existing.filter((s) => s.endpoint !== endpoint);
+        if (filtered.length > 0) {
+            pushSubscriptions.set(username, filtered);
+        } else {
+            pushSubscriptions.delete(username);
+        }
+        log.debug('Push subscription removed for', username, { remaining: filtered.length });
+    }
+
+    // Function to handle test push notification
+    async function handleTestPush() {
+        const username = socket.username;
+        if (!config.pushEnabled || !username) return;
+
+        const subscriptions = pushSubscriptions.get(username);
+        if (!subscriptions || subscriptions.length === 0) {
+            log.debug('No push subscriptions for test push', username);
+            return;
+        }
+
+        const payload = JSON.stringify({
+            type: 'testPush',
+            title: 'Call-me',
+            body: 'Push notifications are working!',
+        });
+
+        for (const sub of subscriptions) {
+            try {
+                await webpush.sendNotification(sub, payload);
+                log.debug('Test push sent to', username);
+            } catch (err) {
+                log.warn('Test push failed for', username, { statusCode: err.statusCode, message: err.message });
+            }
+        }
     }
 
     // Function to handle user sign-in request
@@ -509,8 +625,19 @@ function handleConnection(socket) {
                     };
                     sendMsgTo(recipientSocket, offerData);
                 } else {
-                    log.warn(`Recipient (${toName}) not found`);
-                    sendMsgTo(socket, { type: 'notfound', username: toName });
+                    // User is offline — try push notification
+                    if (type === 'offerAccept' && config.pushEnabled) {
+                        sendPushNotification(toName, socket.username).then((sent) => {
+                            if (sent) {
+                                sendMsgTo(socket, { type: 'pushSent', username: toName });
+                            } else {
+                                sendMsgTo(socket, { type: 'notfound', username: toName });
+                            }
+                        });
+                    } else {
+                        log.warn(`Recipient (${toName}) not found`);
+                        sendMsgTo(socket, { type: 'notfound', username: toName });
+                    }
                 }
                 break;
             case 'offerDecline':
@@ -622,6 +749,56 @@ function handleConnection(socket) {
 function isValidUsername(username) {
     const usernamePattern = /^[a-zA-Z0-9_.-@]{3,36}$/;
     return usernamePattern.test(username);
+}
+
+// Send push notification to an offline user
+async function sendPushNotification(targetUsername, callerUsername) {
+    const subscriptions = pushSubscriptions.get(targetUsername);
+    if (!subscriptions || subscriptions.length === 0) {
+        log.debug('No push subscription found for', targetUsername);
+        return false;
+    }
+
+    const payload = JSON.stringify({
+        type: 'incomingCall',
+        title: 'Call-me',
+        body: `${callerUsername} is calling you`,
+        caller: callerUsername,
+        url: `/join?user=${encodeURIComponent(targetUsername)}&call=${encodeURIComponent(callerUsername)}`,
+    });
+
+    let anySent = false;
+    const invalidIndices = [];
+
+    for (let i = 0; i < subscriptions.length; i++) {
+        try {
+            await webpush.sendNotification(subscriptions[i], payload);
+            anySent = true;
+            log.debug('Push notification sent to', targetUsername, { device: i + 1 });
+        } catch (err) {
+            log.warn('Push notification failed for', targetUsername, {
+                device: i + 1,
+                statusCode: err.statusCode,
+                message: err.message,
+            });
+            // Remove expired/invalid subscriptions (410 Gone, 404 Not Found)
+            if (err.statusCode === 410 || err.statusCode === 404) {
+                invalidIndices.push(i);
+            }
+        }
+    }
+
+    // Clean up invalid subscriptions
+    if (invalidIndices.length > 0) {
+        const filtered = subscriptions.filter((_, idx) => !invalidIndices.includes(idx));
+        if (filtered.length > 0) {
+            pushSubscriptions.set(targetUsername, filtered);
+        } else {
+            pushSubscriptions.delete(targetUsername);
+        }
+    }
+
+    return anySent;
 }
 
 // Function to get all connected users

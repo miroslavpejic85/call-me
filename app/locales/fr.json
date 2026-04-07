@@ -152,7 +152,9 @@
         "clearAll": "Tout Effacer",
         "noCamerasFound": "Aucune caméra trouvée",
         "noMicrophonesFound": "Aucun microphone trouvé",
-        "noSpeakersFound": "Aucun haut-parleur trouvé"
+        "noSpeakersFound": "Aucun haut-parleur trouvé",
+        "pushNotifications": "Notifications push",
+        "testPush": "Tester"
     },
     "chat": {
         "addEmoji": "Ajouter un emoji",
@@ -211,5 +213,14 @@
         "sentFileLabel": " a envoyé le fichier : ",
         "sending": "Envoi : __filename__",
         "receiving": "Réception : __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Appel entrant",
+        "incomingCallBody": "__caller__ vous appelle",
+        "notificationSent": "__username__ est hors ligne. Une notification a \u00e9t\u00e9 envoy\u00e9e \u2014 en attente de connexion...",
+        "enabled": "Notifications push activ\u00e9es",
+        "disabled": "Notifications push d\u00e9sactiv\u00e9es",
+        "permissionDenied": "Permission de notification refusée",
+        "testSent": "Notification de test envoyée"
     }
 }

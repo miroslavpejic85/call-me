@@ -152,7 +152,9 @@
         "clearAll": "सभी साफ़ करें",
         "noCamerasFound": "कोई कैमरा नहीं मिला",
         "noMicrophonesFound": "कोई माइक्रोफ़ोन नहीं मिला",
-        "noSpeakersFound": "कोई स्पीकर नहीं मिला"
+        "noSpeakersFound": "कोई स्पीकर नहीं मिला",
+        "pushNotifications": "पुश सूचनाएं",
+        "testPush": "परीक्षण"
     },
     "chat": {
         "addEmoji": "इमोजी जोड़ें",
@@ -211,5 +213,14 @@
         "sentFileLabel": " ने फ़ाइल भेजी: ",
         "sending": "भेजा जा रहा है: __filename__",
         "receiving": "प्राप्त किया जा रहा है: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "आने वाली कॉल",
+        "incomingCallBody": "__caller__ आपको कॉल कर रहा है",
+        "notificationSent": "__username__ ऑफ़लाइन है। एक सूचना भेजी गई — उनके ऑनलाइन आने की प्रतीक्षा...",
+        "enabled": "पुश सूचनाएं सक्षम",
+        "disabled": "पुश सूचनाएं अक्षम",
+        "permissionDenied": "सूचना अनुमति अस्वीकृत",
+        "testSent": "परीक्षण सूचना भेजी गई"
     }
 }

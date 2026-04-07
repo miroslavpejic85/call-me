@@ -152,7 +152,9 @@
         "clearAll": "Obriši sve",
         "noCamerasFound": "Nisu pronađene kamere",
         "noMicrophonesFound": "Nisu pronađeni mikrofoni",
-        "noSpeakersFound": "Nisu pronađeni zvučnici"
+        "noSpeakersFound": "Nisu pronađeni zvučnici",
+        "pushNotifications": "Push obavijesti",
+        "testPush": "Testiraj"
     },
     "chat": {
         "addEmoji": "Dodaj emoji",
@@ -211,5 +213,14 @@
         "sentFileLabel": " je poslao/la datoteku: ",
         "sending": "Slanje: __filename__",
         "receiving": "Primanje: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Dolazni poziv",
+        "incomingCallBody": "__caller__ vas zove",
+        "notificationSent": "__username__ je offline. Obavijest je poslana \u2014 \u010dekanje na povezivanje...",
+        "enabled": "Push obavijesti uklju\u010dene",
+        "disabled": "Push obavijesti isklju\u010dene",
+        "permissionDenied": "Dozvola za obavijesti odbijena",
+        "testSent": "Testna obavijest poslana"
     }
 }

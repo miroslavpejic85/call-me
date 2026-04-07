@@ -152,7 +152,9 @@
         "clearAll": "Cancella Tutto",
         "noCamerasFound": "Nessuna fotocamera trovata",
         "noMicrophonesFound": "Nessun microfono trovato",
-        "noSpeakersFound": "Nessun altoparlante trovato"
+        "noSpeakersFound": "Nessun altoparlante trovato",
+        "pushNotifications": "Notifiche push",
+        "testPush": "Prova"
     },
     "chat": {
         "addEmoji": "Aggiungi emoji",
@@ -211,5 +213,14 @@
         "sentFileLabel": " ha inviato il file: ",
         "sending": "Invio: __filename__",
         "receiving": "Ricezione: __filename__"
+    },
+    "push": {
+        "incomingCallTitle": "Chiamata in arrivo",
+        "incomingCallBody": "__caller__ ti sta chiamando",
+        "notificationSent": "__username__ \u00e8 offline. \u00c8 stata inviata una notifica \u2014 in attesa che si connetta...",
+        "enabled": "Notifiche push attivate",
+        "disabled": "Notifiche push disattivate",
+        "permissionDenied": "Autorizzazione notifiche negata",
+        "testSent": "Notifica di prova inviata"
     }
 }

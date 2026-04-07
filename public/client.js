@@ -73,6 +73,9 @@ const incomingCallUsername = document.getElementById('incomingCallUsername');
 const incomingCallTimer = document.getElementById('incomingCallTimer');
 const acceptCallBtn = document.getElementById('acceptCallBtn');
 const declineCallBtn = document.getElementById('declineCallBtn');
+const pushNotificationGroup = document.getElementById('pushNotificationGroup');
+const pushNotificationToggle = document.getElementById('pushNotificationToggle');
+const pushTestBtn = document.getElementById('pushTestBtn');
 
 // Ensure app is defined, even if config.js is not loaded
 const app = window.myAppConfig || {};
@@ -98,6 +101,10 @@ let userSignedIn = false;
 let allConnectedUsers = [];
 let filteredUsers = [];
 let selectedUser = null;
+
+// Push notification state
+let pushEnabled = false;
+let pushSubscription = null;
 
 // Chat state
 let unreadMessages = 0;
@@ -454,6 +461,9 @@ function handleMessage(data) {
             break;
         case 'notfound':
             handleNotFound(data);
+            break;
+        case 'pushSent':
+            handlePushSent(data);
             break;
         case 'offerAccept':
             offerAccept(data);
@@ -1347,6 +1357,9 @@ function handlePing(data) {
     if (iceServers) {
         config.iceServers = iceServers;
     }
+    if (data.pushEnabled !== undefined) {
+        pushEnabled = data.pushEnabled;
+    }
     sendMsg({
         type: 'pong',
         message: {
@@ -1365,6 +1378,20 @@ function handleNotFound(data) {
     allConnectedUsers = allConnectedUsers.filter((u) => u !== username);
     filterUserList(userSearchInput.value || '');
     updateParticipantCount();
+}
+
+// Handle push notification sent confirmation
+function handlePushSent(data) {
+    const { username } = data;
+    hideCallingOverlay();
+    toast(
+        t('push.notificationSent', { username }) ||
+            `Notification sent to ${username}. Waiting for them to come online...`,
+        'info',
+        'top',
+        6000
+    );
+    sound('notify');
 }
 
 // Handle call declined by remote user
@@ -1471,6 +1498,11 @@ async function handleSignIn(data) {
 
             // Send initial media status to server
             sendMediaStatusToServer();
+
+            // Show push notification toggle if server has push enabled
+            if (pushEnabled) {
+                initPushNotificationToggle();
+            }
         } else {
             // All attempts failed, show error only now
             handleMediaStreamError(lastError);
@@ -1644,6 +1676,24 @@ function offerAccept(data) {
         data.type = 'offerBusy';
         sendMsg({ ...data });
         return;
+    }
+
+    // Show client-side notification if tab is backgrounded
+    if (document.hidden && Notification.permission === 'granted') {
+        try {
+            const notification = new Notification('Call-me', {
+                body: t('push.incomingCallBody', { caller: data.from }) || `${data.from} is calling you`,
+                icon: '/favicon/favicon-32x32.png',
+                tag: 'call-me-incoming',
+                requireInteraction: true,
+            });
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+        } catch (e) {
+            console.warn('Client notification failed:', e);
+        }
     }
 
     incomingCallData = data;
@@ -2109,6 +2159,165 @@ function handleRemoteScreenShare(data) {
     }
 }
 
+// Initialize push notification toggle in settings
+async function initPushNotificationToggle() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.log('Push notifications not supported in this browser');
+        return;
+    }
+
+    // Show the toggle group
+    elemDisplay(pushNotificationGroup, true, 'flex');
+
+    // Check current state
+    const registration = await navigator.serviceWorker.getRegistration('/sw.js');
+    if (registration) {
+        const existing = await registration.pushManager.getSubscription();
+        pushNotificationToggle.checked = !!existing;
+        if (existing) {
+            pushSubscription = existing;
+            // Re-send subscription to server (in case server restarted)
+            sendMsg({ type: 'pushSubscription', subscription: existing.toJSON() });
+        }
+    }
+
+    // Restore from localStorage
+    if (localStorage.callMePushEnabled === 'true' && !pushNotificationToggle.checked) {
+        pushNotificationToggle.checked = true;
+        await registerPushNotifications();
+    }
+
+    // Show/hide test button based on current state
+    updatePushTestBtn();
+
+    // Handle toggle change
+    pushNotificationToggle.addEventListener('change', handlePushToggle);
+
+    // Handle test button click
+    pushTestBtn.addEventListener('click', handlePushTest);
+}
+
+// Handle push notification toggle
+async function handlePushToggle() {
+    if (pushNotificationToggle.checked) {
+        await registerPushNotifications();
+        if (!pushSubscription) {
+            // Permission denied or failed — revert toggle
+            pushNotificationToggle.checked = false;
+            localStorage.callMePushEnabled = 'false';
+            toast(t('push.permissionDenied') || 'Notification permission denied', 'warning', 'top', 3000);
+            updatePushTestBtn();
+            return;
+        }
+        localStorage.callMePushEnabled = 'true';
+        toast(t('push.enabled') || 'Push notifications enabled', 'success', 'top', 3000);
+    } else {
+        await unregisterPushNotifications();
+        localStorage.callMePushEnabled = 'false';
+        toast(t('push.disabled') || 'Push notifications disabled', 'info', 'top', 3000);
+    }
+    updatePushTestBtn();
+}
+
+// Show/hide test push button based on toggle state
+function updatePushTestBtn() {
+    elemDisplay(pushTestBtn, pushNotificationToggle.checked);
+}
+
+// Handle test push notification button
+function handlePushTest() {
+    sendMsg({ type: 'testPush' });
+    toast(t('push.testSent') || 'Test notification sent', 'info', 'top', 3000);
+}
+
+// Register service worker and subscribe to push notifications
+async function registerPushNotifications() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.log('Push notifications not supported in this browser');
+        return;
+    }
+
+    try {
+        // Fetch VAPID public key from server
+        const { data: vapidData } = await axios.get('/api/v1/vapidPublicKey');
+        if (!vapidData.enabled || !vapidData.vapidPublicKey) {
+            console.log('Push notifications not enabled on server');
+            return;
+        }
+
+        // Register service worker and wait for it to become active
+        await navigator.serviceWorker.register('/sw.js');
+        const registration = await navigator.serviceWorker.ready;
+        console.log('Service worker registered and active');
+
+        // Request notification permission
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            console.log('Notification permission denied');
+            pushSubscription = null;
+            return;
+        }
+
+        // Check for existing subscription first
+        pushSubscription = await registration.pushManager.getSubscription();
+
+        if (!pushSubscription) {
+            // Subscribe to push
+            const applicationServerKey = urlBase64ToUint8Array(vapidData.vapidPublicKey);
+            pushSubscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: applicationServerKey,
+            });
+            console.log('Push notification: new subscription created');
+        } else {
+            console.log('Push notification: using existing subscription');
+        }
+
+        // Send subscription to server via Socket.IO
+        sendMsg({
+            type: 'pushSubscription',
+            subscription: pushSubscription.toJSON(),
+        });
+
+        console.log('Push notification subscription successful', pushSubscription.endpoint);
+    } catch (err) {
+        console.warn('Push notification registration failed:', err);
+        pushSubscription = null;
+    }
+}
+
+// Unsubscribe from push notifications
+async function unregisterPushNotifications() {
+    try {
+        if (pushSubscription) {
+            const endpoint = pushSubscription.endpoint;
+            await pushSubscription.unsubscribe();
+            console.log('Push subscription removed from browser');
+
+            // Tell server to remove the subscription
+            sendMsg({
+                type: 'pushUnsubscribe',
+                endpoint: endpoint,
+            });
+        }
+        pushSubscription = null;
+    } catch (err) {
+        console.warn('Push unsubscribe failed:', err);
+    }
+}
+
+// Convert URL-safe base64 string to Uint8Array (for VAPID key)
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; i++) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
 // Send messages to the server
 function sendMsg(message) {
     // Use connectedUser if call is established, otherwise use pendingUser for signaling
@@ -2465,7 +2674,7 @@ function renderUserList() {
     });
 
     // Initialize Bootstrap tooltips on dynamically created buttons (skip on mobile)
-    if (!userInfo.device.isMobile) {
+    if (userInfo && !userInfo.device.isMobile) {
         const tooltipEls = userList.querySelectorAll('[title]');
         tooltipEls.forEach((el) => {
             el.setAttribute('data-toggle', 'tooltip');
