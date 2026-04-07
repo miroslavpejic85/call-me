@@ -2225,8 +2225,19 @@ function updatePushTestBtn() {
 }
 
 // Handle test push notification button
-function handlePushTest() {
-    sendMsg({ type: 'testPush' });
+async function handlePushTest() {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification('Call-me', {
+            body: 'Push notifications are working!',
+            icon: '/favicon/favicon-32x32.png',
+            badge: '/favicon/favicon-16x16.png',
+            data: { url: '/', type: 'testPush', caller: '' },
+        });
+    } catch (err) {
+        console.warn('Direct notification failed, falling back to push:', err);
+        sendMsg({ type: 'testPush' });
+    }
     toast(t('push.testSent') || 'Test notification sent', 'info', 'top', 3000);
 }
 
