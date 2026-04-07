@@ -66,6 +66,7 @@
     --font-size-lg: 1.125rem;
     --font-size-xl: 1.25rem;
     --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -270,7 +271,7 @@ button {
 
 .card-header h1 {
     margin: 0 !important;
-    font-size: var(--font-size-2xl) !important;
+    font-size: var(--font-size-3xl) !important;
     font-weight: var(--font-weight-bold) !important;
     color: #fff !important;
 }
@@ -3071,7 +3072,7 @@ z-index:
     }
 
     .card-header h1 {
-        font-size: var(--font-size-xl) !important;
+        font-size: var(--font-size-2xl) !important;
     }
 
     .card-body {
