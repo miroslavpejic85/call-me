@@ -23,6 +23,7 @@ This project allows you to:
 - `Share files` with other participants.
 - `Hang up the call` when finished.
 - `Enable Host Protection` mode with a password.
+- `Enable Web Push Notifications` to get notified of incoming calls even when the app is in the background.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
 
 ---
