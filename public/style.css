@@ -259,6 +259,7 @@ button {
 }
 
 .card-header h1 {
+    font-size: var(--font-size-xl) !important;
     margin: 0 !important;
     font-size: var(--font-size-2xl) !important;
     font-weight: var(--font-weight-bold) !important;
@@ -1407,6 +1408,21 @@ input {
 
 #sidebarBtn {
     overflow: visible !important;
+}
+
+@media (max-width: 768px) {
+    .participant-count {
+        top: -2px;
+        right: -2px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 10px;
+        padding: 0 3px;
+    }
+
+    #roomPage > .row.justify-content-center {
+        padding-top: 4px;
+    }
 }
 
 @keyframes pulse {
