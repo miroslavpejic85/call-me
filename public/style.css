@@ -89,20 +89,23 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
-    overflow: auto;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 html {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
     /* Prevent horizontal layout shift when scrollbars are toggled
        (SweetAlert2 may lock scrolling and/or manage scrollbar padding). */
     scrollbar-gutter: stable;
 }
 
 body {
+    min-height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -229,6 +232,7 @@ button {
 #signInPage {
     position: absolute;
     display: none;
+    overflow: visible;
 }
 
 /* Modern Card Styles with Glassmorphism */
@@ -239,10 +243,12 @@ button {
     font-weight: var(--font-weight-medium) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: var(--border-radius-lg) !important;
-    background: transparent !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    box-shadow: var(--shadow-xl) !important;
+    background: rgba(15, 20, 30, 0.82) !important;
+    backdrop-filter: blur(20px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
+    box-shadow:
+        var(--shadow-xl),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
     overflow: hidden !important;
     transition: all var(--transition-base) !important;
 }
@@ -253,8 +259,8 @@ button {
 }
 
 .card-header {
-    background: rgba(59, 130, 246, 0.1) !important;
-    border-bottom: 1px solid var(--glass-border) !important;
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: var(--spacing-lg) !important;
 }
 
@@ -285,17 +291,15 @@ button {
     gap: var(--spacing-md);
     padding: 12px var(--spacing-md);
     border-radius: var(--border-radius);
-    background: rgba(30, 35, 50, 0.5);
+    background: rgba(20, 25, 40, 0.7);
     border: 2px solid rgba(16, 185, 129, 0.35);
     cursor: pointer;
     transition: all var(--transition-base);
     user-select: none;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .media-toggle-item:hover {
-    background: rgba(30, 35, 50, 0.7);
+    background: rgba(20, 25, 40, 0.9);
     border-color: rgba(16, 185, 129, 0.6);
     transform: translateY(-1px);
     box-shadow:
@@ -304,12 +308,12 @@ button {
 }
 
 .media-toggle-item:has(input:not(:checked)) {
-    background: rgba(30, 35, 50, 0.5);
+    background: rgba(20, 25, 40, 0.7);
     border-color: rgba(239, 68, 68, 0.35);
 }
 
 .media-toggle-item:has(input:not(:checked)):hover {
-    background: rgba(30, 35, 50, 0.7);
+    background: rgba(20, 25, 40, 0.9);
     border-color: rgba(239, 68, 68, 0.6);
     box-shadow:
         0 4px 16px rgba(239, 68, 68, 0.2),
@@ -961,7 +965,7 @@ input {
     color: var(--text-color);
     border: 2px solid var(--glass-border);
     border-radius: var(--border-radius);
-    background: rgba(30, 35, 50, 0.5);
+    background: rgba(20, 25, 40, 0.7);
     transition: all var(--transition-base);
     font-weight: var(--font-weight-medium);
     outline: none;
@@ -974,12 +978,12 @@ input {
 
 #usernameIn:hover {
     border-color: var(--primary-light);
-    background: rgba(30, 35, 50, 0.7);
+    background: rgba(20, 25, 40, 0.85);
 }
 
 #usernameIn:focus {
     border-color: var(--primary-color);
-    background: rgba(30, 35, 50, 0.8);
+    background: rgba(20, 25, 40, 0.95);
     box-shadow:
         0 0 0 4px rgba(59, 130, 246, 0.15),
         var(--shadow-md);
@@ -2643,7 +2647,7 @@ z-index:
     color: var(--text-color);
     border: 2px solid var(--glass-border);
     border-radius: var(--border-radius);
-    background: rgba(30, 35, 50, 0.5);
+    background: rgba(20, 25, 40, 0.7);
     transition: all var(--transition-base);
     font-weight: var(--font-weight-medium);
     outline: none;
@@ -2656,7 +2660,7 @@ z-index:
 
 .direct-call-row input:focus {
     border-color: var(--primary-color);
-    background: rgba(30, 35, 50, 0.8);
+    background: rgba(20, 25, 40, 0.95);
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
@@ -3113,8 +3117,7 @@ z-index:
 /* Landscape mobile: ensure card and attribution don't collide */
 @media (max-width: 768px) and (orientation: landscape) {
     #signInPage {
-        overflow-y: auto;
-        max-height: 100vh;
+        max-height: none;
         padding-bottom: 32px;
     }
 
