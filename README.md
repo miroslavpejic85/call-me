@@ -88,7 +88,7 @@ docker-compose up
 
 1. `Open` your browser and visit [http://localhost:8000](http://localhost:8000).
 
-2. `Sign in` with your username.
+2. `Join` with your username or `Call` directly the recipient.
 
 3. `Select` the connected recipient's username and click `Call`.
 
@@ -109,6 +109,50 @@ Lets the `user2 join` the room and initiate a `call` to the `user1`
 - [https://cme.mirotalk.com/join?user=user2&call=user1](https://cme.mirotalk.com/join?user=user2&call=user1) (prod)
 
 You can explore a `widget` example that demonstrates this functionality [here](./integration/widget.html).
+
+---
+
+<details open>
+<summary>Self-Hosting</summary>
+
+</br>
+
+![setup](/assets/doc/self-hosting.png)
+
+## **Requirements**
+
+- A clean server running **Ubuntu 22.04 or 24.04 LTS**
+- **Root access** to the Server
+- A **domain or subdomain** pointing to your server’s public IPv4
+
+---
+
+## Note
+
+When **prompted**, simply **enter your domain or subdomain**. Then wait for the installation to complete.
+
+```bash
+# Install
+wget -qO cme-install.sh https://docs.mirotalk.com/scripts/cme/cme-install.sh \
+  && chmod +x cme-install.sh \
+  && ./cme-install.sh
+```
+
+```bash
+# Uninstall
+wget -qO cme-uninstall.sh https://docs.mirotalk.com/scripts/cme/cme-uninstall.sh \
+  && chmod +x cme-uninstall.sh \
+  && ./cme-uninstall.sh
+```
+
+```bash
+# Update
+wget -qO cme-update.sh https://docs.mirotalk.com/scripts/cme/cme-update.sh \
+  && chmod +x bro-update.sh \
+  && ./cme-update.sh
+```
+
+</details>
 
 ---
 
@@ -143,12 +187,6 @@ curl -X GET "https://cme.mirotalk.com/api/v1/connected?user=call-me" -H "authori
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).
-
----
-
-## Self-Hosting
-
-To install this on your VPS, VDS, or personal server, please follow the instructions in **[the self-hosting documentation](./doc/self-hosting.md)**.
 
 ---
 
