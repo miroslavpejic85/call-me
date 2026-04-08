@@ -267,6 +267,7 @@ button {
     background: rgba(59, 130, 246, 0.15) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: var(--spacing-lg) !important;
+    text-align: center !important;
 }
 
 .card-header h1 {
