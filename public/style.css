@@ -1904,8 +1904,9 @@ input {
 
 .settings-title {
     color: var(--text-color);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
     margin: 0 0 var(--spacing-lg) 0;
     display: flex;
     align-items: center;
@@ -1927,8 +1928,9 @@ input {
     align-items: center;
     gap: var(--spacing-sm);
     color: var(--text-secondary);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    line-height: 1.5;
     margin-bottom: var(--spacing-sm);
     cursor: pointer;
     transition: color var(--transition-fast);
@@ -1962,7 +1964,7 @@ input {
     border-radius: var(--border-radius);
     background: var(--glass-bg);
     color: var(--text-color);
-    font-size: 0.8rem;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
     transition: all var(--transition-base);
@@ -2190,7 +2192,7 @@ input {
     }
 
     .settings-title {
-        font-size: 1rem;
+        font-size: 1.125rem;
         margin-bottom: 16px;
     }
 
