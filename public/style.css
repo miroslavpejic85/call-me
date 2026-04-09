@@ -3094,6 +3094,25 @@ z-index:
     }
 }
 
+/* Large screens: compact sign-in card */
+@media (min-width: 992px) {
+    .card {
+        max-width: 420px !important;
+    }
+
+    .card-header {
+        padding: var(--spacing-md) var(--spacing-lg) !important;
+    }
+
+    .card-header h1 {
+        font-size: var(--font-size-2xl) !important;
+    }
+
+    .card-body {
+        padding: var(--spacing-lg) !important;
+    }
+}
+
 /* Very small screens: further compact the sign-in card */
 @media (max-width: 480px) {
     .card {
