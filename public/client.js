@@ -2597,14 +2597,13 @@ function renderUserList() {
 
         // Create call/hangup button based on active call state
         const actionBtnEl = document.createElement('button');
-        actionBtnEl.style.marginRight = '10px';
         actionBtnEl.style.cursor = 'pointer';
 
         if (isInActiveCall) {
             // Show hang-up button only if in active call (user has answered)
             actionBtnEl.className = 'btn btn-custom btn-danger btn-m hangup-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone-slash"></i>';
-            actionBtnEl.title = t('room.hangupWith', { username: user });
+            actionBtnEl.title = t('room.hangup');
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!userSignedIn) return;
@@ -2618,7 +2617,7 @@ function renderUserList() {
             // Show call button if not in active call
             actionBtnEl.className = 'btn btn-custom btn-warning btn-m call-user-btn';
             actionBtnEl.innerHTML = '<i class="fas fa-phone"></i>';
-            actionBtnEl.title = t('room.callUser', { username: user });
+            actionBtnEl.title = t('room.call');
             actionBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!userSignedIn) return;
@@ -2634,9 +2633,8 @@ function renderUserList() {
         const sendFileBtn = document.createElement('button');
         sendFileBtn.className = 'btn btn-custom btn-success btn-m';
         sendFileBtn.innerHTML = '<i class="fas fa-paperclip"></i>';
-        sendFileBtn.style.marginRight = '10px';
         sendFileBtn.style.cursor = 'pointer';
-        sendFileBtn.title = t('file.sendToUser', { username: user });
+        sendFileBtn.title = t('file.shareFile');
         sendFileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!userSignedIn) return;
@@ -2657,9 +2655,32 @@ function renderUserList() {
             }
         });
 
-        li.appendChild(actionBtnEl);
-        li.appendChild(sendFileBtn);
+        // User avatar with initials
+        const avatarColors = [
+            'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+            'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+            'linear-gradient(135deg, #10b981, #047857)',
+            'linear-gradient(135deg, #f59e0b, #d97706)',
+            'linear-gradient(135deg, #ef4444, #b91c1c)',
+            'linear-gradient(135deg, #06b6d4, #0e7490)',
+            'linear-gradient(135deg, #ec4899, #be185d)',
+        ];
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'user-avatar';
+        const initials = user
+            .split(/[\s_-]+/)
+            .map((w) => w[0])
+            .join('')
+            .substring(0, 2);
+        avatarDiv.textContent = initials;
+        let hash = 0;
+        for (let i = 0; i < user.length; i++) hash = user.charCodeAt(i) + ((hash << 5) - hash);
+        avatarDiv.style.background = avatarColors[Math.abs(hash) % avatarColors.length];
+
+        li.appendChild(avatarDiv);
         li.appendChild(nameSpan);
+        li.appendChild(sendFileBtn);
+        li.appendChild(actionBtnEl);
 
         li.addEventListener('click', () => {
             if (!userSignedIn) return;
