@@ -2097,7 +2097,13 @@ input {
     padding: 12px 16px;
     border: 2px solid var(--glass-border);
     border-radius: var(--border-radius);
-    background: rgba(30, 35, 50, 0.6);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: rgba(30, 35, 50, 0.6)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E")
+        no-repeat right 16px center;
+    padding-right: 40px;
     color: var(--text-color);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
@@ -2108,7 +2114,9 @@ input {
 
 .setting-select:focus {
     border-color: var(--primary-color);
-    background: rgba(30, 35, 50, 0.8);
+    background: rgba(30, 35, 50, 0.8)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E")
+        no-repeat right 16px center;
     box-shadow:
         0 0 0 4px rgba(59, 130, 246, 0.15),
         var(--shadow-md);
