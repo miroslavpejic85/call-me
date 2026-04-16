@@ -1256,7 +1256,7 @@ input {
     display: flex;
     top: 0;
     right: 0;
-    width: clamp(320px, 90vw, 500px);
+    width: clamp(320px, 90vw, 420px);
     height: 100%;
     background: var(--glass-bg-strong);
     flex-direction: column;
@@ -1327,7 +1327,7 @@ input {
     background: none;
     border: 2px solid transparent;
     color: var(--text-secondary);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     padding: 10px 14px;
     cursor: pointer;
@@ -1336,20 +1336,12 @@ input {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex: 1 1 0;
-    min-width: 0;
-    white-space: nowrap;
     justify-content: center;
-    overflow: hidden;
+    flex: 0 0 auto;
 }
 
 .sidebar-tab span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
+    display: none;
 }
 
 .sidebar-tab i,
@@ -1957,7 +1949,7 @@ input {
 
 /* Settings Section */
 .settings-section {
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-lg);
     background: rgba(15, 20, 25, 0.4);
     height: 100%;
     overflow-y: auto;
@@ -1966,15 +1958,16 @@ input {
 
 .settings-title {
     color: var(--text-color);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     line-height: 1.4;
-    margin: 0 0 var(--spacing-lg) 0;
+    margin: 0 0 var(--spacing-md) 0;
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     padding-bottom: var(--spacing-sm);
     border-bottom: 2px solid var(--glass-border);
+    word-break: break-word;
 }
 
 .settings-title:not(:first-child) {
@@ -1982,7 +1975,7 @@ input {
 }
 
 .setting-group {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .setting-label {
@@ -2093,8 +2086,8 @@ input {
 
 .setting-select {
     width: 100%;
-    height: 48px;
-    padding: 12px 16px;
+    height: 42px;
+    padding: 10px 14px;
     border: 2px solid var(--glass-border);
     border-radius: var(--border-radius);
     -webkit-appearance: none;
@@ -2134,6 +2127,7 @@ input {
 
 .settings-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-sm);
     margin-top: var(--spacing-md);
     padding-top: var(--spacing-md);
@@ -2144,18 +2138,30 @@ input {
 .btn-refresh-devices,
 .btn-save-chat,
 .btn-clear-chat {
-    flex: 1;
-    padding: 12px 18px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 14px;
     border: 2px solid transparent;
     border-radius: var(--border-radius);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     cursor: pointer;
     transition: all var(--transition-base);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.btn-test-devices span,
+.btn-refresh-devices span,
+.btn-save-chat span,
+.btn-clear-chat span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .btn-test-devices,
@@ -2220,28 +2226,23 @@ input {
 
     .sidebar-tabs {
         flex: 1;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 6px;
         overflow: hidden;
     }
 
     .sidebar-tab {
-        flex: 1 1 0;
-        min-width: 0;
-        text-align: center;
-        padding: 8px 8px;
-        font-size: 0.8rem;
-        gap: 4px;
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        font-size: 1rem;
     }
 
     .sidebar-tab span {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        display: none;
     }
 
     .sidebar-tab i {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .chat-messages {

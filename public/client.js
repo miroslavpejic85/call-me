@@ -333,7 +333,16 @@ function handleToolTip() {
 
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+        // Always force placement to bottom for sidebar tabs
+        if (
+            tooltipTriggerEl.classList.contains('sidebar-tab') &&
+            tooltipTriggerEl.getAttribute('data-placement') !== 'bottom'
+        ) {
+            tooltipTriggerEl.setAttribute('data-placement', 'bottom');
+        }
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            placement: tooltipTriggerEl.getAttribute('data-placement') || 'bottom',
+        });
     });
     // Add click event listener to hide all tooltips
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
