@@ -26,6 +26,9 @@ const PUBLIC_DIR = path.join(__dirname, '../', 'public');
 // Home page/client
 const HOME = path.join(PUBLIC_DIR, '/index.html');
 
+// Privacy page
+const PRIVACY = path.join(PUBLIC_DIR, '/privacy.html');
+
 // Locales directory location
 const LOCALES_DIR = path.join(__dirname, 'locales');
 
@@ -210,6 +213,11 @@ app.use((req, res, next) => {
 // Set up route to serve the main HTML file
 app.get('/', (req, res) => {
     res.sendFile(HOME);
+});
+
+// Serve the privacy policy page
+app.get('/privacy', (req, res) => {
+    res.sendFile(PRIVACY);
 });
 
 // Get Random Background Images

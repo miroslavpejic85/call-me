@@ -3250,3 +3250,101 @@ z-index:
         right: var(--spacing-xs);
     }
 }
+
+/* Privacy link in sign-in divider */
+
+.privacy-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--spacing-md);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.privacy-divider .privacy-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.privacy-divider .privacy-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Privacy Policy Page */
+
+.privacy-container {
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-lg);
+    padding: 40px 36px 32px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 720px;
+    margin: 60px auto;
+}
+
+.privacy-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.privacy-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.privacy-body p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin: 0 0 18px;
+}
+
+.privacy-body strong {
+    color: var(--text-color);
+}
+
+.privacy-body a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.privacy-body a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.privacy-footer {
+    text-align: center;
+    margin-top: 32px;
+}
+
+.privacy-footer .btn-agree {
+    display: inline-block;
+    padding: 12px 40px;
+    background: var(--primary-color);
+    color: #fff;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+        background 0.2s,
+        transform 0.15s;
+}
+
+.privacy-footer .btn-agree:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}

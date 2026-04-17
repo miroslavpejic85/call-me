@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Call-me - Privacy Policy</title>
+
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
+        <meta
+            name="description"
+            content="Call-me Privacy Policy – learn how we handle your data with minimal collection and end-to-end encryption."
+        />
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <body>
+        <div class="privacy-container">
+            <div class="privacy-header">
+                <h1>Privacy Policy</h1>
+            </div>
+
+            <div class="privacy-body">
+                <p>
+                    <strong>Minimal Data Collection</strong><br />
+                    We collect only the minimal data required to provide real-time communication functionality in
+                    <strong>Call-me</strong>.
+                </p>
+                <p>
+                    <strong>Signaling Data</strong><br />
+                    <strong>Call-me</strong> is a real-time peer-to-peer WebRTC application. Establishing a connection
+                    requires temporary signaling data such as
+                    <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/API/RTCIceCandidate"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >RTCICECandidates</a
+                    >
+                    and
+                    <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >RTCSessionDescription</a
+                    >. This data is used only to negotiate the connection between peers.
+                </p>
+                <p>
+                    <strong>No Persistent Storage</strong><br />
+                    This signaling data is not stored in any persistent database and is discarded immediately after the
+                    session ends or the user leaves the call. <strong>Call-me</strong> does not retain chat, audio,
+                    video, or file transfer content.
+                </p>
+                <p>
+                    <strong>Encryption</strong><br />
+                    Media streams are transmitted directly between peers using WebRTC and are encrypted using
+                    <a
+                        href="https://en.wikipedia.org/wiki/Secure_Real-time_Transport_Protocol"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Secure Real-time Transport Protocol</a
+                    >
+                    (SRTP). Data channels used for chat and file sharing via
+                    <a
+                        href="https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >RTCDataChannel</a
+                    >
+                    are secured using
+                    <a
+                        href="https://en.wikipedia.org/wiki/Datagram_Transport_Layer_Security"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Datagram Transport Layer Security</a
+                    >
+                    (DTLS).
+                </p>
+                <p>
+                    <strong>Peer-to-Peer Architecture</strong><br />
+                    <strong>Call-me</strong> does not act as an intermediary for user communications. Audio, video, chat
+                    messages, and file transfers are exchanged directly between users and are not routed through or
+                    stored on <strong>Call-me</strong> servers.
+                </p>
+                <p>
+                    <strong>Third-Party Services</strong><br />
+                    We do not use third-party analytics, advertising, or tracking services. Our focus is on providing a
+                    secure and private communication platform without compromising user privacy.
+                </p>
+            </div>
+
+            <div class="privacy-footer">
+                <a class="btn-agree" href="/">AGREE</a>
+            </div>
+        </div>
+    </body>
+</html>
