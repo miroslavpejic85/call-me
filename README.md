@@ -1,14 +1,36 @@
-# Call-Me
+<h1 align="center">Call-me</h1>
 
-This project enables easy one-to-one video calls directly from your web browser using WebRTC technology.
+<br/>
+
+<div align="center">
+
+[![GitHub Stars](https://img.shields.io/github/stars/miroslavpejic85/call-me?style=social)](https://github.com/miroslavpejic85/call-me/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/miroslavpejic85/call-me?style=social)](https://github.com/miroslavpejic85/call-me/network/members)
+
+<a href="https://choosealicense.com/licenses/agpl-3.0/">![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3_Open_Source-blue.svg)</a>
+<a href="https://hub.docker.com/r/mirotalk/call-me">![Docker Pulls](https://img.shields.io/docker/pulls/mirotalk/cme)</a>
+<a href="https://github.com/miroslavpejic85/call-me/commits/master">![Last Commit](https://img.shields.io/github/last-commit/miroslavpejic85/call-me)</a>
+<a href="https://discord.gg/rgGYfeYW3N">![Discord](https://img.shields.io/badge/Discord-Community-5865F2?logo=discord&logoColor=white)</a>
+<a href="https://www.linkedin.com/in/miroslav-pejic-976a07101/">![Author](https://img.shields.io/badge/Author-Miroslav_Pejic-brightgreen.svg)</a>
+
+</div>
+
+<p align="center">
+Instant click-to-call video communication in your browser, no signup, no setup, powered by WebRTC.
+</p>
+
+<p align="center">
+    <a href="https://cme.mirotalk.com">Try Live Demo</a> · <a 
+href="https://cme.mirotalk.com/privacy">Privacy</a> · <a 
+href="https://docs.mirotalk.com/mirotalk-cme/self-hosting/">Documentation</a> · <a href="https://discord.gg/rgGYfeYW3N">Discord</a> · <a 
+href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
+</p>
 
 ![callme](./assets/doc/callme.png)
 
 ## Getting Started
 
-### Overview
-
-This project allows you to:
+### Features
 
 - `End-to-End Encryption` for secure and private communications.
 - `Join` with a username or enter a name to `Call now`.
@@ -44,7 +66,7 @@ git clone https://github.com/miroslavpejic85/call-me.git
 cd call-me
 
 # Copy the config file
-$ cp public/config.template.js public/config.js
+cp public/config.template.js public/config.js
 
 # Copy .env.template to .env
 cp .env.template .env
@@ -71,6 +93,9 @@ git clone https://github.com/miroslavpejic85/call-me.git
 # Go to to dir call-me
 cd call-me
 
+# Copy the config file
+cp public/config.template.js public/config.js
+
 # Copy .env.template to .env
 cp .env.template .env
 
@@ -88,7 +113,7 @@ docker-compose up
 
 1. `Open` your browser and visit [http://localhost:8000](http://localhost:8000).
 
-2. `Join` with your username or `Call` directly the recipient.
+2. `Join` with your username or `Call` the recipient directly.
 
 3. `Select` the connected recipient's username and click `Call`.
 
@@ -148,7 +173,7 @@ wget -qO cme-uninstall.sh https://docs.mirotalk.com/scripts/cme/cme-uninstall.sh
 ```bash
 # Update
 wget -qO cme-update.sh https://docs.mirotalk.com/scripts/cme/cme-update.sh \
-  && chmod +x bro-update.sh \
+  && chmod +x cme-update.sh \
   && ./cme-update.sh
 ```
 
