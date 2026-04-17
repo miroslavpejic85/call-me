@@ -221,4 +221,8 @@ Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [h
 
 ---
 
+🌐 **Explore all MiroTalk projects:**
+
+**[ → MiroTalk Overview](https://docs.mirotalk.com/overview/)**
+
 ![Star History Chart](https://app.repohistory.com/api/svg?repo=miroslavpejic85/call-me&type=Date&background=0D1117&color=62C3F8)
