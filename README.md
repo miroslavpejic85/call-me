@@ -26,7 +26,13 @@ href="https://docs.mirotalk.com/mirotalk-cme/self-hosting/">Documentation</a> ·
 href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 </p>
 
-![callme](./assets/doc/callme.png)
+<br/>
+
+<p align="center">
+    <a href="https://cme.mirotalk.com">
+        <img src="assets/doc/callme.png" alt="MiroTalk CME - Click to Call">
+    </a>
+</p>
 
 ## Getting Started
 
