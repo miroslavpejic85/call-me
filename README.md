@@ -8,7 +8,7 @@
 [![GitHub Forks](https://img.shields.io/github/forks/miroslavpejic85/call-me?style=social)](https://github.com/miroslavpejic85/call-me/network/members)
 
 <a href="https://choosealicense.com/licenses/agpl-3.0/">![License: AGPLv3](https://img.shields.io/badge/License-AGPLv3_Open_Source-blue.svg)</a>
-<a href="https://hub.docker.com/r/mirotalk/call-me">![Docker Pulls](https://img.shields.io/docker/pulls/mirotalk/cme)</a>
+<a href="https://hub.docker.com/r/mirotalk/cme">![Docker Pulls](https://img.shields.io/docker/pulls/mirotalk/cme)</a>
 <a href="https://github.com/miroslavpejic85/call-me/commits/master">![Last Commit](https://img.shields.io/github/last-commit/miroslavpejic85/call-me)</a>
 <a href="https://discord.gg/rgGYfeYW3N">![Discord](https://img.shields.io/badge/Discord-Community-5865F2?logo=discord&logoColor=white)</a>
 <a href="https://www.linkedin.com/in/miroslav-pejic-976a07101/">![Author](https://img.shields.io/badge/Author-Miroslav_Pejic-brightgreen.svg)</a>
