@@ -35,6 +35,7 @@ const chatContent = document.getElementById('chatContent');
 const settingsContent = document.getElementById('settingsContent');
 const chatNotification = document.getElementById('chatNotification');
 const participantCount = document.getElementById('participantCount');
+const messageCount = document.getElementById('messageCount');
 const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
@@ -596,6 +597,11 @@ function handleListeners() {
         sidebarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             userSidebar.classList.toggle('active');
+            // Clear message badge when opening sidebar with chat tab active
+            if (userSidebar.classList.contains('active') && currentTab === 'chat') {
+                unreadMessages = 0;
+                updateChatNotification();
+            }
         });
 
         // Utility to handle click outside for any element
@@ -2806,6 +2812,14 @@ function updateChatNotification() {
             chatNotification.classList.add('hidden');
         }
     }
+    if (messageCount) {
+        if (unreadMessages > 0) {
+            messageCount.textContent = unreadMessages > 99 ? '99+' : unreadMessages.toString();
+            messageCount.classList.remove('hidden');
+        } else {
+            messageCount.classList.add('hidden');
+        }
+    }
 }
 
 // Chat form handler
@@ -2856,7 +2870,7 @@ function addChatMessage(msg, isSelf = false) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     // Handle unread message counter
-    if (!isSelf && currentTab !== 'chat') {
+    if (!isSelf && (currentTab !== 'chat' || !userSidebar.classList.contains('active'))) {
         unreadMessages++;
         updateChatNotification();
 
@@ -2903,7 +2917,7 @@ function addFileMessageToChat({ from, name, size, url, isSelf }) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     // Handle unread message counter for received files
-    if (!isSelf && currentTab !== 'chat') {
+    if (!isSelf && (currentTab !== 'chat' || !userSidebar.classList.contains('active'))) {
         unreadMessages++;
         updateChatNotification();
 

@@ -1344,6 +1344,10 @@ input {
     display: none;
 }
 
+.sidebar-tab span.chat-notification {
+    display: flex;
+}
+
 .sidebar-tab i,
 .sidebar-tab .chat-notification {
     flex-shrink: 0;
@@ -1397,7 +1401,7 @@ input {
         bounce 0.5s ease-out;
 }
 
-.chat-notification.hidden {
+.sidebar-tab span.chat-notification.hidden {
     display: none;
 }
 
@@ -1427,6 +1431,34 @@ input {
     display: none;
 }
 
+/* Message Count Badge on Sidebar Button */
+.message-count {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    z-index: 1;
+    padding: 0 4px;
+    animation:
+        pulse 2s infinite,
+        bounce 0.5s ease-out;
+}
+
+.message-count.hidden {
+    display: none;
+}
+
 #sidebarBtn {
     overflow: visible !important;
 }
@@ -1435,6 +1467,15 @@ input {
     .participant-count {
         top: -2px;
         right: -2px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 10px;
+        padding: 0 3px;
+    }
+
+    .message-count {
+        top: -2px;
+        left: -2px;
         min-width: 16px;
         height: 16px;
         font-size: 10px;
