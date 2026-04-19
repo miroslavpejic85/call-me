@@ -1688,8 +1688,12 @@ async function offerCreate() {
 function offerAccept(data) {
     // I'm already in call decline the new one!
     if (remoteVideo.srcObject) {
-        data.type = 'offerBusy';
-        sendMsg({ ...data });
+        // Send busy response directly to avoid sendMsg overriding name with connectedUser
+        socket.emit('message', {
+            type: 'offerBusy',
+            from: data.from, // Original caller (for server routing)
+            name: userName, // This user (the busy one)
+        });
         return;
     }
 
