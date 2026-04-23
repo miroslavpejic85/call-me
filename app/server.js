@@ -2,6 +2,21 @@
 
 // Import necessary modules
 const dotenv = require('dotenv').config();
+
+// Sentry (initialize before all other modules so it can instrument them)
+const Sentry = require('@sentry/node');
+const sentryEnabled = process.env.SENTRY_ENABLED === 'true';
+const sentryDsn = process.env.SENTRY_DSN;
+const sentryTracesSampleRate = parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE) || 0.5;
+
+if (sentryEnabled && sentryDsn && sentryDsn !== '') {
+    Sentry.init({
+        dsn: sentryDsn,
+        environment: process.env.NODE_ENV || 'development',
+        tracesSampleRate: sentryTracesSampleRate,
+    });
+}
+
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -19,6 +34,8 @@ const packageJson = require('../package.json');
 // Logs
 const logs = require('./logs');
 const log = new logs('server');
+
+//log.error('Sentry test error', new Error('This is a test error to verify Sentry integration'));
 
 // Public directory location
 const PUBLIC_DIR = path.join(__dirname, '../', 'public');
@@ -390,6 +407,11 @@ app.post('/api/hostPasswordValidate', (req, res) => {
     const success = password === config.hostPassword;
     res.json({ success: success });
 });
+
+// Sentry error handler (must be registered before other error handlers)
+if (sentryEnabled && sentryDsn && sentryDsn !== '') {
+    Sentry.setupExpressErrorHandler(app);
+}
 
 // Page not found
 app.use((req, res) => {

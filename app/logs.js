@@ -2,11 +2,32 @@
 
 const util = require('util');
 const colors = require('colors');
+const Sentry = require('@sentry/node');
+
 colors.enable(); // colors.disable();
 
 const LOGS_DEBUG = process.env.LOGS_DEBUG !== undefined ? process.env.LOGS_DEBUG === 'true' : true;
 const LOGS_JSON = process.env.LOGS_JSON ? process.env.LOGS_JSON === 'true' : false;
 const LOGS_JSON_PRETTY = process.env.LOGS_JSON_PRETTY ? process.env.LOGS_JSON_PRETTY === 'true' : false;
+
+const SENTRY_ENABLED = process.env.SENTRY_ENABLED === 'true';
+const SENTRY_DSN = process.env.SENTRY_DSN;
+const SENTRY_LOG_LEVELS = process.env.SENTRY_LOG_LEVELS
+    ? process.env.SENTRY_LOG_LEVELS.split(',').map((l) => l.trim())
+    : ['error'];
+
+function sentryCapture(level, msg, op) {
+    if (!SENTRY_ENABLED || !SENTRY_DSN || SENTRY_DSN === '') return;
+    if (!SENTRY_LOG_LEVELS.includes(level)) return;
+
+    if (level === 'error') {
+        const err = op instanceof Error ? op : new Error(String(msg));
+        Sentry.captureException(err, { extra: { message: msg, data: op } });
+    } else {
+        const sentryLevel = level === 'warn' ? 'warning' : level;
+        Sentry.captureMessage(String(msg), { level: sentryLevel, extra: { data: op } });
+    }
+}
 
 const options = {
     depth: null,
@@ -41,6 +62,7 @@ module.exports = class Logs {
             }
             this.timeStart = Date.now();
         }
+        sentryCapture('debug', msg, op);
     }
 
     log(msg, op = '') {
@@ -49,6 +71,7 @@ module.exports = class Logs {
         } else {
             console.log('[' + this.getDateTime() + '] [' + this.appName + '] ' + msg, util.inspect(op, options));
         }
+        sentryCapture('log', msg, op);
     }
 
     info(msg, op = '') {
@@ -60,6 +83,7 @@ module.exports = class Logs {
                 util.inspect(op, options)
             );
         }
+        sentryCapture('info', msg, op);
     }
 
     warn(msg, op = '') {
@@ -71,6 +95,7 @@ module.exports = class Logs {
                 util.inspect(op, options)
             );
         }
+        sentryCapture('warn', msg, op);
     }
 
     error(msg, op = '') {
@@ -82,6 +107,7 @@ module.exports = class Logs {
                 util.inspect(op, options)
             );
         }
+        sentryCapture('error', msg, op);
     }
     jsonLog(level, appName, msg, op, extra = {}) {
         const logObj = {
