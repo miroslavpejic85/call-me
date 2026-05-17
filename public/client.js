@@ -3,8 +3,11 @@
 // This user agent
 const userAgent = navigator.userAgent;
 
-// WebSocket connection to the signaling server
-const socket = io();
+// WebSocket connection to the signaling server.
+// The socket is created lazily by initSocket() after the host password (if
+// any) has been resolved, so the password can be supplied in the handshake
+// auth payload and verified server-side before any event handler runs.
+let socket;
 
 // WebRTC configuration
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -150,11 +153,42 @@ document.addEventListener('DOMContentLoaded', async function () {
     handleConfig();
     handleToolTip();
     handleLocalStorage();
+    const password = await resolveHostPassword();
+    if (password === null) return; // User cancelled or exhausted retries
+    initSocket(password);
     await handleDirectJoin();
     handleListeners();
     initializeFileSharing();
     await fetchRandomImage();
 });
+
+// Create the Socket.IO connection, supplying the host password (if any) in
+// the handshake auth payload so the server-side middleware can authorize the
+// connection before any handler runs.
+function initSocket(password) {
+    socket = io({ auth: { password: password || '' } });
+    socket.on('connect', handleSocketConnect);
+    socket.on('message', handleMessage);
+    socket.on('error', handleSocketError);
+    socket.on('connect_error', handleSocketConnectError);
+}
+
+// Handle handshake rejection (e.g. wrong host password)
+function handleSocketConnectError(err) {
+    console.error('Socket connect error:', err && err.message);
+    if (err && err.message === 'Unauthorized') {
+        Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
+            position: 'top',
+            icon: 'error',
+            title: t('host.invalidPasswordTitle'),
+            text: t('host.invalidPasswordText', { attempts: 1, maxRetries: 1 }),
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+        }).then(() => window.location.reload());
+    }
+}
 
 // Get user information from User-Agent string
 function getUserInfo(userAgent) {
@@ -205,88 +239,112 @@ function handleConfig() {
     });
 }
 
-async function checkHostPassword(maxRetries = 3, attempts = 0) {
+// Resolve the host password before opening the Socket.IO connection.
+// Returns the validated password string (empty if host password is disabled),
+// or null if the user cancelled or exhausted retries.
+async function resolveHostPassword() {
+    let isRequired = false;
     try {
-        // Fetch host configuration
-        const { data: config } = await axios.get('/api/hostPassword');
+        const { data } = await axios.get('/api/hostPassword');
+        isRequired = !!(data && data.isPasswordRequired);
+    } catch (error) {
+        console.error('Error fetching host password config:', error);
+    }
 
-        if (config.isPasswordRequired) {
-            // Show prompt for the password
-            const { value: password } = await Swal.fire({
+    if (!isRequired) {
+        elemDisplay(signInPage, true);
+        return '';
+    }
+
+    // If a password was supplied via the URL (?password=...), try it first.
+    const urlPassword = new URLSearchParams(window.location.search).get('password');
+    if (urlPassword) {
+        try {
+            const { data } = await axios.post('/api/hostPasswordValidate', { password: urlPassword });
+            if (data && data.success) {
+                elemDisplay(signInPage, true);
+                return urlPassword;
+            }
+        } catch (error) {
+            console.error('Error validating URL host password:', error);
+        }
+    }
+
+    return await promptHostPassword();
+}
+
+async function promptHostPassword(maxRetries = 3, attempts = 0) {
+    try {
+        const { value: password } = await Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
+            title: t('host.protectedTitle'),
+            text: t('host.enterPassword'),
+            input: 'password',
+            inputPlaceholder: t('host.passwordPlaceholder'),
+            inputAttributes: {
+                autocapitalize: 'off',
+                autocorrect: 'off',
+            },
+            imageUrl: 'assets/locked.png',
+            imageWidth: 150,
+            imageHeight: 150,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showDenyButton: true,
+            confirmButtonText: t('host.submit'),
+            denyButtonText: t('settings.cancel'),
+            preConfirm: (password) => {
+                if (!password) {
+                    Swal.showValidationMessage(t('host.passwordEmpty'));
+                }
+                return password;
+            },
+        });
+
+        if (!password) {
+            return null;
+        }
+
+        const { data: validationResult } = await axios.post('/api/hostPasswordValidate', { password });
+
+        if (validationResult && validationResult.success) {
+            await Swal.fire({
                 heightAuto: false,
                 scrollbarPadding: false,
-                title: t('host.protectedTitle'),
-                text: t('host.enterPassword'),
-                input: 'password',
-                inputPlaceholder: t('host.passwordPlaceholder'),
-                inputAttributes: {
-                    autocapitalize: 'off',
-                    autocorrect: 'off',
-                },
-                imageUrl: 'assets/locked.png',
-                imageWidth: 150,
-                imageHeight: 150,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showDenyButton: true,
-                confirmButtonText: t('host.submit'),
-                denyButtonText: t('settings.cancel'),
-                preConfirm: (password) => {
-                    if (!password) {
-                        Swal.showValidationMessage(t('host.passwordEmpty'));
-                    }
-                    return password;
-                },
+                position: 'top',
+                icon: 'success',
+                title: t('host.accessGrantedTitle'),
+                text: t('host.accessGrantedText'),
+                timer: 1500,
+                showConfirmButton: false,
             });
-
-            // If the user cancels, exit
-            if (!password) {
-                return;
-            }
-
-            // Validate the password
-            const { data: validationResult } = await axios.post('/api/hostPasswordValidate', { password });
-
-            if (validationResult.success) {
-                await Swal.fire({
-                    heightAuto: false,
-                    scrollbarPadding: false,
-                    position: 'top',
-                    icon: 'success',
-                    title: t('host.accessGrantedTitle'),
-                    text: t('host.accessGrantedText'),
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
-                elemDisplay(signInPage, true);
-            } else {
-                attempts++;
-                if (attempts < maxRetries) {
-                    await Swal.fire({
-                        heightAuto: false,
-                        scrollbarPadding: false,
-                        position: 'top',
-                        icon: 'error',
-                        title: t('host.invalidPasswordTitle'),
-                        text: t('host.invalidPasswordText', { attempts, maxRetries }),
-                    });
-                    // Retry the process
-                    await checkHostPassword(maxRetries, attempts);
-                } else {
-                    await Swal.fire({
-                        heightAuto: false,
-                        scrollbarPadding: false,
-                        position: 'top',
-                        icon: 'warning',
-                        title: t('host.tooManyAttemptsTitle'),
-                        text: t('host.tooManyAttemptsText'),
-                    });
-                }
-            }
-        } else {
-            // No password required
             elemDisplay(signInPage, true);
+            return password;
         }
+
+        attempts++;
+        if (attempts < maxRetries) {
+            await Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
+                position: 'top',
+                icon: 'error',
+                title: t('host.invalidPasswordTitle'),
+                text: t('host.invalidPasswordText', { attempts, maxRetries }),
+            });
+            return await promptHostPassword(maxRetries, attempts);
+        }
+
+        await Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
+            position: 'top',
+            icon: 'warning',
+            title: t('host.tooManyAttemptsTitle'),
+            text: t('host.tooManyAttemptsText'),
+        });
+        return null;
     } catch (error) {
         console.error('Error:', error);
         Swal.fire({
@@ -297,6 +355,7 @@ async function checkHostPassword(maxRetries = 3, attempts = 0) {
             title: t('messages.error'),
             text: t('host.joinError'),
         });
+        return null;
     }
 }
 
@@ -401,8 +460,6 @@ async function handleDirectJoin() {
             }, 3000);
         }
     }
-
-    if (!password) await checkHostPassword();
 }
 
 // Start Session Time
@@ -443,10 +500,8 @@ function secondsToHms(d) {
     return hDisplay + ' ' + mDisplay + ' ' + sDisplay;
 }
 
-// WebSocket event listeners
-socket.on('connect', handleSocketConnect);
-socket.on('message', handleMessage);
-socket.on('error', handleSocketError);
+// WebSocket event listeners are wired in initSocket() after the password
+// (if required) has been resolved.
 
 // Handle WebSocket connection establishment
 function handleSocketConnect() {

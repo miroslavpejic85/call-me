@@ -456,6 +456,30 @@ server.on('clientError', (err, socket) => {
     }
 });
 
+// Enforce host password at the Socket.IO handshake. This is the single
+// source of truth for socket-level authentication and runs before any event
+// handler, so it cannot be bypassed by skipping the HTTP /join page and
+// connecting the WebSocket transport directly.
+io.use((socket, next) => {
+    if (!config.hostPasswordEnabled) {
+        socket.data.authorized = true;
+        return next();
+    }
+    const auth = socket.handshake.auth || {};
+    const provided = typeof auth.password === 'string' ? auth.password : '';
+    if (provided && provided === config.hostPassword) {
+        socket.data.authorized = true;
+        return next();
+    }
+    log.warn('Socket.IO unauthorized handshake rejected', {
+        id: socket.id,
+        address: socket.handshake.address,
+    });
+    const err = new Error('Unauthorized');
+    err.data = { code: 'UNAUTHORIZED' };
+    return next(err);
+});
+
 // Handle WebSocket connections
 io.on('connection', handleConnection);
 
