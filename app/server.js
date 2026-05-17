@@ -523,12 +523,14 @@ function handleConnection(socket) {
         }
     }
 
-    // Send a ping message to the newly connected client and iceServers for peer connection
+    // Send a ping message to the newly connected client.
+    // NOTE: iceServers (which may include TURN credentials) are intentionally
+    // NOT sent here; they are delivered only after a successful sign-in to
+    // prevent leaking TURN credentials to unauthenticated clients.
     function sendPing(socket) {
         sendMsgTo(socket, {
             type: 'ping',
             message: 'Hello Client!',
-            iceServers: config.iceServers,
             pushEnabled: config.pushEnabled,
             ringTimeout: config.ringTimeout,
         });
@@ -628,7 +630,9 @@ function handleConnection(socket) {
             });
 
             log.debug('User signed in:', name);
-            sendMsgTo(socket, { type: 'signIn', success: true });
+            // Deliver iceServers (including any TURN credentials) only after
+            // successful authentication, not on the anonymous ping.
+            sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers });
             broadcastConnectedUsers();
         } else {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });

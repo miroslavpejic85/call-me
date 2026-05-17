@@ -1437,7 +1437,7 @@ function handleOfferBusy(data) {
 
 // Handle sign-in response from the server
 async function handleSignIn(data) {
-    const { success, message } = data;
+    const { success, message, iceServers } = data;
     if (!success) {
         handleError(message);
         if (!message.startsWith('Invalid username')) {
@@ -1445,6 +1445,11 @@ async function handleSignIn(data) {
         }
     } else {
         userSignedIn = true;
+
+        // iceServers (with any TURN credentials) are delivered post sign-in
+        if (iceServers) {
+            config.iceServers = iceServers;
+        }
 
         if (userInfo.device.isDesktop) userSidebar.classList.toggle('active');
         if (userInfo.device.isMobile) userSidebar.style.width = '100%';
