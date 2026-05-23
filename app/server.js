@@ -35,6 +35,9 @@ const packageJson = require('../package.json');
 const logs = require('./logs');
 const log = new logs('server');
 
+// Middlewares
+const { applyEmbedHeaders, embedAllowedOrigins, embedCsp } = require('./middleware/embedHeaders');
+
 //log.error('Sentry test error', new Error('This is a test error to verify Sentry integration'));
 
 // Public directory location
@@ -189,6 +192,10 @@ function getServerConfig(tunnelHttps = false) {
         },
         api_key_secret: config.apiKeySecret,
         api_docs: apiDocs,
+        embed: {
+            allowedOrigins: embedAllowedOrigins.length ? embedAllowedOrigins : 'any',
+            csp: embedCsp ? embedCsp.csp : 'not set (embedding allowed from any origin)',
+        },
         running_at: tunnelHttps ? tunnelHttps : host,
         environment: process.env.NODE_ENV || 'development',
         appVersion: packageJson.version,
@@ -213,6 +220,7 @@ async function ngrokStart() {
 // Configure Express middleware BEFORE starting the server
 app.use(cors(corsOptions)); // Handle cors options
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
+app.use(applyEmbedHeaders); // Apply iframe embedding restrictions (CSP frame-ancestors / X-Frame-Options)
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
 app.use(express.json()); // Api parse body data as json
 app.use(config.apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(config.swaggerDocument)); // api docs
