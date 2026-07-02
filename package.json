@@ -29,7 +29,7 @@
         "express": "^5.2.1",
         "helmet": "^8.2.0",
         "httpolyglot": "0.1.2",
-        "js-yaml": "5.2.0",
+        "js-yaml": "5.2.1",
         "socket.io": "^4.8.3",
         "swagger-ui-express": "5.0.1",
         "web-push": "^3.6.7"
