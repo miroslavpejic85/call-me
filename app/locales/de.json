@@ -24,6 +24,7 @@
         "userLeft": "__username__ hat den Anruf verlassen",
         "users": "Benutzer",
         "chat": "Chat",
+        "chatTitle": "Öffentlicher Chat",
         "searchUsers": "Benutzer suchen...",
         "closeSidebar": "Seitenleiste schließen",
         "callingUser": "Du rufst __username__ an.<br/>Bitte warte, bis die Person antwortet",

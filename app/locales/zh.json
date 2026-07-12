@@ -24,6 +24,7 @@
         "userLeft": "__username__ 离开了通话",
         "users": "用户",
         "chat": "聊天",
+        "chatTitle": "公共聊天",
         "searchUsers": "搜索用户...",
         "closeSidebar": "关闭侧边栏",
         "callingUser": "你正在呼叫 __username__。<br/>请等待对方接听。",

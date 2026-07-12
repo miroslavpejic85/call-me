@@ -24,6 +24,7 @@
         "userLeft": "__username__ left the call",
         "users": "Users",
         "chat": "Chat",
+        "chatTitle": "Public Chat",
         "searchUsers": "Search users...",
         "closeSidebar": "Close sidebar",
         "callingUser": "You are calling __username__.<br/>Please wait for them to answer",

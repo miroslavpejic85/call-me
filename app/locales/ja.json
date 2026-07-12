@@ -24,6 +24,7 @@
         "userLeft": "__username__ が通話から退出しました",
         "users": "ユーザー",
         "chat": "チャット",
+        "chatTitle": "パブリックチャット",
         "searchUsers": "ユーザーを検索...",
         "closeSidebar": "サイドバーを閉じる",
         "callingUser": "__username__ に発信しています。<br/>応答するまでお待ちください。",

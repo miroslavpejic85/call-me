@@ -24,6 +24,7 @@
         "userLeft": "غادر __username__ المكالمة",
         "users": "المستخدمون",
         "chat": "الدردشة",
+        "chatTitle": "الدردشة العامة",
         "searchUsers": "البحث عن المستخدمين...",
         "closeSidebar": "إغلاق الشريط الجانبي",
         "callingUser": "أنت تتصل بـ __username__.<br/>يرجى الانتظار حتى يجيب",
