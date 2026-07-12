@@ -221,8 +221,6 @@ Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [h
 
 ---
 
-🌐 **Explore all MiroTalk projects:**
+<p align="center">🌐 Explore the full MiroTalk suite (SFU, P2P, BRO, C2C, WEB, CME, ADM) → <a href="https://docs.mirotalk.com/overview/"><strong>MiroTalk Overview</strong></a></p>
 
-**[ → MiroTalk Overview](https://docs.mirotalk.com/overview/)**
-
-![Star History Chart](https://app.repohistory.com/api/svg?repo=miroslavpejic85/call-me&type=Date&background=0D1117&color=62C3F8)
+---
