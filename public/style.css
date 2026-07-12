@@ -2373,6 +2373,19 @@ input {
         border-radius: 0;
     }
 
+    .private-chat-panel {
+        width: 100vw;
+        max-width: 100vw;
+        z-index: 1002;
+        height: 100dvh;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        border-radius: 0;
+    }
+
+    .private-chat-header {
+        border-radius: 0;
+    }
+
     .user-sidebar-header {
         border-radius: 0;
     }

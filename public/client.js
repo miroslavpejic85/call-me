@@ -685,13 +685,16 @@ function handleListeners() {
         });
 
         // Utility to handle click outside for any element
-        function handleClickOutside(targetElement, triggerElement, callback, minWidth = 0) {
+        function handleClickOutside(targetElement, triggerElement, callback, minWidth = 0, extraExclude = null) {
             document.addEventListener('click', (e) => {
                 if (minWidth && window.innerWidth > minWidth) return;
                 let el = e.target;
                 let shouldExclude = false;
                 while (el) {
-                    if (el instanceof HTMLElement && (el === targetElement || el === triggerElement)) {
+                    if (
+                        el instanceof HTMLElement &&
+                        (el === targetElement || el === triggerElement || el === extraExclude)
+                    ) {
                         shouldExclude = true;
                         break;
                     }
@@ -710,7 +713,8 @@ function handleListeners() {
                     userSidebar.classList.remove('active');
                 }
             },
-            768
+            768,
+            privateChatPanel
         );
 
         // Hide emoji picker when clicking outside
