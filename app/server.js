@@ -537,6 +537,10 @@ function handleConnection(socket) {
                 handleChatMessage(data);
                 log.debug('Chat message:', data);
                 break;
+            case 'privateChat':
+                data.from = socket.username || 'Anonymous';
+                handlePrivateChatMessage(data);
+                break;
             case 'pushSubscription':
                 handlePushSubscription(data);
                 break;
@@ -796,6 +800,39 @@ function handleConnection(socket) {
         broadcastMsgExpectSender(socket, {
             type: 'chat',
             from: from || 'Anonymous',
+            text: text,
+            timestamp: Date.now(),
+        });
+    }
+
+    // Function to handle private (1-to-1) chat messages
+    function handlePrivateChatMessage(data) {
+        const { to, from } = data;
+        let { text } = data;
+
+        // Validate recipient and message
+        if (typeof to !== 'string' || typeof text !== 'string') return;
+        text = text.trim();
+        if (text.length === 0) return;
+        // Limit message length to prevent abuse
+        if (text.length > 5000) text = text.substring(0, 5000);
+
+        const recipientSocket = users.get(to);
+
+        if (!recipientSocket) {
+            // Recipient is offline — notify the sender
+            sendMsgTo(socket, { type: 'privateChatFailed', to });
+            log.debug('Private chat recipient offline:', to);
+            return;
+        }
+
+        log.debug('Private chat from', from, 'to', to);
+
+        // Deliver only to the intended recipient
+        sendMsgTo(recipientSocket, {
+            type: 'privateChat',
+            from: from || 'Anonymous',
+            to: to,
             text: text,
             timestamp: Date.now(),
         });

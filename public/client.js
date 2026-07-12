@@ -46,6 +46,17 @@ const emojiBtn = document.getElementById('emojiBtn');
 const emojiPicker = document.getElementById('emojiPicker');
 const saveChatBtn = document.getElementById('saveChatBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
+const privateChatPanel = document.getElementById('privateChatPanel');
+const privateChatBackBtn = document.getElementById('privateChatBackBtn');
+const privateChatCloseBtn = document.getElementById('privateChatCloseBtn');
+const privateChatAvatar = document.getElementById('privateChatAvatar');
+const privateChatWith = document.getElementById('privateChatWith');
+const privateChatStatus = document.getElementById('privateChatStatus');
+const privateChatMessages = document.getElementById('privateChatMessages');
+const privateChatForm = document.getElementById('privateChatForm');
+const privateChatInput = document.getElementById('privateChatInput');
+const privateEmojiBtn = document.getElementById('privateEmojiBtn');
+const privateEmojiPicker = document.getElementById('privateEmojiPicker');
 const videoSelect = document.getElementById('videoSelect');
 const audioSelect = document.getElementById('audioSelect');
 const audioOutputSelect = document.getElementById('audioOutputSelect');
@@ -115,6 +126,11 @@ let pushSubscription = null;
 // Chat state
 let unreadMessages = 0;
 let currentTab = 'users';
+
+// Private chat (direct message) state
+const privateChats = new Map(); // username -> [{ from, text, timestamp, isSelf }]
+const privateUnread = new Map(); // username -> unread count
+let currentPrivateChatUser = null; // username of open DM thread, or null
 
 // Store last applied media status for reapplication after stream connection
 let lastAppliedMediaStatus = null;
@@ -572,6 +588,12 @@ function handleMessage(data) {
         case 'chat':
             addChatMessage(data, false);
             break;
+        case 'privateChat':
+            handleIncomingPrivateChat(data);
+            break;
+        case 'privateChatFailed':
+            handlePrivateChatFailed(data);
+            break;
         case 'leave':
             handleLeave(false);
             break;
@@ -635,6 +657,7 @@ function handleListeners() {
     emojiBtn.addEventListener('click', handleEmojiClick);
     saveChatBtn.addEventListener('click', handleSaveChatClick);
     clearChatBtn.addEventListener('click', handleClearChatClick);
+    if (privateEmojiBtn) privateEmojiBtn.addEventListener('click', handlePrivateEmojiClick);
 
     // Direct call listeners
     directCallBtn.addEventListener('click', handleDirectCallClick);
@@ -696,6 +719,15 @@ function handleListeners() {
                 emojiPicker.classList.remove('show');
             }
         });
+
+        // Hide private chat emoji picker when clicking outside
+        if (privateEmojiPicker && privateEmojiBtn) {
+            handleClickOutside(privateEmojiPicker, privateEmojiBtn, () => {
+                if (privateEmojiPicker.classList.contains('show')) {
+                    privateEmojiPicker.classList.remove('show');
+                }
+            });
+        }
     }
 }
 
@@ -1939,6 +1971,10 @@ function handleUsers(data) {
     allConnectedUsers = currentUsers;
     filterUserList(userSearchInput.value || '');
     updateParticipantCount();
+    // Keep the open DM header status in sync with presence changes
+    if (currentPrivateChatUser) {
+        updatePrivateChatStatus(currentPrivateChatUser);
+    }
     if (userSignedIn) {
         currentUsers.forEach((u) => {
             if (!prevUsers.has(u)) {
@@ -2747,6 +2783,27 @@ function renderUserList() {
         const nameSpan = document.createElement('span');
         nameSpan.textContent = user;
 
+        // Private message button
+        const messageBtn = document.createElement('button');
+        messageBtn.className = 'btn btn-custom btn-info btn-m private-chat-btn';
+        messageBtn.innerHTML = '<i class="fas fa-comment-dots"></i>';
+        messageBtn.style.cursor = 'pointer';
+        messageBtn.style.position = 'relative';
+        messageBtn.title = t('chat.privateMessage', { username: user });
+        // Unread badge for this user
+        const unreadForUser = privateUnread.get(user) || 0;
+        if (unreadForUser > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'chat-notification dm-badge';
+            badge.textContent = unreadForUser > 99 ? '99+' : unreadForUser.toString();
+            messageBtn.appendChild(badge);
+        }
+        messageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!userSignedIn) return;
+            openPrivateChat(user);
+        });
+
         // Send file button
         const sendFileBtn = document.createElement('button');
         sendFileBtn.className = 'btn btn-custom btn-success btn-m';
@@ -2797,6 +2854,7 @@ function renderUserList() {
 
         li.appendChild(avatarDiv);
         li.appendChild(nameSpan);
+        li.appendChild(messageBtn);
         li.appendChild(sendFileBtn);
         li.appendChild(actionBtnEl);
 
@@ -2982,6 +3040,210 @@ function addChatMessage(msg, isSelf = false) {
             toast(t('chat.newMessageFrom', { username: msg.from }), 'info', 'top', 2000);
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Private chat (direct message) — 1-to-1, server relayed, no call required
+// ---------------------------------------------------------------------------
+
+const privateAvatarColors = [
+    'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+    'linear-gradient(135deg, #10b981, #047857)',
+    'linear-gradient(135deg, #f59e0b, #d97706)',
+    'linear-gradient(135deg, #ef4444, #b91c1c)',
+    'linear-gradient(135deg, #06b6d4, #0e7490)',
+    'linear-gradient(135deg, #ec4899, #be185d)',
+];
+
+function setPrivateChatAvatar(user) {
+    if (!privateChatAvatar) return;
+    const initials = user
+        .split(/[\s_-]+/)
+        .map((w) => w[0])
+        .join('')
+        .substring(0, 2);
+    privateChatAvatar.textContent = initials;
+    let hash = 0;
+    for (let i = 0; i < user.length; i++) hash = user.charCodeAt(i) + ((hash << 5) - hash);
+    privateChatAvatar.style.background = privateAvatarColors[Math.abs(hash) % privateAvatarColors.length];
+}
+
+// Open the private chat panel for a specific user
+function openPrivateChat(user) {
+    currentPrivateChatUser = user;
+
+    // Clear unread for this user
+    privateUnread.set(user, 0);
+
+    if (privateChatWith) privateChatWith.textContent = user;
+    setPrivateChatAvatar(user);
+    updatePrivateChatStatus(user);
+    renderPrivateChat(user);
+
+    if (privateChatPanel) privateChatPanel.classList.add('active');
+    if (privateChatInput) {
+        privateChatInput.disabled = false;
+        setTimeout(() => privateChatInput.focus(), 100);
+    }
+
+    renderUserList(); // refresh badges
+}
+
+// Close the private chat panel
+function closePrivateChat() {
+    currentPrivateChatUser = null;
+    if (privateChatPanel) privateChatPanel.classList.remove('active');
+    if (privateEmojiPicker) privateEmojiPicker.classList.remove('show');
+}
+
+// Update the online/offline status label in the DM header
+function updatePrivateChatStatus(user) {
+    if (!privateChatStatus) return;
+    const online = allConnectedUsers.includes(user);
+    privateChatStatus.textContent = online ? t('chat.online') : t('chat.offline');
+    privateChatStatus.classList.toggle('offline', !online);
+}
+
+// Render the full message thread for a user
+function renderPrivateChat(user) {
+    if (!privateChatMessages) return;
+    privateChatMessages.innerHTML = '';
+
+    const messages = privateChats.get(user) || [];
+    if (messages.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'chat-empty-state';
+        empty.innerHTML = `<i class="fas fa-comment-dots"></i><p>${t('chat.privateEmpty', { username: user })}</p>`;
+        privateChatMessages.appendChild(empty);
+        return;
+    }
+
+    messages.forEach((m) => appendPrivateChatMessage(m));
+    privateChatMessages.scrollTop = privateChatMessages.scrollHeight;
+}
+
+// Append a single message element to the open DM thread
+function appendPrivateChatMessage(m) {
+    if (!privateChatMessages) return;
+
+    const emptyState = privateChatMessages.querySelector('.chat-empty-state');
+    if (emptyState) emptyState.remove();
+
+    const div = document.createElement('div');
+    div.className = 'chat-message';
+    if (m.isSelf) div.classList.add('own-message');
+
+    const userSpan = document.createElement('span');
+    userSpan.className = 'chat-user';
+    userSpan.textContent = m.isSelf ? t('chat.me') : m.from;
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'chat-text';
+    textSpan.textContent = ': ' + m.text;
+
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'chat-time';
+    timeSpan.textContent = formatChatTime(m.timestamp);
+
+    div.appendChild(userSpan);
+    div.appendChild(textSpan);
+    div.appendChild(timeSpan);
+    privateChatMessages.appendChild(div);
+    privateChatMessages.scrollTop = privateChatMessages.scrollHeight;
+}
+
+// Store a message in the per-user thread
+function storePrivateMessage(user, message) {
+    const thread = privateChats.get(user) || [];
+    thread.push(message);
+    privateChats.set(user, thread);
+}
+
+// Handle an incoming private chat message from another user
+function handleIncomingPrivateChat(data) {
+    const { from, text, timestamp } = data;
+    if (!from || typeof text !== 'string') return;
+
+    const message = { from, text, timestamp: timestamp || Date.now(), isSelf: false };
+    storePrivateMessage(from, message);
+
+    const isOpen = currentPrivateChatUser === from && privateChatPanel.classList.contains('active');
+    if (isOpen) {
+        appendPrivateChatMessage(message);
+    } else {
+        privateUnread.set(from, (privateUnread.get(from) || 0) + 1);
+        renderUserList();
+        toast(t('chat.newPrivateMessageFrom', { username: from }), 'info', 'top', 2500);
+    }
+}
+
+// Handle a failed private chat (recipient offline)
+function handlePrivateChatFailed(data) {
+    const { to } = data;
+    toast(t('chat.userOffline', { username: to }), 'warning', 'top', 3000);
+    if (currentPrivateChatUser === to) {
+        updatePrivateChatStatus(to);
+    }
+}
+
+// Private chat form handler
+if (privateChatForm && privateChatInput) {
+    privateChatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = privateChatInput.value.trim();
+        if (text.length === 0 || !currentPrivateChatUser) return;
+
+        const to = currentPrivateChatUser;
+
+        if (!allConnectedUsers.includes(to)) {
+            toast(t('chat.userOffline', { username: to }), 'warning', 'top', 3000);
+            privateChatInput.value = '';
+            return;
+        }
+
+        socket.emit('message', { type: 'privateChat', to, text });
+
+        const message = { from: userName || t('chat.me'), text, timestamp: Date.now(), isSelf: true };
+        storePrivateMessage(to, message);
+        appendPrivateChatMessage(message);
+        privateChatInput.value = '';
+    });
+}
+
+if (privateChatBackBtn) privateChatBackBtn.addEventListener('click', closePrivateChat);
+if (privateChatCloseBtn) privateChatCloseBtn.addEventListener('click', closePrivateChat);
+
+// Private chat emoji picker
+function handlePrivateEmojiClick() {
+    if (!privateEmojiPicker) return;
+    if (!privateEmojiPicker.classList.contains('show')) {
+        initPrivateEmojiPicker();
+        privateEmojiPicker.classList.add('show');
+    } else {
+        privateEmojiPicker.classList.remove('show');
+    }
+}
+
+function initPrivateEmojiPicker() {
+    privateEmojiPicker.innerHTML = '';
+
+    const picker = new EmojiMart.Picker({
+        theme: 'dark',
+        perLine: 8,
+        onEmojiSelect: (data) => {
+            const cursorPosition = privateChatInput.selectionStart;
+            const currentValue = privateChatInput.value;
+            privateChatInput.value =
+                currentValue.slice(0, cursorPosition) + data.native + currentValue.slice(cursorPosition);
+            const newCursorPosition = cursorPosition + data.native.length;
+            privateChatInput.setSelectionRange(newCursorPosition, newCursorPosition);
+            privateChatInput.focus();
+            privateEmojiPicker.classList.remove('show');
+        },
+    });
+
+    privateEmojiPicker.appendChild(picker);
 }
 
 // Add a file message entry into the chat with download link

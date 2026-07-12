@@ -494,6 +494,56 @@
             </div>
         </div>
 
+        <!-- Private chat (direct message) panel -->
+        <div id="privateChatPanel" class="private-chat-panel">
+            <div class="private-chat-header">
+                <button
+                    id="privateChatBackBtn"
+                    class="btn btn-exit-sidebar"
+                    title="Back"
+                    data-i18n-title="chat.back"
+                >
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="private-chat-title">
+                    <div id="privateChatAvatar" class="user-avatar"></div>
+                    <span id="privateChatWith" class="private-chat-with"></span>
+                    <span id="privateChatStatus" class="private-chat-status"></span>
+                </div>
+                <button
+                    id="privateChatCloseBtn"
+                    class="btn btn-exit-sidebar"
+                    title="Close"
+                    data-i18n-title="room.closeSidebar"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="privateChatMessages" class="chat-messages"></div>
+            <form id="privateChatForm" class="chat-form" autocomplete="off">
+                <button
+                    type="button"
+                    id="privateEmojiBtn"
+                    class="btn btn-emoji"
+                    title="Add emoji"
+                    data-i18n-title="chat.addEmoji"
+                >
+                    <i class="fas fa-smile"></i>
+                </button>
+                <input
+                    id="privateChatInput"
+                    type="text"
+                    placeholder="Type a message..."
+                    data-i18n-placeholder="chat.typeMessage"
+                    autocomplete="off"
+                />
+                <button type="submit" class="btn btn-primary btn-send-chat" data-i18n-title="chat.sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+            <div id="privateEmojiPicker" class="emoji-picker-container"></div>
+        </div>
+
         <!-- JavaScript libraries for WebSocket and custom client code -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="config.js"></script>
