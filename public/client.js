@@ -49,6 +49,7 @@ const clearChatBtn = document.getElementById('clearChatBtn');
 const privateChatPanel = document.getElementById('privateChatPanel');
 const privateChatBackBtn = document.getElementById('privateChatBackBtn');
 const privateChatCloseBtn = document.getElementById('privateChatCloseBtn');
+const privateChatClearBtn = document.getElementById('privateChatClearBtn');
 const privateChatAvatar = document.getElementById('privateChatAvatar');
 const privateChatWith = document.getElementById('privateChatWith');
 const privateChatStatus = document.getElementById('privateChatStatus');
@@ -3191,6 +3192,44 @@ function handlePrivateChatFailed(data) {
     }
 }
 
+// Handle clear private chat button click
+function handleClearPrivateChatClick() {
+    const user = currentPrivateChatUser;
+    if (!user) return;
+
+    const messages = privateChats.get(user) || [];
+    if (messages.length === 0) {
+        toast(t('chat.noMessagesToClear'), 'info', 'top', 2000);
+        return;
+    }
+
+    Swal.fire({
+        heightAuto: false,
+        scrollbarPadding: false,
+        position: 'center',
+        icon: 'question',
+        title: t('chat.clearTitle'),
+        text: t('chat.clearConfirm'),
+        showCancelButton: true,
+        confirmButtonText: t('chat.clearConfirmYes'),
+        cancelButtonText: t('settings.cancel'),
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Clear the stored thread and unread count for this user
+            privateChats.set(user, []);
+            privateUnread.set(user, 0);
+
+            // Re-render the empty thread and refresh user list badges
+            renderPrivateChat(user);
+            renderUserList();
+
+            toast(t('chat.cleared'), 'success', 'top', 2000);
+        }
+    });
+}
+
 // Private chat form handler
 if (privateChatForm && privateChatInput) {
     privateChatForm.addEventListener('submit', (e) => {
@@ -3217,6 +3256,7 @@ if (privateChatForm && privateChatInput) {
 
 if (privateChatBackBtn) privateChatBackBtn.addEventListener('click', closePrivateChat);
 if (privateChatCloseBtn) privateChatCloseBtn.addEventListener('click', closePrivateChat);
+if (privateChatClearBtn) privateChatClearBtn.addEventListener('click', handleClearPrivateChatClick);
 
 // Private chat emoji picker
 function handlePrivateEmojiClick() {
