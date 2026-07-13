@@ -50,6 +50,7 @@ const privateChatPanel = document.getElementById('privateChatPanel');
 const privateChatBackBtn = document.getElementById('privateChatBackBtn');
 const privateChatCloseBtn = document.getElementById('privateChatCloseBtn');
 const privateChatClearBtn = document.getElementById('privateChatClearBtn');
+const privateChatSaveBtn = document.getElementById('privateChatSaveBtn');
 const privateChatAvatar = document.getElementById('privateChatAvatar');
 const privateChatWith = document.getElementById('privateChatWith');
 const privateChatStatus = document.getElementById('privateChatStatus');
@@ -3192,6 +3193,54 @@ function handlePrivateChatFailed(data) {
     }
 }
 
+// Generate private chat export text for a user
+function generatePrivateChatExportText(user) {
+    const messages = privateChats.get(user) || [];
+    if (messages.length === 0) {
+        return null;
+    }
+
+    let chatText = '';
+    const currentDate = new Date();
+    const dateString = currentDate.toLocaleDateString();
+    const timeString = currentDate.toLocaleTimeString();
+
+    // Add header to the file
+    chatText += `Call-me Private Chat Export\n`;
+    chatText += `Exported on: ${dateString} at ${timeString}\n`;
+    chatText += `Conversation between: ${userName || 'Unknown'} and ${user}\n`;
+    chatText += `${'='.repeat(50)}\n\n`;
+
+    // Extract messages
+    messages.forEach((m) => {
+        const time = formatChatTime(m.timestamp);
+        const from = m.isSelf ? userName || t('chat.me') : m.from;
+        chatText += `[${time}] ${from}: ${m.text}\n`;
+    });
+
+    return chatText;
+}
+
+// Handle save private chat button click
+function handleSavePrivateChatClick() {
+    const user = currentPrivateChatUser;
+    if (!user) return;
+
+    const chatText = generatePrivateChatExportText(user);
+    if (!chatText) {
+        toast(t('chat.noMessagesToSave'), 'info', 'top', 2000);
+        return;
+    }
+
+    const currentDate = new Date();
+    const safeUser = user.replace(/[^a-z0-9_-]/gi, '_');
+    const fileName = `call-me-private-${safeUser}-${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getHours()).padStart(2, '0')}${String(currentDate.getMinutes()).padStart(2, '0')}.txt`;
+
+    downloadTextAsFile(chatText, fileName);
+
+    toast(t('chat.savedAs', { filename: fileName }), 'success', 'top', 3000);
+}
+
 // Handle clear private chat button click
 function handleClearPrivateChatClick() {
     const user = currentPrivateChatUser;
@@ -3257,6 +3306,7 @@ if (privateChatForm && privateChatInput) {
 if (privateChatBackBtn) privateChatBackBtn.addEventListener('click', closePrivateChat);
 if (privateChatCloseBtn) privateChatCloseBtn.addEventListener('click', closePrivateChat);
 if (privateChatClearBtn) privateChatClearBtn.addEventListener('click', handleClearPrivateChatClick);
+if (privateChatSaveBtn) privateChatSaveBtn.addEventListener('click', handleSavePrivateChatClick);
 
 // Private chat emoji picker
 function handlePrivateEmojiClick() {

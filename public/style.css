@@ -1651,6 +1651,23 @@ input {
     transform: scale(0.95) rotate(10deg);
 }
 
+/* Smaller Save/Clear buttons in the private chat header */
+.private-chat-header #privateChatSaveBtn,
+.private-chat-header #privateChatClearBtn {
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    font-size: var(--font-size-sm);
+}
+
+/* Save private chat: blue hover instead of red */
+.private-chat-header #privateChatSaveBtn:hover {
+    color: var(--primary-light);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--primary-color);
+}
+
 /* Tab Content */
 .tab-content {
     display: none;
