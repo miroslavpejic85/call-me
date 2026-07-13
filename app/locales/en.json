@@ -139,7 +139,7 @@
         "language": "Language",
         "selectLanguage": "Select Language",
         "mediaDevicesTitle": "Media Devices",
-        "chatSettingsTitle": "Chat Settings",
+        "chatSettingsTitle": "Public Chat Settings",
         "audioInput": "Microphone",
         "videoInput": "Camera",
         "audioOutput": "Speaker",
