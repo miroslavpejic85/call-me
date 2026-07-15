@@ -40,6 +40,7 @@ href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 
 - `End-to-End Encryption` for secure and private communications.
 - `Join` with a username or enter a name to `Call now`.
+- `Join a room` (e.g. `Support`, `Reception`) to group users, everyone in the same room can see and call each other (defaults to `Public`).
 - `Set your preferred language`.
 - `Initiate video calls` by clicking the call button next to a recipient’s username.
 - `Switch between cameras, microphones, and speakers` during a call.
@@ -139,6 +140,23 @@ Lets the `user2 join` the room and initiate a `call` to the `user1`
 - [http://localhost:8000/join?user=user2&call=user1](http://localhost:8000/join?user=user2&call=user1) (dev)
 - [https://cme.mirotalk.com/join?user=user2&call=user1](https://cme.mirotalk.com/join?user=user2&call=user1) (prod)
 
+### Rooms
+
+By default everyone joins the same shared `Public` room. You can optionally add a `room` parameter to group users into separate rooms (e.g. `Support`, `Reception`). Users only see and can call others **in the same room**.
+
+Join a specific room as `user1`
+
+- [http://localhost:8000/join?user=user1&room=Support](http://localhost:8000/join?user=user1&room=Support) (dev)
+- [https://cme.mirotalk.com/join?user=user1&room=Support](https://cme.mirotalk.com/join?user=user1&room=Support) (prod)
+
+Let `user2` join the **same** room and `call` the `user1`
+
+- [http://localhost:8000/join?user=user2&call=user1&room=Support](http://localhost:8000/join?user=user2&call=user1&room=Support) (dev)
+- [https://cme.mirotalk.com/join?user=user2&call=user1&room=Support](https://cme.mirotalk.com/join?user=user2&call=user1&room=Support) (prod)
+
+> [!NOTE]
+> The `call` target must be in the same `room` as the caller. If `room` is omitted, users join the default `Public` room.
+
 You can explore a `widget` example that demonstrates this functionality [here](./integration/widget.html).
 
 ---
@@ -212,9 +230,15 @@ Get all connected users
 curl -X GET "http://localhost:8000/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 curl -X GET "https://cme.mirotalk.com/api/v1/users" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 
+# Get connected users in a specific room (optional `room` filter)
+curl -X GET "http://localhost:8000/api/v1/users?room=Support" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
 # Generate call links for connected users to call
 curl -X GET "http://localhost:8000/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 curl -X GET "https://cme.mirotalk.com/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
+# Generate call links scoped to a room (adds `&room=...` to the links)
+curl -X GET "http://localhost:8000/api/v1/connected?user=call-me&room=Support" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).

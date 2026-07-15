@@ -5,6 +5,7 @@
     "signIn": {
         "title": "انضمام",
         "username": "اختر اسم العرض",
+        "room": "اسم الغرفة (الافتراضي عام)",
         "button": "انضمام",
         "camera": "الكاميرا",
         "microphone": "الميكروفون",
@@ -23,6 +24,8 @@
         "userJoined": "انضم __username__ إلى المكالمة",
         "userLeft": "غادر __username__ المكالمة",
         "users": "المستخدمون",
+        "roomLabel": "الغرفة",
+        "copyRoomName": "نسخ اسم الغرفة",
         "chat": "الدردشة",
         "chatTitle": "الدردشة العامة",
         "searchUsers": "البحث عن المستخدمين...",

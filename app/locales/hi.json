@@ -5,6 +5,7 @@
     "signIn": {
         "title": "शामिल हों",
         "username": "एक डिस्प्ले नाम चुनें",
+        "room": "रूम का नाम (डिफ़ॉल्ट: सार्वजनिक)",
         "button": "शामिल हों",
         "camera": "कैमरा",
         "microphone": "माइक्रोવोन",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ कॉल में शामिल हुआ",
         "userLeft": "__username__ कॉल से निकल गया",
         "users": "उपयोगकर्ता",
+        "roomLabel": "रूम",
+        "copyRoomName": "रूम का नाम कॉपी करें",
         "chat": "चैट",
         "chatTitle": "सार्वजनिक चैट",
         "searchUsers": "उपयोगकर्ता खोजें...",

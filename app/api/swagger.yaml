@@ -17,7 +17,13 @@ paths:
             tags:
                 - 'users'
             summary: 'Connected users'
-            description: 'Get all connected users'
+            description: 'Get all connected users. Optionally filter by room.'
+            parameters:
+                - name: room
+                  in: query
+                  description: 'Optional room name to filter users by. Defaults to all rooms when omitted.'
+                  required: false
+                  type: string
             consumes:
                 - 'application/json'
             produces:
@@ -37,12 +43,17 @@ paths:
             tags:
                 - 'connected'
             summary: 'Connected users to call'
-            description: 'Retrieve all connected users to call'
+            description: 'Retrieve all connected users to call. Links are scoped to a room (defaults to the public room).'
             parameters:
                 - name: user
-                  in: path
+                  in: query
                   description: 'Username of the requesting user'
                   required: true
+                  type: string
+                - name: room
+                  in: query
+                  description: 'Optional room name. Users and generated call links are scoped to this room. Defaults to the public room.'
+                  required: false
                   type: string
             consumes:
                 - 'application/json'
@@ -92,7 +103,7 @@ definitions:
         properties:
             connected:
                 type: array
-                example: ['https://your.domain/join?user=call-me&call=miro']
+                example: ['https://your.domain/join?user=call-me&call=miro&room=public']
 
     VapidPublicKeyResponse:
         type: 'object'

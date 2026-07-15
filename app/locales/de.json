@@ -5,6 +5,7 @@
     "signIn": {
         "title": "Beitreten",
         "username": "Anzeigename wählen",
+        "room": "Raumname (Standard: Öffentlich)",
         "button": "Beitreten",
         "camera": "Kamera",
         "microphone": "Mikrofon",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ ist dem Anruf beigetreten",
         "userLeft": "__username__ hat den Anruf verlassen",
         "users": "Benutzer",
+        "roomLabel": "Raum",
+        "copyRoomName": "Raumnamen kopieren",
         "chat": "Chat",
         "chatTitle": "Öffentlicher Chat",
         "searchUsers": "Benutzer suchen...",

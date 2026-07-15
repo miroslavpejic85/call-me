@@ -5,6 +5,7 @@
     "signIn": {
         "title": "Entrar",
         "username": "Escolha um nome de exibição",
+        "room": "Nome da sala (padrão: Público)",
         "button": "Entrar",
         "camera": "Câmera",
         "microphone": "Microfone",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ entrou na chamada",
         "userLeft": "__username__ saiu da chamada",
         "users": "Usuários",
+        "roomLabel": "Sala",
+        "copyRoomName": "Copiar nome da sala",
         "chat": "Chat",
         "chatTitle": "Chat público",
         "searchUsers": "Pesquisar usuários...",

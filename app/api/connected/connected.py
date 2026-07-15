@@ -1,5 +1,6 @@
 import requests  # pip3 install requests
 
+# Optionally scope to a room: append &room=Support (defaults to the public room)
 url = "http://localhost:8000/api/v1/connected?user=call-me"
 
 authorization = "call_me_api_key_secret"

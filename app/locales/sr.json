@@ -5,6 +5,7 @@
     "signIn": {
         "title": "Pridruži se",
         "username": "Izaberite ime za prikaz",
+        "room": "Naziv sobe (podrazumevano: Javno)",
         "button": "Pridruži se",
         "camera": "Камера",
         "microphone": "Микрофон",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ se pridružio pozivu",
         "userLeft": "__username__ je napustio poziv",
         "users": "Korisnici",
+        "roomLabel": "Soba",
+        "copyRoomName": "Kopiraj naziv sobe",
         "chat": "Ćaskanje",
         "chatTitle": "Javno ćaskanje",
         "searchUsers": "Pretraži korisnike...",

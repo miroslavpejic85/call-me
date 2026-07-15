@@ -77,6 +77,34 @@
                         <div class="card-body">
                             <!-- Sign-in Form -->
                             <div class="mb-3">
+                                <!-- Input field for entering the room name -->
+                                <div class="username-input-wrapper">
+                                    <input
+                                        id="roomIn"
+                                        type="text"
+                                        placeholder="Room name (e.g. Support)"
+                                        data-i18n-placeholder="signIn.room"
+                                        autocomplete="off"
+                                    />
+                                    <button
+                                        id="randomRoomBtn"
+                                        class="random-username-btn"
+                                        type="button"
+                                        title="Generate random room name"
+                                    >
+                                        <i class="fas fa-random"></i>
+                                    </button>
+                                    <button
+                                        id="copyRoomBtn"
+                                        class="copy-username-btn"
+                                        type="button"
+                                        title="Copy room name"
+                                    >
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
                                 <!-- Input field for entering the username -->
                                 <div class="username-input-wrapper">
                                     <input
@@ -351,6 +379,24 @@
 
             <!-- Users Tab Content -->
             <div id="usersContent" class="tab-content active">
+                <div id="roomNameLabel" class="room-name-label">
+                    <span class="room-name-label-icon">
+                        <i class="fas fa-door-open"></i>
+                    </span>
+                    <div class="room-name-label-body">
+                        <span class="room-name-label-text" data-i18n="room.roomLabel">Room</span>
+                        <span id="roomNameLabelValue" class="room-name-label-value"></span>
+                    </div>
+                    <button
+                        id="copyRoomNameBtn"
+                        class="room-name-label-copy"
+                        type="button"
+                        title="Copy room name"
+                        data-i18n-title="room.copyRoomName"
+                    >
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
                 <div class="user-search-bar">
                     <div class="user-search-wrapper">
                         <i class="fas fa-search"></i>

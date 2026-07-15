@@ -228,6 +228,82 @@ button {
     transform: translateY(-2px);
 }
 
+/* Room name label inside the Users sidebar tab */
+.room-name-label {
+    display: none; /* toggled to flex by JS after sign-in */
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    margin: var(--spacing-md) var(--spacing-md) var(--spacing-md);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.04));
+    border: 1px solid var(--glass-border);
+    border-left: 3px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.room-name-label-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--primary-light);
+    font-size: var(--font-size-base);
+}
+
+.room-name-label-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+    line-height: 1.2;
+}
+
+.room-name-label-text {
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+}
+
+.room-name-label-value {
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.room-name-label-copy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.room-name-label-copy:hover {
+    color: var(--primary-light);
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.room-name-label-copy:active {
+    transform: scale(0.9);
+}
+
 /* Room */
 #roomPage {
     position: absolute;
@@ -987,6 +1063,40 @@ input {
 }
 
 #usernameIn:focus {
+    border-color: var(--primary-color);
+    background: rgba(20, 25, 40, 0.95);
+    box-shadow:
+        0 0 0 4px rgba(59, 130, 246, 0.15),
+        var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Room name input (shares username input look, no action buttons) */
+#roomIn {
+    display: block;
+    width: 100%;
+    padding: 14px 74px 14px 18px;
+    font-size: 16px;
+    color: var(--text-color);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: rgba(20, 25, 40, 0.7);
+    transition: all var(--transition-base);
+    font-weight: var(--font-weight-medium);
+    outline: none;
+}
+
+#roomIn::placeholder {
+    color: var(--text-muted);
+    font-weight: var(--font-weight-normal);
+}
+
+#roomIn:hover {
+    border-color: var(--primary-light);
+    background: rgba(20, 25, 40, 0.85);
+}
+
+#roomIn:focus {
     border-color: var(--primary-color);
     background: rgba(20, 25, 40, 0.95);
     box-shadow:

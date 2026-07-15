@@ -1,5 +1,6 @@
 'use strict';
 
+// Optionally scope to a room: append &room=Support (defaults to the public room)
 const url = 'http://localhost:8000/api/v1/connected?user=call-me';
 
 const authorization = 'call_me_api_key_secret';

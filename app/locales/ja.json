@@ -5,6 +5,7 @@
     "signIn": {
         "title": "参加",
         "username": "表示名を選択",
+        "room": "ルーム名（デフォルト：公開）",
         "button": "参加",
         "camera": "カメラ",
         "microphone": "マイク",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ が通話に参加しました",
         "userLeft": "__username__ が通話から退出しました",
         "users": "ユーザー",
+        "roomLabel": "ルーム",
+        "copyRoomName": "ルーム名をコピー",
         "chat": "チャット",
         "chatTitle": "パブリックチャット",
         "searchUsers": "ユーザーを検索...",

@@ -69,13 +69,16 @@ function getAvailableLocales() {
     }
 }
 
-// Map to store connected users
+// Default room used when no room name is provided (preserves single-lobby behavior)
+const DEFAULT_ROOM = 'public';
+
+// Map to store connected users (key: room+username composite, value: socket)
 const users = new Map();
 
-// Map to store user media status (video/audio enabled/disabled)
+// Map to store user media status (key: room+username composite)
 const userMediaStatus = new Map();
 
-// Map to store push subscriptions (username -> PushSubscription[])
+// Map to store push subscriptions (key: room+username composite -> PushSubscription[])
 const pushSubscriptions = new Map();
 
 // Configuration settings
@@ -342,14 +345,20 @@ app.get(`${config.apiBasePath}/connected`, (req, res) => {
         return res.status(400).json({ error: 'User not provided in request query' });
     }
 
+    // Room scoping: default to the public room so the generated call links are
+    // always valid (caller and callee must be in the same room). Target a
+    // custom room with ?room=Name.
+    const room = sanitizeRoom(req.query.room);
+    const roomParam = `&room=${encodeURIComponent(room)}`;
+
     // Construct the base URL (simplified)
     const baseUrl = `${req.protocol}://${req.get('Host')}`;
 
     // Generate the password part dynamically based on hostPasswordEnabled
     const password = config.hostPasswordEnabled ? `&password=${config.hostPassword}` : '';
 
-    // Retrieve the list of connected users (ensure this returns an iterable like Map or Array)
-    const users = getConnectedUsers();
+    // Retrieve the list of connected users in the target room
+    const users = getConnectedUsers(room);
     if (!users || typeof users.values !== 'function') {
         return res.status(500).json({ error: 'Unable to retrieve connected users' });
     }
@@ -357,7 +366,7 @@ app.get(`${config.apiBasePath}/connected`, (req, res) => {
     // Generate a list of user-to-call links for the provided user
     const connected = Array.from(users.values()).reduce((acc, connectedUser) => {
         if (user !== connectedUser) {
-            acc.push(`${baseUrl}/join?user=${user}&call=${connectedUser}${password}`);
+            acc.push(`${baseUrl}/join?user=${user}&call=${connectedUser}${roomParam}${password}`);
         }
         return acc;
     }, []);
@@ -376,8 +385,8 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
         });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
-    // Retrieve the list of connected users
-    const users = getConnectedUsers();
+    // Retrieve the list of connected users (optionally scoped to a room)
+    const users = getConnectedUsers(req.query.room ? sanitizeRoom(req.query.room) : undefined);
     return res.json({ users });
 });
 
@@ -495,9 +504,6 @@ io.on('connection', handleConnection);
 function handleConnection(socket) {
     log.debug('User connected:', socket.id);
 
-    // Refresh connected users
-    broadcastConnectedUsers();
-
     // Send a ping message to the newly connected client
     sendPing(socket);
 
@@ -576,13 +582,14 @@ function handleConnection(socket) {
     function handlePushSubscription(data) {
         const { subscription } = data;
         const username = socket.username;
+        const key = roomKey(socket.room, username);
 
         if (!config.pushEnabled || !username || !subscription || !subscription.endpoint) {
             return;
         }
 
         // Store subscription (support multiple devices per user)
-        const existing = pushSubscriptions.get(username) || [];
+        const existing = pushSubscriptions.get(key) || [];
         // Replace if same endpoint exists, otherwise add
         const idx = existing.findIndex((s) => s.endpoint === subscription.endpoint);
         if (idx >= 0) {
@@ -590,7 +597,7 @@ function handleConnection(socket) {
         } else {
             existing.push(subscription);
         }
-        pushSubscriptions.set(username, existing);
+        pushSubscriptions.set(key, existing);
         log.debug('Push subscription stored for', username, { devices: existing.length });
     }
 
@@ -598,15 +605,16 @@ function handleConnection(socket) {
     function handlePushUnsubscribe(data) {
         const { endpoint } = data;
         const username = socket.username;
+        const key = roomKey(socket.room, username);
 
         if (!username || !endpoint) return;
 
-        const existing = pushSubscriptions.get(username) || [];
+        const existing = pushSubscriptions.get(key) || [];
         const filtered = existing.filter((s) => s.endpoint !== endpoint);
         if (filtered.length > 0) {
-            pushSubscriptions.set(username, filtered);
+            pushSubscriptions.set(key, filtered);
         } else {
-            pushSubscriptions.delete(username);
+            pushSubscriptions.delete(key);
         }
         log.debug('Push subscription removed for', username, { remaining: filtered.length });
     }
@@ -616,7 +624,7 @@ function handleConnection(socket) {
         const username = socket.username;
         if (!config.pushEnabled || !username) return;
 
-        const subscriptions = pushSubscriptions.get(username);
+        const subscriptions = pushSubscriptions.get(roomKey(socket.room, username));
         if (!subscriptions || subscriptions.length === 0) {
             log.debug('No push subscriptions for test push', username);
             return;
@@ -641,9 +649,10 @@ function handleConnection(socket) {
     // Function to handle user sign-in request
     function handleSignIn(data) {
         const { name } = data;
+        const room = sanitizeRoom(data.room);
 
         const isValidName = isValidUsername(name);
-        log.debug('isValidName', { username: name, valid: isValidName });
+        log.debug('isValidName', { username: name, room, valid: isValidName });
         if (!isValidName) {
             sendMsgTo(socket, {
                 type: 'signIn',
@@ -654,22 +663,26 @@ function handleConnection(socket) {
             return;
         }
 
-        if (!users.has(name)) {
-            users.set(name, socket);
+        const key = roomKey(room, name);
+
+        if (!users.has(key)) {
+            users.set(key, socket);
             socket.username = name;
+            socket.room = room;
+            socket.join(ioRoom(room));
 
             // Initialize user media status (default: both enabled, no screen sharing)
-            userMediaStatus.set(name, {
+            userMediaStatus.set(key, {
                 video: true,
                 audio: true,
                 screenSharing: false,
             });
 
-            log.debug('User signed in:', name);
+            log.debug('User signed in:', { name, room });
             // Deliver iceServers (including any TURN credentials) only after
             // successful authentication, not on the anonymous ping.
-            sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers });
-            broadcastConnectedUsers();
+            sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers, room });
+            broadcastConnectedUsers(room);
         } else {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });
         }
@@ -680,17 +693,18 @@ function handleConnection(socket) {
         log.debug('handleOffer', data);
 
         const { from, to, name, type } = data;
+        const room = socket.room;
         const toName = type === 'offerAccept' ? to : from;
-        const recipientSocket = users.get(toName);
+        const recipientSocket = users.get(roomKey(room, toName));
 
-        log.debug(`Handling offer for ${toName}`);
+        log.debug(`Handling offer for ${toName}`, { room });
 
         switch (type) {
             case 'offerAccept':
             case 'offerCreate':
                 if (recipientSocket) {
                     // Include caller's media status when sending offer
-                    const callerMediaStatus = userMediaStatus.get(socket.username);
+                    const callerMediaStatus = userMediaStatus.get(roomKey(room, socket.username));
                     const offerData = {
                         ...data,
                         callerMediaStatus: callerMediaStatus,
@@ -699,7 +713,7 @@ function handleConnection(socket) {
                 } else {
                     // User is offline — try push notification
                     if (type === 'offerAccept' && config.pushEnabled) {
-                        sendPushNotification(toName, socket.username).then((sent) => {
+                        sendPushNotification(room, toName, socket.username).then((sent) => {
                             if (sent) {
                                 sendMsgTo(socket, { type: 'pushSent', username: toName });
                             } else {
@@ -734,16 +748,18 @@ function handleConnection(socket) {
     function handleMediaStatus(data) {
         const { video, audio, screenSharing } = data;
         const username = socket.username;
+        const room = socket.room;
+        const key = roomKey(room, username);
 
-        if (username && userMediaStatus.has(username)) {
-            const currentStatus = userMediaStatus.get(username);
+        if (username && userMediaStatus.has(key)) {
+            const currentStatus = userMediaStatus.get(key);
             const newStatus = {
                 video: video !== undefined ? video : currentStatus.video,
                 audio: audio !== undefined ? audio : currentStatus.audio,
                 screenSharing: screenSharing !== undefined ? screenSharing : currentStatus.screenSharing,
             };
 
-            userMediaStatus.set(username, newStatus);
+            userMediaStatus.set(key, newStatus);
             log.debug('Updated media status for', username, newStatus);
 
             // Broadcast screen sharing status change to other connected users if it changed
@@ -753,7 +769,7 @@ function handleConnection(socket) {
         }
     }
 
-    // Function to broadcast screen sharing status to connected users
+    // Function to broadcast screen sharing status to connected users in the same room
     function broadcastScreenSharingStatus(username, isScreenSharing) {
         const message = {
             type: 'remoteScreenShare',
@@ -763,18 +779,14 @@ function handleConnection(socket) {
 
         log.debug('Broadcasting screen sharing status:', message);
 
-        // Send to all other connected users
-        users.forEach((userSocket, userName) => {
-            if (userName !== username) {
-                sendMsgTo(userSocket, message);
-            }
-        });
+        // Send to all other users in the same room (excluding the sender)
+        socket.to(ioRoom(socket.room)).emit('message', message);
     }
 
     // Function to handle signaling messages (offer, answer, candidate, leave)
     function handleSignalingMessage(data) {
         const { type, name } = data;
-        const recipientSocket = users.get(name);
+        const recipientSocket = users.get(roomKey(socket.room, name));
 
         switch (type) {
             case 'leave':
@@ -796,8 +808,8 @@ function handleConnection(socket) {
         const { text, from } = data;
         log.debug('Chat message from', from, ':', text);
 
-        // Broadcast the chat message to all connected clients
-        broadcastMsgExpectSender(socket, {
+        // Broadcast the chat message to other clients in the same room
+        socket.to(ioRoom(socket.room)).emit('message', {
             type: 'chat',
             from: from || 'Anonymous',
             text: text,
@@ -817,7 +829,7 @@ function handleConnection(socket) {
         // Limit message length to prevent abuse
         if (text.length > 5000) text = text.substring(0, 5000);
 
-        const recipientSocket = users.get(to);
+        const recipientSocket = users.get(roomKey(socket.room, to));
 
         if (!recipientSocket) {
             // Recipient is offline — notify the sender
@@ -841,24 +853,30 @@ function handleConnection(socket) {
     // Function to handle the closing of a connection
     function handleClose() {
         const name = socket.username;
+        const room = socket.room;
         if (name) {
-            log.debug('User disconnected:', name);
-            users.delete(name);
-            userMediaStatus.delete(name); // Clean up media status
-            broadcastConnectedUsers();
+            log.debug('User disconnected:', { name, room });
+            const key = roomKey(room, name);
+            users.delete(key);
+            userMediaStatus.delete(key); // Clean up media status
+            broadcastConnectedUsers(room);
         }
     }
 }
 
-// Allow letters, numbers, underscores, periods, hyphens, and @. Length: 3-36 characters
+// Allow letters, numbers, underscores, periods, hyphens, and @. Length: 3-36 characters.
+// NOTE: the hyphen is intentionally placed at the end of the character class so it is
+// treated literally. Writing it as ".-@" would form a range (0x2E–0x40) that would wrongly
+// allow characters such as < > : ; / = ? and open an HTML-injection vector.
 function isValidUsername(username) {
-    const usernamePattern = /^[a-zA-Z0-9_.-@]{3,36}$/;
+    const usernamePattern = /^[a-zA-Z0-9_.@-]{3,36}$/;
     return usernamePattern.test(username);
 }
 
 // Send push notification to an offline user
-async function sendPushNotification(targetUsername, callerUsername) {
-    const subscriptions = pushSubscriptions.get(targetUsername);
+async function sendPushNotification(room, targetUsername, callerUsername) {
+    const key = roomKey(room, targetUsername);
+    const subscriptions = pushSubscriptions.get(key);
     if (!subscriptions || subscriptions.length === 0) {
         log.debug('No push subscription found for', targetUsername);
         return false;
@@ -869,7 +887,7 @@ async function sendPushNotification(targetUsername, callerUsername) {
         title: 'Call-me',
         body: `${callerUsername} is calling you`,
         caller: callerUsername,
-        url: `/join?user=${encodeURIComponent(targetUsername)}&call=${encodeURIComponent(callerUsername)}`,
+        url: `/join?user=${encodeURIComponent(targetUsername)}&call=${encodeURIComponent(callerUsername)}&room=${encodeURIComponent(room)}`,
     });
 
     let anySent = false;
@@ -897,25 +915,56 @@ async function sendPushNotification(targetUsername, callerUsername) {
     if (invalidIndices.length > 0) {
         const filtered = subscriptions.filter((_, idx) => !invalidIndices.includes(idx));
         if (filtered.length > 0) {
-            pushSubscriptions.set(targetUsername, filtered);
+            pushSubscriptions.set(key, filtered);
         } else {
-            pushSubscriptions.delete(targetUsername);
+            pushSubscriptions.delete(key);
         }
     }
 
     return anySent;
 }
 
-// Function to get all connected users
-function getConnectedUsers() {
-    return Array.from(users.keys());
+// Sanitize a room name (fallback to default room when empty/invalid).
+// Strips control characters (including the U+001F delimiter used by roomKey to
+// prevent map-key injection/collision) and HTML/JS-significant characters as
+// defense-in-depth against XSS, then trims and caps the length.
+function sanitizeRoom(room) {
+    if (typeof room !== 'string') return DEFAULT_ROOM;
+    const cleaned = room
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\u0000-\u001F\u007F]/g, '') // control chars (incl. the roomKey delimiter)
+        .replace(/[<>"'`&]/g, '') // HTML/JS-significant chars
+        .trim();
+    if (!cleaned) return DEFAULT_ROOM;
+    return cleaned.slice(0, 64);
 }
 
-// Function to broadcast all connected users
-function broadcastConnectedUsers() {
-    const connectedUsers = getConnectedUsers();
-    log.debug('Connected Users', connectedUsers);
-    broadcastMsg({ type: 'users', users: connectedUsers });
+// Composite key used for per-room user/media/push maps
+function roomKey(room, name) {
+    return `${room}\u001f${name}`;
+}
+
+// Socket.IO room name used for room-scoped broadcasts
+function ioRoom(room) {
+    return `room:${room}`;
+}
+
+// Function to get all connected users, optionally scoped to a single room
+function getConnectedUsers(room) {
+    const list = [];
+    users.forEach((sock) => {
+        if (room === undefined || sock.room === room) {
+            list.push(sock.username);
+        }
+    });
+    return list;
+}
+
+// Function to broadcast the connected users of a given room to that room only
+function broadcastConnectedUsers(room) {
+    const connectedUsers = getConnectedUsers(room);
+    log.debug('Connected Users', { room, connectedUsers });
+    io.to(ioRoom(room)).emit('message', { type: 'users', users: connectedUsers });
 }
 
 // Function to broadcast a message to all connected clients

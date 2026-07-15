@@ -18,9 +18,12 @@ const appName = document.getElementById('appName');
 const attribution = document.getElementById('attribution');
 const randomImage = document.getElementById('randomImage');
 const sessionTime = document.getElementById('sessionTime');
+const roomNameLabel = document.getElementById('roomNameLabel');
+const roomNameLabelValue = document.getElementById('roomNameLabelValue');
 const githubDiv = document.getElementById('githubDiv');
 const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
+const roomIn = document.getElementById('roomIn');
 const signInBtn = document.getElementById('signInBtn');
 const joinVideoToggle = document.getElementById('joinVideoToggle');
 const joinAudioToggle = document.getElementById('joinAudioToggle');
@@ -100,6 +103,7 @@ const app = window.myAppConfig || {};
 // User and connection information
 let userInfo;
 let userName;
+let roomName = '';
 let connectedUser;
 let pendingUser; // Track outgoing call target
 let callingTimerId = null; // Timer for calling overlay
@@ -440,6 +444,11 @@ function handleLocalStorage() {
         ? localStorage.callMeUsername
         : 'Guest' + Math.floor(Math.random() * 10000);
 
+    // Restore last used room name
+    if (roomIn && localStorage.callMeRoom) {
+        roomIn.value = localStorage.callMeRoom;
+    }
+
     // Restore media toggle states
     if (localStorage.callMeJoinVideo !== undefined) {
         joinVideoToggle.checked = localStorage.callMeJoinVideo === 'true';
@@ -462,10 +471,16 @@ async function handleDirectJoin() {
     const usp = new URLSearchParams(window.location.search);
     const user = usp.get('user');
     const call = usp.get('call');
+    const room = usp.get('room');
     const password = usp.get('password');
 
+    // Prefill the room name if provided in the URL
+    if (room && roomIn) {
+        roomIn.value = room;
+    }
+
     if (user) {
-        console.log('Direct Join detected', { user, call, password });
+        console.log('Direct Join detected', { user, call, room, password });
 
         // SignIn
         usernameIn.value = user;
@@ -644,8 +659,12 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    if (roomIn) roomIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
     document.getElementById('randomUsernameBtn').addEventListener('click', handleRandomUsername);
     document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
+    document.getElementById('randomRoomBtn').addEventListener('click', handleRandomRoom);
+    document.getElementById('copyRoomBtn').addEventListener('click', handleCopyRoom);
+    document.getElementById('copyRoomNameBtn').addEventListener('click', handleCopyRoomName);
     usersTab.addEventListener('click', () => switchTab('users'));
     chatTab.addEventListener('click', () => switchTab('chat'));
     settingsTab.addEventListener('click', () => switchTab('settings'));
@@ -819,12 +838,15 @@ function handleKeyUp(e, callback) {
 // Handle sign-in button click
 function handleSignInClick() {
     userName = usernameIn.value.trim();
+    roomName = roomIn ? roomIn.value.trim() : '';
     if (userName.length > 0) {
         sendMsg({
             type: 'signIn',
             name: userName,
+            room: roomName,
         });
         localStorage.callMeUsername = userName;
+        localStorage.callMeRoom = roomName;
     }
 }
 
@@ -844,10 +866,13 @@ function handleDirectCallClick() {
     }
     // Store call target for after sign-in
     userName = myName;
+    roomName = roomIn ? roomIn.value.trim() : '';
     localStorage.callMeUsername = myName;
+    localStorage.callMeRoom = roomName;
     sendMsg({
         type: 'signIn',
         name: myName,
+        room: roomName,
     });
     // After sign-in completes, auto-call the target user
     const waitForSignIn = setInterval(() => {
@@ -902,7 +927,11 @@ function handleCancelCall() {
 
 // Share Room click handler
 async function handleShareRoomClick() {
-    const roomUrl = window.location.origin;
+    const shareUrl = new URL(window.location.origin);
+    if (roomName) {
+        shareUrl.searchParams.set('room', roomName);
+    }
+    const roomUrl = shareUrl.toString();
     if (navigator.share) {
         try {
             await navigator.share({
@@ -940,6 +969,44 @@ async function handleCopyUsername() {
     try {
         await navigator.clipboard.writeText(username);
         toast(t('messages.usernameCopied', { username }), 'success', 'top', 3000);
+    } catch (error) {
+        handleError(t('errors.copyToClipboardFailed'), error.message);
+    }
+}
+
+// Generate random room name
+function handleRandomRoom() {
+    if (!roomIn) return;
+    const rooms = ['Support', 'Sales', 'Reception', 'Meeting', 'Lounge', 'Team', 'Office', 'Help', 'Desk', 'Front'];
+    const room = rooms[Math.floor(Math.random() * rooms.length)];
+    const num = Math.floor(Math.random() * 1000);
+    roomIn.value = `${room}${num}`;
+    roomIn.focus();
+}
+
+// Copy room name to clipboard
+async function handleCopyRoom() {
+    if (!roomIn) return;
+    const room = roomIn.value.trim();
+    if (!room) {
+        toast(t('signIn.enterRoom'), 'warning', 'top', 2000);
+        roomIn.focus();
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(room);
+        toast(t('messages.roomNameCopied', { room }), 'success', 'top', 3000);
+    } catch (error) {
+        handleError(t('errors.copyToClipboardFailed'), error.message);
+    }
+}
+
+// Copy the current room name (from the Users sidebar label) to clipboard
+async function handleCopyRoomName() {
+    const room = roomName || 'Public';
+    try {
+        await navigator.clipboard.writeText(room);
+        toast(t('messages.roomNameCopied', { room }), 'success', 'top', 3000);
     } catch (error) {
         handleError(t('errors.copyToClipboardFailed'), error.message);
     }
@@ -1530,7 +1597,7 @@ function handleOfferBusy(data) {
 
 // Handle sign-in response from the server
 async function handleSignIn(data) {
-    const { success, message, iceServers } = data;
+    const { success, message, iceServers, room } = data;
     if (!success) {
         handleError(message);
         if (!message.startsWith('Invalid username')) {
@@ -1538,6 +1605,11 @@ async function handleSignIn(data) {
         }
     } else {
         userSignedIn = true;
+
+        // Keep the local room in sync with the server-resolved room name
+        if (room !== undefined) {
+            roomName = room;
+        }
 
         // iceServers (with any TURN credentials) are delivered post sign-in
         if (iceServers) {
@@ -1551,6 +1623,9 @@ async function handleSignIn(data) {
         elemDisplay(attribution, false);
         elemDisplay(signInPage, false);
         elemDisplay(roomPage, true);
+
+        // Show the room the user joined
+        updateRoomNameDisplay();
 
         let myStream = null;
         let lastError = null;
@@ -2016,6 +2091,13 @@ function updateUsernameDisplay() {
         remoteUsername.innerText = '';
         remoteUsername.classList.add('hide');
     }
+}
+
+// Show the current room name in the Users sidebar label
+function updateRoomNameDisplay() {
+    const name = roomName || 'Public';
+    if (roomNameLabelValue) roomNameLabelValue.innerText = name;
+    if (roomNameLabel) roomNameLabel.style.display = 'flex';
 }
 
 // Show/hide camera off overlay with username display

@@ -5,6 +5,7 @@
     "signIn": {
         "title": "加入",
         "username": "选择显示名称",
+        "room": "房间名称（默认：公共）",
         "button": "加入",
         "camera": "摄像头",
         "microphone": "麦克风",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ 加入了通话",
         "userLeft": "__username__ 离开了通话",
         "users": "用户",
+        "roomLabel": "房间",
+        "copyRoomName": "复制房间名称",
         "chat": "聊天",
         "chatTitle": "公共聊天",
         "searchUsers": "搜索用户...",

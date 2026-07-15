@@ -5,6 +5,7 @@
     "signIn": {
         "title": "Rejoindre",
         "username": "Choisissez un nom d'affichage",
+        "room": "Nom de la salle (par défaut : Public)",
         "button": "Rejoindre",
         "camera": "Caméra",
         "microphone": "Microphone",
@@ -23,6 +24,8 @@
         "userJoined": "__username__ a rejoint l'appel",
         "userLeft": "__username__ a quitté l'appel",
         "users": "Utilisateurs",
+        "roomLabel": "Salle",
+        "copyRoomName": "Copier le nom de la salle",
         "chat": "Chat",
         "chatTitle": "Chat public",
         "searchUsers": "Rechercher des utilisateurs...",
