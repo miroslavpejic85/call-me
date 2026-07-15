@@ -236,9 +236,14 @@ async function ngrokStart() {
 // Set TRUST_PROXY to a number of hops (e.g. 1) or a boolean. Defaults to off
 // so req.ip reflects the direct connection and cannot be spoofed via headers.
 if (process.env.TRUST_PROXY && process.env.TRUST_PROXY !== 'false') {
-    const trustProxyValue = /^\d+$/.test(process.env.TRUST_PROXY)
-        ? parseInt(process.env.TRUST_PROXY, 10)
-        : process.env.TRUST_PROXY;
+    let trustProxyValue;
+    if (process.env.TRUST_PROXY === 'true') {
+        trustProxyValue = true;
+    } else if (/^\d+$/.test(process.env.TRUST_PROXY)) {
+        trustProxyValue = parseInt(process.env.TRUST_PROXY, 10);
+    } else {
+        trustProxyValue = process.env.TRUST_PROXY;
+    }
     app.set('trust proxy', trustProxyValue);
     log.info('Trust proxy', { value: trustProxyValue });
 }
