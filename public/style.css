@@ -3570,6 +3570,11 @@ z-index:
     text-decoration: underline;
 }
 
+.privacy-divider .privacy-separator {
+    margin: 0 var(--spacing-sm);
+    color: var(--text-muted);
+}
+
 /* Privacy Policy Page */
 
 .privacy-container {
