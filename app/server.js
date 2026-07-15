@@ -25,6 +25,7 @@ const ngrok = require('@ngrok/ngrok');
 const socketIO = require('socket.io');
 const axios = require('axios');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
@@ -81,6 +82,9 @@ const userMediaStatus = new Map();
 // Map to store push subscriptions (key: room+username composite -> PushSubscription[])
 const pushSubscriptions = new Map();
 
+// Map to track concurrent Socket.IO connections per client IP (anti-abuse)
+const socketConnectionsPerIp = new Map();
+
 // Configuration settings
 const config = {
     iceServers: [],
@@ -99,6 +103,13 @@ const config = {
     pushVapidEmail: process.env.PUSH_VAPID_EMAIL || 'mailto:admin@example.com',
     randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     ringTimeout: parseInt(process.env.RINGING_TIMEOUT, 10) || 30,
+    // Anti-abuse / rate limiting
+    rateLimitEnabled: process.env.RATE_LIMIT_ENABLED !== 'false',
+    rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60 * 1000,
+    rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX, 10) || 300,
+    socketMaxConnectionsPerIp: parseInt(process.env.SOCKET_MAX_CONNECTIONS_PER_IP, 10) || 20,
+    socketRateLimitWindowMs: parseInt(process.env.SOCKET_RATE_LIMIT_WINDOW_MS, 10) || 10 * 1000,
+    socketRateLimitMax: parseInt(process.env.SOCKET_RATE_LIMIT_MAX, 10) || 100,
     apiBasePath: '/api/v1',
     swaggerDocument: yaml.load(fs.readFileSync(path.join(__dirname, '/api/swagger.yaml'), 'utf8')),
 };
@@ -220,12 +231,40 @@ async function ngrokStart() {
     }
 }
 
+// Trust proxy configuration (required for correct client IP detection and
+// rate limiting when running behind a reverse proxy such as Nginx/Apache).
+// Set TRUST_PROXY to a number of hops (e.g. 1) or a boolean. Defaults to off
+// so req.ip reflects the direct connection and cannot be spoofed via headers.
+if (process.env.TRUST_PROXY && process.env.TRUST_PROXY !== 'false') {
+    const trustProxyValue = /^\d+$/.test(process.env.TRUST_PROXY)
+        ? parseInt(process.env.TRUST_PROXY, 10)
+        : process.env.TRUST_PROXY;
+    app.set('trust proxy', trustProxyValue);
+    log.info('Trust proxy', { value: trustProxyValue });
+}
+
+// Global rate limiter to mitigate abuse/brute-force against HTTP endpoints.
+const apiRateLimiter = rateLimit({
+    windowMs: config.rateLimitWindowMs,
+    max: config.rateLimitMax,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' },
+    handler: (req, res, next, options) => {
+        log.warn('Rate limit exceeded', { ip: req.ip, path: req.originalUrl });
+        res.status(options.statusCode).json(options.message);
+    },
+});
+
 // Configure Express middleware BEFORE starting the server
 app.use(cors(corsOptions)); // Handle cors options
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(applyEmbedHeaders); // Apply iframe embedding restrictions (CSP frame-ancestors / X-Frame-Options)
 app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
 app.use(express.json()); // Api parse body data as json
+if (config.rateLimitEnabled) {
+    app.use(apiRateLimiter); // Throttle requests per IP to prevent abuse
+}
 app.use(config.apiBasePath + '/docs', swaggerUi.serve, swaggerUi.setup(config.swaggerDocument)); // api docs
 
 // Logs requests
@@ -497,12 +536,36 @@ io.use((socket, next) => {
     return next(err);
 });
 
+// Limit the number of concurrent Socket.IO connections per client IP to
+// mitigate connection-flooding abuse. Runs after the password check so only
+// authorized handshakes are counted; the counter is released on 'disconnect'.
+// Passing this middleware guarantees a matching 'connection'/'disconnect'
+// pair, so the per-IP counter cannot leak.
+io.use((socket, next) => {
+    const ip = getSocketIp(socket);
+    const current = socketConnectionsPerIp.get(ip) || 0;
+    if (config.socketMaxConnectionsPerIp > 0 && current >= config.socketMaxConnectionsPerIp) {
+        log.warn('Socket.IO connection limit exceeded', { ip, current });
+        const err = new Error('Too many connections');
+        err.data = { code: 'TOO_MANY_CONNECTIONS' };
+        return next(err);
+    }
+    socketConnectionsPerIp.set(ip, current + 1);
+    socket.data.clientIp = ip;
+    return next();
+});
+
 // Handle WebSocket connections
 io.on('connection', handleConnection);
 
 // Function to handle individual WebSocket connections
 function handleConnection(socket) {
     log.debug('User connected:', socket.id);
+
+    // Per-socket sliding-window counter to throttle inbound message events and
+    // mitigate event-flooding abuse.
+    let msgWindowStart = Date.now();
+    let msgCount = 0;
 
     // Send a ping message to the newly connected client
     sendPing(socket);
@@ -511,8 +574,32 @@ function handleConnection(socket) {
     socket.on('message', handleMessage);
     socket.on('disconnect', handleClose);
 
+    // Returns true if the socket has exceeded its allowed message rate.
+    function isRateLimited() {
+        if (!config.rateLimitEnabled || config.socketRateLimitMax <= 0) return false;
+        const now = Date.now();
+        if (now - msgWindowStart >= config.socketRateLimitWindowMs) {
+            msgWindowStart = now;
+            msgCount = 0;
+        }
+        msgCount++;
+        return msgCount > config.socketRateLimitMax;
+    }
+
     // Function to handle incoming messages
     function handleMessage(data) {
+        if (!data || typeof data !== 'object') return;
+
+        if (isRateLimited()) {
+            log.warn('Socket message rate limit exceeded', {
+                id: socket.id,
+                ip: socket.data.clientIp,
+                user: socket.username,
+            });
+            sendError(socket, 'Rate limit exceeded. Please slow down.');
+            return;
+        }
+
         const { type } = data;
 
         log.debug('Received message', type);
@@ -852,6 +939,17 @@ function handleConnection(socket) {
 
     // Function to handle the closing of a connection
     function handleClose() {
+        // Release this socket's slot in the per-IP connection counter.
+        const ip = socket.data.clientIp;
+        if (ip) {
+            const current = socketConnectionsPerIp.get(ip) || 0;
+            if (current <= 1) {
+                socketConnectionsPerIp.delete(ip);
+            } else {
+                socketConnectionsPerIp.set(ip, current - 1);
+            }
+        }
+
         const name = socket.username;
         const room = socket.room;
         if (name) {
@@ -947,6 +1045,19 @@ function roomKey(room, name) {
 // Socket.IO room name used for room-scoped broadcasts
 function ioRoom(room) {
     return `room:${room}`;
+}
+
+// Resolve the client IP for a Socket.IO connection. When running behind a
+// trusted reverse proxy (TRUST_PROXY set), the left-most X-Forwarded-For entry
+// is used; otherwise the direct handshake address is used (not spoofable).
+function getSocketIp(socket) {
+    if (process.env.TRUST_PROXY && process.env.TRUST_PROXY !== 'false') {
+        const xff = socket.handshake.headers['x-forwarded-for'];
+        if (typeof xff === 'string' && xff.length > 0) {
+            return xff.split(',')[0].trim();
+        }
+    }
+    return socket.handshake.address;
 }
 
 // Function to get all connected users, optionally scoped to a single room
