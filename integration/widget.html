@@ -143,6 +143,8 @@
         <div class="modal" id="joinModal">
             <h2>Enter Username to Join</h2>
             <input type="text" id="joinUsername" placeholder="Enter username to join" />
+            <h2>Room (optional)</h2>
+            <input type="text" id="joinRoom" placeholder="Enter room name (defaults to Public)" />
             <button id="joinCall">Join Call</button>
         </div>
 
@@ -152,6 +154,8 @@
             <input type="text" id="displayUsername" placeholder="Enter your display name" />
             <h2>Enter Username to Call</h2>
             <input type="text" id="callUsername" placeholder="Enter username to call" />
+            <h2>Room (optional)</h2>
+            <input type="text" id="startRoom" placeholder="Enter room name (defaults to Public)" />
             <button id="startCall">Start Call</button>
         </div>
 
@@ -176,6 +180,8 @@
             const joinUsernameInput = document.getElementById('joinUsername');
             const displayUsernameInput = document.getElementById('displayUsername');
             const callUsernameInput = document.getElementById('callUsername');
+            const joinRoomInput = document.getElementById('joinRoom');
+            const startRoomInput = document.getElementById('startRoom');
             const iframe = document.getElementById('callIframe');
 
             // Event listeners
@@ -204,7 +210,9 @@
                     alert('Please enter a username to join.');
                     return;
                 }
-                const url = `https://${domain}/join?user=${joinUsername}`;
+                const joinRoom = joinRoomInput.value.trim();
+                let url = `https://${domain}/join?user=${encodeURIComponent(joinUsername)}`;
+                if (joinRoom) url += `&room=${encodeURIComponent(joinRoom)}`;
                 startIframe(url);
             });
 
@@ -219,7 +227,9 @@
                     alert('Please enter a username to call.');
                     return;
                 }
-                const url = `https://${domain}/join?user=${displayUsername}&call=${callUsername}`;
+                const startRoom = startRoomInput.value.trim();
+                let url = `https://${domain}/join?user=${encodeURIComponent(displayUsername)}&call=${encodeURIComponent(callUsername)}`;
+                if (startRoom) url += `&room=${encodeURIComponent(startRoom)}`;
                 startIframe(url);
             });
 
