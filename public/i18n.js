@@ -51,6 +51,24 @@ function getLocaleLabel(locale) {
 }
 
 /**
+ * Read the locale from the URL query string (e.g. ?lang=fr).
+ * Supports both 'lang' and 'locale' parameter names.
+ * @returns {string|null} The normalized locale (e.g. 'fr') or null if not present
+ */
+function getUrlLocale() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const value = params.get('lang') || params.get('locale');
+        if (!value) return null;
+        // Normalize e.g. 'fr-FR' -> 'fr' and lowercase
+        return value.trim().toLowerCase().split('-')[0];
+    } catch (error) {
+        console.warn('Unable to read locale from URL', error);
+        return null;
+    }
+}
+
+/**
  * Initialize i18n
  */
 async function initI18n() {
@@ -58,15 +76,18 @@ async function initI18n() {
     i18n.availableLocales = supportedLocales;
 
     // Determine which locale to use
+    const urlLocale = getUrlLocale(); // e.g. ?lang=fr
     const savedLocale = localStorage.getItem('locale');
     const browserLocale = navigator.language.split('-')[0]; // Get 'en' from 'en-US'
 
     i18n.currentLocale =
-        savedLocale && supportedLocales.includes(savedLocale)
-            ? savedLocale
-            : supportedLocales.includes(browserLocale)
-              ? browserLocale
-              : i18n.defaultLocale;
+        urlLocale && supportedLocales.includes(urlLocale)
+            ? urlLocale
+            : savedLocale && supportedLocales.includes(savedLocale)
+              ? savedLocale
+              : supportedLocales.includes(browserLocale)
+                ? browserLocale
+                : i18n.defaultLocale;
 
     // Always load English once as a per-key fallback
     try {
