@@ -2274,16 +2274,28 @@ input {
 
 .settings-title {
     color: var(--text-color);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     line-height: 1.4;
     margin: 0 0 var(--spacing-md) 0;
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 2px solid var(--glass-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(139, 92, 246, 0.08));
+    border: 1px solid var(--glass-border);
+    border-left: 3px solid var(--primary-light);
+    border-radius: 10px;
     word-break: break-word;
+}
+
+.settings-title i {
+    color: var(--primary-light);
+    font-size: 1.05em;
+    width: 1.25em;
+    text-align: center;
 }
 
 .settings-title:not(:first-child) {
@@ -2402,8 +2414,10 @@ input {
 
 .setting-select {
     width: 100%;
-    height: 42px;
+    min-height: 44px;
     padding: 10px 14px;
+    line-height: 1.5;
+    box-sizing: border-box;
     border: 2px solid var(--glass-border);
     border-radius: var(--border-radius);
     -webkit-appearance: none;
@@ -2602,7 +2616,7 @@ input {
     }
 
     .settings-title {
-        font-size: 1.125rem;
+        font-size: var(--font-size-base);
         margin-bottom: 16px;
     }
 
