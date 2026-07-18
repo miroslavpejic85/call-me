@@ -106,6 +106,13 @@ const config = {
     hostPasswordEnabled: process.env.HOST_PASSWORD_ENABLED === 'true',
     hostPassword: process.env.HOST_PASSWORD || '',
     apiKeySecret: process.env.API_KEY_SECRET,
+    // Comma-separated list of API endpoints an admin can disable, e.g.
+    // API_DISABLED_ENDPOINTS="rooms,calls,stats,users-details"
+    // Supported tokens: rooms | calls | stats | users | users-details | connected
+    apiDisabledEndpoints: (process.env.API_DISABLED_ENDPOINTS || '')
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean),
     pushEnabled: process.env.PUSH_ENABLED === 'true',
     pushVapidPublicKey: process.env.PUSH_VAPID_PUBLIC_KEY || '',
     pushVapidPrivateKey: process.env.PUSH_VAPID_PRIVATE_KEY || '',
@@ -451,11 +458,13 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
         });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
+    if (blockIfDisabled('users', res)) return;
     const room = req.query.room ? sanitizeRoom(req.query.room) : undefined;
 
     // Rich descriptors (room, media status, availability, connectedAt) when
     // ?details=true, otherwise the backward-compatible array of usernames.
     if (String(req.query.details) === 'true') {
+        if (blockIfDisabled('users-details', res)) return;
         return res.json({ users: getConnectedUsersDetailed(room) });
     }
 
@@ -470,6 +479,7 @@ app.get(`${config.apiBasePath}/rooms`, (req, res) => {
         log.debug('Unauthorized API call: Get Rooms', { headers: req.headers });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
+    if (blockIfDisabled('rooms', res)) return;
     return res.json({ rooms: getRoomsSummary() });
 });
 
@@ -479,6 +489,7 @@ app.get(`${config.apiBasePath}/calls`, (req, res) => {
         log.debug('Unauthorized API call: Get Calls', { headers: req.headers });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
+    if (blockIfDisabled('calls', res)) return;
     const room = req.query.room ? sanitizeRoom(req.query.room) : undefined;
     const calls = getActiveCalls(room);
     return res.json({ count: calls.length, calls });
@@ -490,6 +501,7 @@ app.get(`${config.apiBasePath}/stats`, (req, res) => {
         log.debug('Unauthorized API call: Get Stats', { headers: req.headers });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
+    if (blockIfDisabled('stats', res)) return;
     const rooms = getRoomsSummary();
     return res.json({
         version: packageJson.version,
@@ -564,6 +576,31 @@ const isAuthorized = (req) => {
     return authorization === config.apiKeySecret;
 };
 
+// Warn if the API key is missing or still set to the default value.
+// A predictable secret exposes the admin API (rooms, calls, stats, users...).
+function warnInsecureApiKey() {
+    if (!config.apiKeySecret || config.apiKeySecret === 'call_me_api_key_secret') {
+        log.warn('API_KEY_SECRET', {
+            secure: false,
+            reason: 'Default or empty API_KEY_SECRET detected. Change it before deploying a self-hosted/production instance.',
+        });
+    }
+}
+
+// Utility function to check if an API endpoint was disabled by the admin
+const isEndpointDisabled = (name) => config.apiDisabledEndpoints.includes(String(name).toLowerCase());
+
+// Reject the request if the given endpoint token is disabled by the admin.
+// Returns true when the request was handled (blocked), false otherwise.
+const blockIfDisabled = (name, res) => {
+    if (isEndpointDisabled(name)) {
+        log.debug('Blocked disabled API endpoint', { endpoint: name });
+        res.status(403).json({ error: 'Endpoint disabled by admin' });
+        return true;
+    }
+    return false;
+};
+
 // Start the server and listen on the specified port
 server.listen(port, () => {
     if (ngrokEnabled && ngrokAuthToken) {
@@ -571,6 +608,7 @@ server.listen(port, () => {
     } else {
         log.info('Server', getServerConfig());
     }
+    warnInsecureApiKey();
 });
 
 // Handle client errors (malformed/incomplete HTTP requests) gracefully
