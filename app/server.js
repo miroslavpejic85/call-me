@@ -86,9 +86,13 @@ const pushSubscriptions = new Map();
 // Map to track concurrent Socket.IO connections per client IP (anti-abuse)
 const socketConnectionsPerIp = new Map();
 
-// Map to track active call sessions for webhook duration reporting
-// (key: room + sorted participant pair -> { startedAt, caller, callee, room })
+// Map to track active call sessions (always tracked, independent of webhooks).
+// Used for call-duration webhook reporting and the /calls, /rooms and /stats
+// API endpoints. (key: room + sorted participant pair -> { startedAt, caller, callee, room })
 const callSessions = new Map();
+
+// Timestamp (ms) when the server process started, used for uptime reporting.
+const serverStartedAt = Date.now();
 
 // Configuration settings
 const config = {
@@ -447,9 +451,55 @@ app.get(`${config.apiBasePath}/users`, (req, res) => {
         });
         return res.status(403).json({ error: 'Unauthorized!' });
     }
+    const room = req.query.room ? sanitizeRoom(req.query.room) : undefined;
+
+    // Rich descriptors (room, media status, availability, connectedAt) when
+    // ?details=true, otherwise the backward-compatible array of usernames.
+    if (String(req.query.details) === 'true') {
+        return res.json({ users: getConnectedUsersDetailed(room) });
+    }
+
     // Retrieve the list of connected users (optionally scoped to a room)
-    const users = getConnectedUsers(req.query.room ? sanitizeRoom(req.query.room) : undefined);
+    const users = getConnectedUsers(room);
     return res.json({ users });
+});
+
+// List active rooms with user counts and active call counts.
+app.get(`${config.apiBasePath}/rooms`, (req, res) => {
+    if (!isAuthorized(req)) {
+        log.debug('Unauthorized API call: Get Rooms', { headers: req.headers });
+        return res.status(403).json({ error: 'Unauthorized!' });
+    }
+    return res.json({ rooms: getRoomsSummary() });
+});
+
+// List active calls, optionally scoped to a room.
+app.get(`${config.apiBasePath}/calls`, (req, res) => {
+    if (!isAuthorized(req)) {
+        log.debug('Unauthorized API call: Get Calls', { headers: req.headers });
+        return res.status(403).json({ error: 'Unauthorized!' });
+    }
+    const room = req.query.room ? sanitizeRoom(req.query.room) : undefined;
+    const calls = getActiveCalls(room);
+    return res.json({ count: calls.length, calls });
+});
+
+// Aggregate server statistics: version, uptime, users, rooms and active calls.
+app.get(`${config.apiBasePath}/stats`, (req, res) => {
+    if (!isAuthorized(req)) {
+        log.debug('Unauthorized API call: Get Stats', { headers: req.headers });
+        return res.status(403).json({ error: 'Unauthorized!' });
+    }
+    const rooms = getRoomsSummary();
+    return res.json({
+        version: packageJson.version,
+        startedAt: serverStartedAt,
+        uptimeSeconds: Math.round((Date.now() - serverStartedAt) / 1000),
+        totalUsers: users.size,
+        totalRooms: rooms.length,
+        totalActiveCalls: callSessions.size,
+        rooms,
+    });
 });
 
 // Get VAPID public key for push subscription
@@ -779,6 +829,7 @@ function handleConnection(socket) {
             users.set(key, socket);
             socket.username = name;
             socket.room = room;
+            socket.connectedAt = Date.now();
             socket.join(ioRoom(room));
 
             // Initialize user media status (default: both enabled, no screen sharing)
@@ -1109,8 +1160,9 @@ function sendWebhook(event, data) {
 }
 
 // Mark a call as started (idempotent) and emit the call.started webhook.
+// Call sessions are always tracked so the REST API can report active calls and
+// user availability; the webhook itself is only delivered when enabled.
 function startCall(room, caller, callee) {
-    if (!config.webhookEnabled) return;
     const key = callKey(room, caller, callee);
     if (callSessions.has(key)) return;
     callSessions.set(key, { startedAt: Date.now(), caller, callee, room });
@@ -1119,7 +1171,6 @@ function startCall(room, caller, callee) {
 
 // End a specific call (if tracked) and emit the call.ended webhook with duration.
 function endCall(room, a, b) {
-    if (!config.webhookEnabled) return;
     const key = callKey(room, a, b);
     const session = callSessions.get(key);
     if (!session) return;
@@ -1135,7 +1186,6 @@ function endCall(room, a, b) {
 
 // End any active calls a user is part of (used on disconnect).
 function endCallsForUser(room, user) {
-    if (!config.webhookEnabled) return;
     for (const [key, session] of callSessions) {
         if (session.room === room && (session.caller === user || session.callee === user)) {
             callSessions.delete(key);
@@ -1172,6 +1222,93 @@ function getConnectedUsers(room) {
         }
     });
     return list;
+}
+
+// Return active call sessions, optionally scoped to a single room, as plain
+// objects with a live duration. Shared by the /calls, /rooms and /stats APIs.
+function getActiveCalls(room) {
+    const now = Date.now();
+    const list = [];
+    callSessions.forEach((session) => {
+        if (room === undefined || session.room === room) {
+            list.push({
+                room: session.room,
+                caller: session.caller,
+                callee: session.callee,
+                startedAt: session.startedAt,
+                durationSeconds: Math.round((now - session.startedAt) / 1000),
+            });
+        }
+    });
+    return list;
+}
+
+// Whether a user is currently participating in an active call (in the given room).
+function isUserInCall(room, username) {
+    for (const session of callSessions.values()) {
+        if (session.room === room && (session.caller === username || session.callee === username)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Build a detailed descriptor for a connected user: room, media status,
+// availability and how long they have been connected.
+function getUserDetails(sock) {
+    const key = roomKey(sock.room, sock.username);
+    const media = userMediaStatus.get(key) || { video: false, audio: false, screenSharing: false };
+    const inCall = isUserInCall(sock.room, sock.username);
+    return {
+        username: sock.username,
+        room: sock.room,
+        connectedAt: sock.connectedAt || null,
+        media: {
+            video: !!media.video,
+            audio: !!media.audio,
+            screenSharing: !!media.screenSharing,
+        },
+        inCall,
+        availability: inCall ? 'in-call' : 'available',
+    };
+}
+
+// Return detailed descriptors for connected users, optionally scoped to a room.
+function getConnectedUsersDetailed(room) {
+    const list = [];
+    users.forEach((sock) => {
+        if (room === undefined || sock.room === room) {
+            list.push(getUserDetails(sock));
+        }
+    });
+    return list;
+}
+
+// Build a per-room summary: user count, active call count and (optionally) the
+// list of users and calls in that room.
+function getRoomsSummary() {
+    const rooms = new Map();
+
+    users.forEach((sock) => {
+        if (!rooms.has(sock.room)) {
+            rooms.set(sock.room, { room: sock.room, users: [], activeCalls: 0 });
+        }
+        rooms.get(sock.room).users.push(sock.username);
+    });
+
+    callSessions.forEach((session) => {
+        if (!rooms.has(session.room)) {
+            rooms.set(session.room, { room: session.room, users: [], activeCalls: 0 });
+        }
+        rooms.get(session.room).activeCalls += 1;
+    });
+
+    return Array.from(rooms.values()).map((r) => ({
+        room: r.room,
+        userCount: r.users.length,
+        activeCalls: r.activeCalls,
+        users: r.users,
+    }));
 }
 
 // Function to broadcast the connected users of a given room to that room only

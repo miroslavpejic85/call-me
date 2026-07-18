@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
     title: Call-me API
     description: API description for external applications that integrates with Call-me.
-    version: 1.0.1
+    version: 1.1.0
 
 basePath: /api/v1
 
@@ -17,13 +17,18 @@ paths:
             tags:
                 - 'users'
             summary: 'Connected users'
-            description: 'Get all connected users. Optionally filter by room.'
+            description: 'Get all connected users. Optionally filter by room and request detailed descriptors.'
             parameters:
                 - name: room
                   in: query
                   description: 'Optional room name to filter users by. Defaults to all rooms when omitted.'
                   required: false
                   type: string
+                - name: details
+                  in: query
+                  description: 'When "true", return detailed descriptors (room, media status, availability, connectedAt) instead of a plain array of usernames.'
+                  required: false
+                  type: boolean
             consumes:
                 - 'application/json'
             produces:
@@ -83,6 +88,66 @@ paths:
                     schema:
                         $ref: '#/definitions/VapidPublicKeyResponse'
 
+    /rooms:
+        get:
+            tags:
+                - 'rooms'
+            summary: 'Active rooms'
+            description: 'List active rooms with their user counts and active call counts.'
+            produces:
+                - 'application/json'
+            security:
+                - secretApiKey: []
+            responses:
+                '200':
+                    description: 'Active rooms'
+                    schema:
+                        $ref: '#/definitions/RoomsResponse'
+                '403':
+                    description: 'Unauthorized!'
+
+    /calls:
+        get:
+            tags:
+                - 'calls'
+            summary: 'Active calls'
+            description: 'List active calls, optionally scoped to a room.'
+            parameters:
+                - name: room
+                  in: query
+                  description: 'Optional room name to filter active calls by.'
+                  required: false
+                  type: string
+            produces:
+                - 'application/json'
+            security:
+                - secretApiKey: []
+            responses:
+                '200':
+                    description: 'Active calls'
+                    schema:
+                        $ref: '#/definitions/CallsResponse'
+                '403':
+                    description: 'Unauthorized!'
+
+    /stats:
+        get:
+            tags:
+                - 'stats'
+            summary: 'Server statistics'
+            description: 'Aggregate server statistics: version, uptime, total users, rooms and active calls.'
+            produces:
+                - 'application/json'
+            security:
+                - secretApiKey: []
+            responses:
+                '200':
+                    description: 'Server statistics'
+                    schema:
+                        $ref: '#/definitions/StatsResponse'
+                '403':
+                    description: 'Unauthorized!'
+
 securityDefinitions:
     secretApiKey:
         type: 'apiKey'
@@ -114,3 +179,117 @@ definitions:
             vapidPublicKey:
                 type: string
                 example: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkPs-aP9IKV5O1BamVfGPpxtSkgUc_bUz41MXd8Aww'
+
+    UserDetail:
+        type: 'object'
+        properties:
+            username:
+                type: string
+                example: 'miro'
+            room:
+                type: string
+                example: 'public'
+            connectedAt:
+                type: integer
+                format: int64
+                example: 1752796800000
+            media:
+                type: object
+                properties:
+                    video:
+                        type: boolean
+                        example: true
+                    audio:
+                        type: boolean
+                        example: true
+                    screenSharing:
+                        type: boolean
+                        example: false
+            inCall:
+                type: boolean
+                example: false
+            availability:
+                type: string
+                example: 'available'
+
+    Room:
+        type: 'object'
+        properties:
+            room:
+                type: string
+                example: 'public'
+            userCount:
+                type: integer
+                example: 2
+            activeCalls:
+                type: integer
+                example: 1
+            users:
+                type: array
+                example: ['call-me', 'miro']
+
+    RoomsResponse:
+        type: 'object'
+        properties:
+            rooms:
+                type: array
+                items:
+                    $ref: '#/definitions/Room'
+
+    Call:
+        type: 'object'
+        properties:
+            room:
+                type: string
+                example: 'public'
+            caller:
+                type: string
+                example: 'call-me'
+            callee:
+                type: string
+                example: 'miro'
+            startedAt:
+                type: integer
+                format: int64
+                example: 1752796800000
+            durationSeconds:
+                type: integer
+                example: 42
+
+    CallsResponse:
+        type: 'object'
+        properties:
+            count:
+                type: integer
+                example: 1
+            calls:
+                type: array
+                items:
+                    $ref: '#/definitions/Call'
+
+    StatsResponse:
+        type: 'object'
+        properties:
+            version:
+                type: string
+                example: '1.4.25'
+            startedAt:
+                type: integer
+                format: int64
+                example: 1752796800000
+            uptimeSeconds:
+                type: integer
+                example: 3600
+            totalUsers:
+                type: integer
+                example: 5
+            totalRooms:
+                type: integer
+                example: 2
+            totalActiveCalls:
+                type: integer
+                example: 1
+            rooms:
+                type: array
+                items:
+                    $ref: '#/definitions/Room'

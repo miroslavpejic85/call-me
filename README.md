@@ -53,7 +53,7 @@ href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 - `Hang up the call` when finished.
 - `Enable Host Protection` mode with a password.
 - `Enable Web Push Notifications` to get notified of incoming calls even when the app is in the background.
-- `Use the REST API` to retrieve the list of connected users or initiate a call.
+- `Use the REST API` to retrieve connected users, rooms, availability status, active calls and server stats, or to initiate a call.
 - `Receive Webhooks` for call lifecycle events (user joined/left, call started/ended with duration) for external integrations.
 
 ---
@@ -162,7 +162,7 @@ You can explore a `widget` example that demonstrates this functionality [here](.
 
 #### Per-room branding (optional)
 
-Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.js`](./public/config.js). Rooms without an entry keep the default look. Visual only — not a security feature.
+Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.template.js`](./public/config.js). Rooms without an entry keep the default look. Visual only — not a security feature.
 
 ---
 
@@ -238,12 +238,29 @@ curl -X GET "https://cme.mirotalk.com/api/v1/users" -H "authorization: call_me_a
 # Get connected users in a specific room (optional `room` filter)
 curl -X GET "http://localhost:8000/api/v1/users?room=Support" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 
+# Get detailed users info (room, media status, availability, connectedAt)
+curl -X GET "http://localhost:8000/api/v1/users?details=true" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
 # Generate call links for connected users to call
 curl -X GET "http://localhost:8000/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 curl -X GET "https://cme.mirotalk.com/api/v1/connected?user=call-me" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 
 # Generate call links scoped to a room (adds `&room=...` to the links)
 curl -X GET "http://localhost:8000/api/v1/connected?user=call-me&room=Support" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+```
+
+Get rooms, active calls and server statistics
+
+```shell
+# List active rooms with user counts and active call counts
+curl -X GET "http://localhost:8000/api/v1/rooms" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
+# List active calls (optional `room` filter)
+curl -X GET "http://localhost:8000/api/v1/calls" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+curl -X GET "http://localhost:8000/api/v1/calls?room=Support" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
+
+# Get aggregate server statistics (version, uptime, users, rooms, active calls)
+curl -X GET "http://localhost:8000/api/v1/stats" -H "authorization: call_me_api_key_secret" -H "Content-Type: application/json"
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).
