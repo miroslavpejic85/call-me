@@ -67,12 +67,12 @@ node webhook/server.js
 WEBHOOK_SECRET='your-shared-secret' node webhook/server.js
 ```
 
-It listens on `http://localhost:9000/webhooks/call-me` by default. Override with `PORT`, `WEBHOOK_PATH`, and `WEBHOOK_SECRET` environment variables.
+It listens on `http://localhost:9099/webhooks/call-me` by default. Override with `PORT`, `WEBHOOK_PATH`, and `WEBHOOK_SECRET` environment variables.
 
 Example output:
 
 ```text
-Call-Me webhook receiver listening on http://localhost:9000/webhooks/call-me
+Call-Me webhook receiver listening on http://localhost:9099/webhooks/call-me
 Signature verification: enabled
 [2026-07-18T10:00:00.000Z] user.joined   room=Support user=user1
 [2026-07-18T10:00:05.000Z] user.joined   room=Support user=user2
