@@ -238,20 +238,46 @@ function getUserInfo(userAgent) {
     };
 }
 
-// Handle config - only set custom values if provided, otherwise let i18n handle it
+// Handle config - global defaults with optional per-room visual overrides
 function handleConfig() {
+    // Apply branding for the room in the URL (?room=Name), if any. When the
+    // user joins a room via the sign-in form instead, applyBranding() is called
+    // again from handleSignIn() with the room actually joined.
+    const room = new URLSearchParams(window.location.search).get('room');
+    applyBranding(room);
+}
+
+// Apply the global config, overlaying any per-room visual overrides for `room`.
+// Branding only (NOT security). Safe to call multiple times.
+function applyBranding(room) {
+    const roomCfg = (room && app?.rooms && app.rooms[room]) || {};
+    const cfg = { ...app, ...roomCfg };
+
     // Only override if custom values are provided in config
-    if (app?.title && app.title !== 'Call-me') {
-        appTitle.innerText = app.title;
+    if (cfg?.title && cfg.title !== 'Call-me') {
+        appTitle.innerText = cfg.title;
     }
-    if (app?.name && app.name !== 'Call-me') {
-        appName.innerText = app.name;
+    if (cfg?.name && cfg.name !== 'Call-me') {
+        appName.innerText = cfg.name;
+    }
+
+    // Optional per-room welcome subtitle
+    const subtitleEl = document.querySelector('.sign-in-subtitle');
+    if (subtitleEl && cfg?.subtitle) {
+        subtitleEl.innerText = cfg.subtitle;
+    }
+
+    // Optional per-room theme color (drives the --primary-color CSS variable)
+    if (cfg?.themeColor) {
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', cfg.themeColor);
+        root.style.setProperty('--primary-hover', cfg.themeColor);
     }
 
     // Hide elements based on config conditions
     const elementsToHide = [
-        { condition: !(app?.showGithub ?? true), element: githubDiv },
-        { condition: !(app?.attribution ?? true), element: attribution },
+        { condition: !(cfg?.showGithub ?? true), element: githubDiv },
+        { condition: !(cfg?.attribution ?? true), element: attribution },
     ];
 
     elementsToHide.forEach(({ condition, element }) => {
@@ -1610,6 +1636,10 @@ async function handleSignIn(data) {
         if (room !== undefined) {
             roomName = room;
         }
+
+        // Apply per-room branding for the room actually joined (covers joining
+        // via the sign-in form, where the room is not in the URL at load).
+        applyBranding(roomName);
 
         // iceServers (with any TURN credentials) are delivered post sign-in
         if (iceServers) {

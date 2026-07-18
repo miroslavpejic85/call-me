@@ -19,7 +19,7 @@ WEBHOOK_TIMEOUT_MS=5000
 | -------------- | ----------------------------------- | ------------------------------------------- |
 | `user.joined`  | A user signs in to a room           | `{ room, user }`                            |
 | `user.left`    | A user disconnects from a room      | `{ room, user }`                            |
-| `call.started` | A call is established between peers  | `{ room, caller, callee }`                  |
+| `call.started` | A call is established between peers | `{ room, caller, callee }`                  |
 | `call.ended`   | A call ends (hang up or disconnect) | `{ room, caller, callee, durationSeconds }` |
 
 ## Payload

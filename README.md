@@ -160,6 +160,10 @@ Let `user2` join the **same** room and `call` the `user1`
 
 You can explore a `widget` example that demonstrates this functionality [here](./integration/widget.html).
 
+#### Per-room branding (optional)
+
+Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.js`](./public/config.js). Rooms without an entry keep the default look. Visual only — not a security feature.
+
 ---
 
 <details open>
@@ -263,8 +267,6 @@ node webhook/server.js
 ```
 
 ---
-
-
 
 <p align="center">🌐 Explore the full MiroTalk suite (SFU, P2P, BRO, C2C, WEB, CME, ADM) → <a href="https://docs.mirotalk.com/overview/"><strong>MiroTalk Overview</strong></a></p>
 
