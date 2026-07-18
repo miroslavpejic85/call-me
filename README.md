@@ -162,7 +162,7 @@ You can explore a `widget` example that demonstrates this functionality [here](.
 
 #### Per-room branding (optional)
 
-Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.template.js`](./public/config.js). Rooms without an entry keep the default look. Visual only — not a security feature.
+Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.template.js`](./public/config.template.js). Rooms without an entry keep the default look. Visual only — not a security feature.
 
 ---
 
