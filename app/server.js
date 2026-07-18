@@ -19,6 +19,7 @@ if (sentryEnabled && sentryDsn && sentryDsn !== '') {
 
 const express = require('express');
 const cors = require('cors');
+const crypto = require('crypto');
 const fs = require('fs');
 const httpolyglot = require('httpolyglot');
 const ngrok = require('@ngrok/ngrok');
@@ -85,6 +86,10 @@ const pushSubscriptions = new Map();
 // Map to track concurrent Socket.IO connections per client IP (anti-abuse)
 const socketConnectionsPerIp = new Map();
 
+// Map to track active call sessions for webhook duration reporting
+// (key: room + sorted participant pair -> { startedAt, caller, callee, room })
+const callSessions = new Map();
+
 // Configuration settings
 const config = {
     iceServers: [],
@@ -103,6 +108,11 @@ const config = {
     pushVapidEmail: process.env.PUSH_VAPID_EMAIL || 'mailto:admin@example.com',
     randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     ringTimeout: parseInt(process.env.RINGING_TIMEOUT, 10) || 30,
+    // Outbound webhooks for call lifecycle events (external integrations)
+    webhookEnabled: process.env.WEBHOOK_ENABLED === 'true',
+    webhookUrl: process.env.WEBHOOK_URL || '',
+    webhookSecret: process.env.WEBHOOK_SECRET || '',
+    webhookTimeoutMs: parseInt(process.env.WEBHOOK_TIMEOUT_MS, 10) || 5000,
     // Anti-abuse / rate limiting
     rateLimitEnabled: process.env.RATE_LIMIT_ENABLED !== 'false',
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60 * 1000,
@@ -138,6 +148,14 @@ if (config.pushEnabled && config.pushVapidPublicKey && config.pushVapidPrivateKe
 } else if (config.pushEnabled) {
     log.warn('Web Push', { enabled: false, reason: 'VAPID keys not configured. Run: npm run generate-vapid-keys' });
     config.pushEnabled = false;
+}
+
+// Configure outbound webhooks if enabled
+if (config.webhookEnabled && config.webhookUrl) {
+    log.info('Webhooks', { enabled: true, url: config.webhookUrl, signed: !!config.webhookSecret });
+} else if (config.webhookEnabled) {
+    log.warn('Webhooks', { enabled: false, reason: 'WEBHOOK_URL not configured' });
+    config.webhookEnabled = false;
 }
 
 const ngrokEnabled = process.env.NGROK_ENABLED === 'true';
@@ -775,6 +793,7 @@ function handleConnection(socket) {
             // successful authentication, not on the anonymous ping.
             sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers, room });
             broadcastConnectedUsers(room);
+            sendWebhook('user.joined', { room, user: name });
         } else {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });
         }
@@ -886,9 +905,17 @@ function handleConnection(socket) {
                     log.debug('Leave room', socket.username);
                     sendMsgTo(recipientSocket, { type: 'leave', name: socket.username });
                 }
+                // A call has ended: report it (with duration) if it was tracked.
+                endCall(socket.room, socket.username, name);
                 break;
             default:
                 if (recipientSocket !== undefined) {
+                    // The 'answer' relay marks the point where the WebRTC session is
+                    // established between the two peers: treat it as call.started.
+                    if (type === 'answer') {
+                        // The answer flows callee -> caller, so `name` is the caller.
+                        startCall(socket.room, name, socket.username);
+                    }
                     sendMsgTo(recipientSocket, { ...data, name: socket.username });
                 }
                 break;
@@ -963,6 +990,9 @@ function handleConnection(socket) {
             users.delete(key);
             userMediaStatus.delete(key); // Clean up media status
             broadcastConnectedUsers(room);
+            // End any active call this user was part of, then report the departure.
+            endCallsForUser(room, name);
+            sendWebhook('user.left', { room, user: name });
         }
     }
 }
@@ -1050,6 +1080,74 @@ function roomKey(room, name) {
 // Socket.IO room name used for room-scoped broadcasts
 function ioRoom(room) {
     return `room:${room}`;
+}
+
+// Composite key used for the callSessions map (order-independent participant pair)
+function callKey(room, a, b) {
+    const [x, y] = [a, b].sort();
+    return `${room}\u001f${x}\u001f${y}`;
+}
+
+// Deliver a webhook to the configured endpoint. Fire-and-forget: delivery never
+// blocks signaling and failures are logged without throwing.
+function sendWebhook(event, data) {
+    if (!config.webhookEnabled || !config.webhookUrl) return;
+
+    const body = JSON.stringify({ event, timestamp: Date.now(), data });
+
+    const headers = { 'Content-Type': 'application/json' };
+    // Sign the payload so receivers can verify authenticity (HMAC-SHA256).
+    if (config.webhookSecret) {
+        const signature = crypto.createHmac('sha256', config.webhookSecret).update(body).digest('hex');
+        headers['X-CallMe-Signature'] = `sha256=${signature}`;
+    }
+
+    axios
+        .post(config.webhookUrl, body, { headers, timeout: config.webhookTimeoutMs })
+        .then(() => log.debug('Webhook delivered', { event }))
+        .catch((err) => log.warn('Webhook delivery failed', { event, error: err.message }));
+}
+
+// Mark a call as started (idempotent) and emit the call.started webhook.
+function startCall(room, caller, callee) {
+    if (!config.webhookEnabled) return;
+    const key = callKey(room, caller, callee);
+    if (callSessions.has(key)) return;
+    callSessions.set(key, { startedAt: Date.now(), caller, callee, room });
+    sendWebhook('call.started', { room, caller, callee });
+}
+
+// End a specific call (if tracked) and emit the call.ended webhook with duration.
+function endCall(room, a, b) {
+    if (!config.webhookEnabled) return;
+    const key = callKey(room, a, b);
+    const session = callSessions.get(key);
+    if (!session) return;
+    callSessions.delete(key);
+    const durationSeconds = Math.round((Date.now() - session.startedAt) / 1000);
+    sendWebhook('call.ended', {
+        room: session.room,
+        caller: session.caller,
+        callee: session.callee,
+        durationSeconds,
+    });
+}
+
+// End any active calls a user is part of (used on disconnect).
+function endCallsForUser(room, user) {
+    if (!config.webhookEnabled) return;
+    for (const [key, session] of callSessions) {
+        if (session.room === room && (session.caller === user || session.callee === user)) {
+            callSessions.delete(key);
+            const durationSeconds = Math.round((Date.now() - session.startedAt) / 1000);
+            sendWebhook('call.ended', {
+                room: session.room,
+                caller: session.caller,
+                callee: session.callee,
+                durationSeconds,
+            });
+        }
+    }
 }
 
 // Resolve the client IP for a Socket.IO connection. When running behind a

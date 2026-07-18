@@ -54,6 +54,7 @@ href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 - `Enable Host Protection` mode with a password.
 - `Enable Web Push Notifications` to get notified of incoming calls even when the app is in the background.
 - `Use the REST API` to retrieve the list of connected users or initiate a call.
+- `Receive Webhooks` for call lifecycle events (user joined/left, call started/ended with duration) for external integrations.
 
 ---
 
@@ -244,6 +245,26 @@ curl -X GET "http://localhost:8000/api/v1/connected?user=call-me&room=Support" -
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).
 
 ---
+
+## Webhooks
+
+Get notified of call lifecycle events (`user.joined`, `user.left`, `call.started`, `call.ended` with duration) in real time for external integrations. Enable it in your `.env`:
+
+```shell
+WEBHOOK_ENABLED=true
+WEBHOOK_URL='http://localhost:9099/webhooks/call-me'
+WEBHOOK_SECRET='your-shared-secret' # optional, enables HMAC-SHA256 request signing
+```
+
+A ready-to-run example receiver and the full event reference (payloads, signature verification) live in [`webhook/`](./webhook/README.md). Run it in parallel with `Call-Me` to watch events live:
+
+```shell
+node webhook/server.js
+```
+
+---
+
+
 
 <p align="center">🌐 Explore the full MiroTalk suite (SFU, P2P, BRO, C2C, WEB, CME, ADM) → <a href="https://docs.mirotalk.com/overview/"><strong>MiroTalk Overview</strong></a></p>
 
