@@ -88,7 +88,7 @@
         "cameraChanged": "摄像头切换成功",
         "microphoneChanged": "麦克风切换成功",
         "speakerChanged": "扬声器切换成功",
-        "deviceTestCompleted": "设备测试完成"
+        "speakerTestPlaying": "正在选定的扬声器上播放测试声音..."
     },
     "errors": {
         "noUsername": "必须填写用户名",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "切换麦克风失败",
         "audioOutputNotSupported": "此浏览器不支持选择音频输出",
         "changeSpeakerFailed": "切换扬声器失败",
-        "noDevicesToTest": "没有可测试的设备",
-        "deviceTestFailed": "设备测试失败: __message__",
+        "speakerTestFailed": "扬声器测试失败: __message__",
         "getUserMediaNotFound": "未找到摄像头或麦克风。你仍然可以使用可用设备加入。",
         "getUserMediaInUse": "设备已被其他应用占用",
         "getUserMediaConstraints": "找不到满足要求的设备。请尝试使用其他设备。",
@@ -152,7 +151,7 @@
         "save": "保存",
         "cancel": "取消",
         "settings": "设置",
-        "testDevices": "测试设备",
+        "testSpeaker": "测试扬声器",
         "refresh": "刷新",
         "saveMessages": "保存消息",
         "clearAll": "全部清除",

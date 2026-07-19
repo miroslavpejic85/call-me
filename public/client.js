@@ -698,7 +698,7 @@ function handleListeners() {
     videoSelect.addEventListener('change', handleVideoDeviceChange);
     audioSelect.addEventListener('change', handleAudioDeviceChange);
     audioOutputSelect.addEventListener('change', handleAudioOutputDeviceChange);
-    testDevicesBtn.addEventListener('click', testDevices);
+    testDevicesBtn.addEventListener('click', testSpeaker);
     refreshDevicesBtn.addEventListener('click', refreshDevices);
     // Chat event listeners
     emojiBtn.addEventListener('click', handleEmojiClick);
@@ -4223,56 +4223,81 @@ async function setAudioOutputDevice(deviceId) {
     }
 }
 
-async function testDevices() {
+async function testSpeaker() {
     if (testDevicesBtn) {
         testDevicesBtn.disabled = true;
     }
 
-    try {
-        // Build constraints based on available devices
-        const hasCamera = availableDevices.videoInputs.length > 0;
-        const hasMic = availableDevices.audioInputs.length > 0;
+    let audioContext;
+    let audioElement;
 
-        if (!hasCamera && !hasMic) {
-            toast(t('errors.noDevicesToTest'), 'warning', 'top', 2000);
-            return;
+    const cleanup = () => {
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.srcObject = null;
         }
-
-        const constraints = {
-            video: hasCamera
-                ? selectedDevices.videoInput
-                    ? { deviceId: { exact: selectedDevices.videoInput } }
-                    : true
-                : false,
-            audio: hasMic
-                ? selectedDevices.audioInput
-                    ? { deviceId: { exact: selectedDevices.audioInput } }
-                    : true
-                : false,
-        };
-
-        const testStream = await navigator.mediaDevices.getUserMedia(constraints);
-
-        // Log stream info for debugging
-        console.log('Test stream tracks:', {
-            video: testStream.getVideoTracks().length,
-            audio: testStream.getAudioTracks().length,
-            videoSettings: testStream.getVideoTracks()[0]?.getSettings(),
-            audioSettings: testStream.getAudioTracks()[0]?.getSettings(),
-        });
-
-        // Test for 2 seconds then stop
-        setTimeout(() => {
-            testStream.getTracks().forEach((track) => track.stop());
-            toast(t('messages.deviceTestCompleted'), 'success', 'top', 2000);
-        }, 2000);
-    } catch (error) {
-        console.error('Error testing devices:', error);
-        handleError(t('errors.deviceTestFailed', { message: error.message }));
-    } finally {
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close();
+        }
         if (testDevicesBtn) {
             testDevicesBtn.disabled = false;
         }
+    };
+
+    try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+            handleError(t('errors.noSupport'));
+            cleanup();
+            return;
+        }
+
+        audioContext = new AudioContextClass();
+
+        // Generate a short, pleasant test tone
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const destination = audioContext.createMediaStreamDestination();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 440; // A4
+
+        const now = audioContext.currentTime;
+        const duration = 1.2;
+        // Fade in/out to avoid clicks
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+        gainNode.gain.setValueAtTime(0.2, now + duration - 0.1);
+        gainNode.gain.linearRampToValueAtTime(0, now + duration);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(destination);
+
+        // Route the tone to the selected speaker via an audio element
+        audioElement = new Audio();
+        audioElement.srcObject = destination.stream;
+
+        if (selectedDevices.audioOutput && typeof audioElement.setSinkId === 'function') {
+            try {
+                await audioElement.setSinkId(selectedDevices.audioOutput);
+            } catch (err) {
+                console.warn('Could not set sink for speaker test:', err);
+            }
+        }
+
+        await audioElement.play();
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+
+        toast(t('messages.speakerTestPlaying'), 'success', 'top', 2000);
+
+        oscillator.onended = cleanup;
+        // Safety fallback in case onended does not fire
+        setTimeout(cleanup, (duration + 0.3) * 1000);
+    } catch (error) {
+        console.error('Error testing speaker:', error);
+        handleError(t('errors.speakerTestFailed', { message: error.message }));
+        cleanup();
     }
 }
 

@@ -88,7 +88,7 @@
         "cameraChanged": "Fotocamera cambiata correttamente",
         "microphoneChanged": "Microfono cambiato correttamente",
         "speakerChanged": "Altoparlante cambiato correttamente",
-        "deviceTestCompleted": "Test dei dispositivi completato con successo"
+        "speakerTestPlaying": "Riproduzione del suono di prova sull'altoparlante selezionato..."
     },
     "errors": {
         "noUsername": "Il nome utente è obbligatorio",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "Impossibile cambiare microfono",
         "audioOutputNotSupported": "La selezione dell'uscita audio non è supportata in questo browser",
         "changeSpeakerFailed": "Impossibile cambiare altoparlante",
-        "noDevicesToTest": "Nessun dispositivo disponibile per il test",
-        "deviceTestFailed": "Test del dispositivo non riuscito: __message__",
+        "speakerTestFailed": "Test dell'altoparlante non riuscito: __message__",
         "getUserMediaNotFound": "Nessuna fotocamera o microfono trovato. Puoi comunque partecipare con i dispositivi disponibili",
         "getUserMediaInUse": "Il dispositivo è già in uso da un'altra applicazione",
         "getUserMediaConstraints": "Impossibile trovare dispositivi che soddisfino i requisiti. Prova con dispositivi diversi",
@@ -152,7 +151,7 @@
         "save": "Salva",
         "cancel": "Annulla",
         "settings": "Impostazioni",
-        "testDevices": "Prova Dispositivi",
+        "testSpeaker": "Prova Altoparlante",
         "refresh": "Aggiorna",
         "saveMessages": "Salva Messaggi",
         "clearAll": "Cancella Tutto",

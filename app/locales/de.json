@@ -88,7 +88,7 @@
         "cameraChanged": "Kamera erfolgreich gewechselt",
         "microphoneChanged": "Mikrofon erfolgreich gewechselt",
         "speakerChanged": "Lautsprecher erfolgreich gewechselt",
-        "deviceTestCompleted": "Gerätetest erfolgreich abgeschlossen"
+        "speakerTestPlaying": "Testton wird über den ausgewählten Lautsprecher abgespielt..."
     },
     "errors": {
         "noUsername": "Benutzername erforderlich",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "Mikrofonwechsel fehlgeschlagen",
         "audioOutputNotSupported": "Audioausgabeauswahl wird in diesem Browser nicht unterstützt",
         "changeSpeakerFailed": "Lautsprecherwechsel fehlgeschlagen",
-        "noDevicesToTest": "Keine Geräte zum Testen verfügbar",
-        "deviceTestFailed": "Gerätetest fehlgeschlagen: __message__",
+        "speakerTestFailed": "Lautsprechertest fehlgeschlagen: __message__",
         "getUserMediaNotFound": "Keine Kamera oder kein Mikrofon gefunden. Du kannst trotzdem mit verfügbaren Geräten beitreten",
         "getUserMediaInUse": "Gerät wird bereits von einer anderen Anwendung verwendet",
         "getUserMediaConstraints": "Keine Geräte gefunden, die den Anforderungen entsprechen. Versuche es mit anderen Geräten",
@@ -152,7 +151,7 @@
         "save": "Speichern",
         "cancel": "Abbrechen",
         "settings": "Einstellungen",
-        "testDevices": "Geräte Testen",
+        "testSpeaker": "Lautsprecher testen",
         "refresh": "Aktualisieren",
         "saveMessages": "Nachrichten Speichern",
         "clearAll": "Alles Löschen",

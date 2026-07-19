@@ -88,7 +88,7 @@
         "cameraChanged": "कैमरा सफलतापूर्वक बदला गया",
         "microphoneChanged": "माइक्रोफ़ोन सफलतापूर्वक बदला गया",
         "speakerChanged": "स्पीकर सफलतापूर्वक बदला गया",
-        "deviceTestCompleted": "डिवाइस टेस्ट सफलतापूर्वक पूरा हुआ"
+        "speakerTestPlaying": "चयनित स्पीकर पर परीक्षण ध्वनि चलाई जा रही है..."
     },
     "errors": {
         "noUsername": "उपयोगकर्ता नाम आवश्यक है",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "माइक्रोफ़ोन बदलने में विफल",
         "audioOutputNotSupported": "इस ब्राउज़र में ऑडियो आउटपुट चयन समर्थित नहीं है",
         "changeSpeakerFailed": "स्पीकर बदलने में विफल",
-        "noDevicesToTest": "परीक्षण के लिए कोई डिवाइस उपलब्ध नहीं है",
-        "deviceTestFailed": "डिवाइस टेस्ट विफल: __message__",
+        "speakerTestFailed": "स्पीकर परीक्षण विफल: __message__",
         "getUserMediaNotFound": "कोई कैमरा या माइक्रोफ़ोन नहीं मिला। आप उपलब्ध डिवाइस के साथ फिर भी जुड़ सकते हैं।",
         "getUserMediaInUse": "डिवाइस पहले से किसी अन्य एप्लिकेशन द्वारा उपयोग में है",
         "getUserMediaConstraints": "आवश्यकताओं से मेल खाते डिवाइस नहीं मिले। अन्य डिवाइस के साथ प्रयास करें।",
@@ -152,7 +151,7 @@
         "save": "सहेजें",
         "cancel": "रद्द करें",
         "settings": "सेटिंग्स",
-        "testDevices": "डिवाइस जाँचें",
+        "testSpeaker": "स्पीकर जाँचें",
         "refresh": "रीफ़्रेश",
         "saveMessages": "संदेश सहेजें",
         "clearAll": "सभी साफ़ करें",

@@ -91,7 +91,7 @@
         "cameraChanged": "Camera changed successfully",
         "microphoneChanged": "Microphone changed successfully",
         "speakerChanged": "Speaker changed successfully",
-        "deviceTestCompleted": "Device test completed successfully"
+        "speakerTestPlaying": "Playing test sound on the selected speaker..."
     },
     "errors": {
         "noUsername": "Username is required",
@@ -127,8 +127,7 @@
         "changeMicrophoneFailed": "Failed to change microphone",
         "audioOutputNotSupported": "Audio output selection not supported in this browser",
         "changeSpeakerFailed": "Failed to change speaker",
-        "noDevicesToTest": "No devices available to test",
-        "deviceTestFailed": "Device test failed: __message__",
+        "speakerTestFailed": "Speaker test failed: __message__",
         "getUserMediaNotFound": "No camera or microphone found. You can still join with available devices",
         "getUserMediaInUse": "Device is already in use by another application",
         "getUserMediaConstraints": "Cannot find devices matching the requirements. Try with different devices",
@@ -155,7 +154,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "settings": "Settings",
-        "testDevices": "Test Devices",
+        "testSpeaker": "Test Speaker",
         "refresh": "Refresh",
         "saveMessages": "Save Messages",
         "clearAll": "Clear All",

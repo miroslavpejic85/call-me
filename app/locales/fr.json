@@ -88,7 +88,7 @@
         "cameraChanged": "Caméra changée avec succès",
         "microphoneChanged": "Microphone changé avec succès",
         "speakerChanged": "Haut-parleur changé avec succès",
-        "deviceTestCompleted": "Test des appareils terminé avec succès"
+        "speakerTestPlaying": "Lecture du son de test sur le haut-parleur sélectionné..."
     },
     "errors": {
         "noUsername": "Le nom d'utilisateur est requis",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "Impossible de changer de microphone",
         "audioOutputNotSupported": "La sélection de la sortie audio n’est pas prise en charge par ce navigateur",
         "changeSpeakerFailed": "Impossible de changer de haut-parleur",
-        "noDevicesToTest": "Aucun appareil disponible à tester",
-        "deviceTestFailed": "Le test des appareils a échoué : __message__",
+        "speakerTestFailed": "Le test du haut-parleur a échoué : __message__",
         "getUserMediaNotFound": "Aucune caméra ou aucun microphone trouvé. Vous pouvez tout de même rejoindre avec les appareils disponibles",
         "getUserMediaInUse": "L’appareil est déjà utilisé par une autre application",
         "getUserMediaConstraints": "Impossible de trouver des appareils correspondant aux exigences. Essayez avec d’autres appareils",
@@ -152,7 +151,7 @@
         "save": "Enregistrer",
         "cancel": "Annuler",
         "settings": "Paramètres",
-        "testDevices": "Tester les Appareils",
+        "testSpeaker": "Tester le Haut-parleur",
         "refresh": "Actualiser",
         "saveMessages": "Enregistrer les Messages",
         "clearAll": "Tout Effacer",

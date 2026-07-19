@@ -88,7 +88,7 @@
         "cameraChanged": "تم تغيير الكاميرا بنجاح",
         "microphoneChanged": "تم تغيير الميكروفون بنجاح",
         "speakerChanged": "تم تغيير مكبر الصوت بنجاح",
-        "deviceTestCompleted": "اكتمل اختبار الأجهزة بنجاح"
+        "speakerTestPlaying": "يتم تشغيل صوت الاختبار على السماعة المحددة..."
     },
     "errors": {
         "noUsername": "اسم المستخدم مطلوب",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "فشل تغيير الميكروفون",
         "audioOutputNotSupported": "اختيار إخراج الصوت غير مدعوم في هذا المتصفح",
         "changeSpeakerFailed": "فشل تغيير مكبر الصوت",
-        "noDevicesToTest": "لا توجد أجهزة متاحة للاختبار",
-        "deviceTestFailed": "فشل اختبار الجهاز: __message__",
+        "speakerTestFailed": "فشل اختبار السماعة: __message__",
         "getUserMediaNotFound": "لم يتم العثور على كاميرا أو ميكروفون. لا يزال بإمكانك الانضمام باستخدام الأجهزة المتاحة",
         "getUserMediaInUse": "الجهاز مستخدم بالفعل بواسطة تطبيق آخر",
         "getUserMediaConstraints": "تعذر العثور على أجهزة تطابق المتطلبات. جرّب أجهزة مختلفة",
@@ -152,7 +151,7 @@
         "save": "حفظ",
         "cancel": "إلغاء",
         "settings": "الإعدادات",
-        "testDevices": "اختبار الأجهزة",
+        "testSpeaker": "اختبار السماعة",
         "refresh": "تحديث",
         "saveMessages": "حفظ الرسائل",
         "clearAll": "مسح الكل",

@@ -88,7 +88,7 @@
         "cameraChanged": "Kamera je uspješno promijenjena",
         "microphoneChanged": "Mikrofon je uspješno promijenjen",
         "speakerChanged": "Zvučnik je uspješno promijenjen",
-        "deviceTestCompleted": "Test uređaja uspješno dovršen"
+        "speakerTestPlaying": "Reprodukcija probnog zvuka na odabranom zvučniku..."
     },
     "errors": {
         "noUsername": "Korisničko ime je obavezno",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "Neuspjela promjena mikrofona",
         "audioOutputNotSupported": "Odabir audio izlaza nije podržan u ovom pregledniku",
         "changeSpeakerFailed": "Neuspjela promjena zvučnika",
-        "noDevicesToTest": "Nema uređaja dostupnih za testiranje",
-        "deviceTestFailed": "Test uređaja nije uspio: __message__",
+        "speakerTestFailed": "Test zvučnika nije uspio: __message__",
         "getUserMediaNotFound": "Nije pronađena kamera ili mikrofon. I dalje se možete pridružiti s dostupnim uređajima",
         "getUserMediaInUse": "Uređaj već koristi druga aplikacija",
         "getUserMediaConstraints": "Nije moguće pronaći uređaje koji odgovaraju zahtjevima. Pokušajte s drugim uređajima",
@@ -152,7 +151,7 @@
         "save": "Spremi",
         "cancel": "Odustani",
         "settings": "Postavke",
-        "testDevices": "Testiraj uređaje",
+        "testSpeaker": "Testiraj zvučnik",
         "refresh": "Osvježi",
         "saveMessages": "Spremi poruke",
         "clearAll": "Obriši sve",

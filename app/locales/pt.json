@@ -88,7 +88,7 @@
         "cameraChanged": "Câmera alterada com sucesso",
         "microphoneChanged": "Microfone alterado com sucesso",
         "speakerChanged": "Alto-falante alterado com sucesso",
-        "deviceTestCompleted": "Teste de dispositivos concluído com sucesso"
+        "speakerTestPlaying": "A reproduzir som de teste no altifalante selecionado..."
     },
     "errors": {
         "noUsername": "Nome de usuário é obrigatório",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "Falha ao alterar o microfone",
         "audioOutputNotSupported": "A seleção de saída de áudio não é suportada neste navegador",
         "changeSpeakerFailed": "Falha ao alterar o alto-falante",
-        "noDevicesToTest": "Nenhum dispositivo disponível para teste",
-        "deviceTestFailed": "Falha no teste do dispositivo: __message__",
+        "speakerTestFailed": "Falha no teste do altifalante: __message__",
         "getUserMediaNotFound": "Nenhuma câmera ou microfone encontrado. Você ainda pode entrar com os dispositivos disponíveis",
         "getUserMediaInUse": "O dispositivo já está em uso por outro aplicativo",
         "getUserMediaConstraints": "Não foi possível encontrar dispositivos que atendam aos requisitos. Tente com dispositivos diferentes",
@@ -152,7 +151,7 @@
         "save": "Salvar",
         "cancel": "Cancelar",
         "settings": "Configurações",
-        "testDevices": "Testar dispositivos",
+        "testSpeaker": "Testar altifalante",
         "refresh": "Atualizar",
         "saveMessages": "Salvar mensagens",
         "clearAll": "Limpar tudo",

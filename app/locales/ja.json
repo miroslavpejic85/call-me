@@ -88,7 +88,7 @@
         "cameraChanged": "カメラを正常に変更しました",
         "microphoneChanged": "マイクを正常に変更しました",
         "speakerChanged": "スピーカーを正常に変更しました",
-        "deviceTestCompleted": "デバイステストが正常に完了しました"
+        "speakerTestPlaying": "選択したスピーカーでテスト音を再生しています..."
     },
     "errors": {
         "noUsername": "ユーザー名は必須です",
@@ -124,8 +124,7 @@
         "changeMicrophoneFailed": "マイクの変更に失敗しました",
         "audioOutputNotSupported": "このブラウザではオーディオ出力の選択がサポートされていません",
         "changeSpeakerFailed": "スピーカーの変更に失敗しました",
-        "noDevicesToTest": "テストできるデバイスがありません",
-        "deviceTestFailed": "デバイステストに失敗しました: __message__",
+        "speakerTestFailed": "スピーカーのテストに失敗しました: __message__",
         "getUserMediaNotFound": "カメラまたはマイクが見つかりません。利用可能なデバイスで参加できます。",
         "getUserMediaInUse": "デバイスは別のアプリケーションで使用中です",
         "getUserMediaConstraints": "要件に一致するデバイスが見つかりません。別のデバイスで試してください。",
@@ -152,7 +151,7 @@
         "save": "保存",
         "cancel": "キャンセル",
         "settings": "設定",
-        "testDevices": "デバイスをテスト",
+        "testSpeaker": "スピーカーをテスト",
         "refresh": "更新",
         "saveMessages": "メッセージを保存",
         "clearAll": "すべてクリア",
