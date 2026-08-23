@@ -372,11 +372,20 @@ app.get('/join/', (req, res) => {
     if (Object.keys(req.query).length > 0) {
         log.debug('Request query', req.query);
 
-        const { user, call, password } = req.query;
+        const { user, call, room, password } = req.query;
+        // http://localhost:8000/join?room=Support
         // http://localhost:8000/join?user=user1
         // http://localhost:8000/join?user=user2&call=user1
         // http://localhost:8000/join?user=user1&password=123456789
         // http://localhost:8000/join?user=user2&call=user1&password=123456789
+
+        // Open the home page with the room prefilled when only a room is provided
+        if (!user && room) {
+            if (!isValidUsername(room)) {
+                return notFound(res);
+            }
+            return res.sendFile(HOME);
+        }
 
         if (config.hostPasswordEnabled && password !== config.hostPassword) {
             return unauthorized(res);
