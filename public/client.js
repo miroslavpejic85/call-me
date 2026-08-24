@@ -50,7 +50,6 @@ const emojiPicker = document.getElementById('emojiPicker');
 const saveChatBtn = document.getElementById('saveChatBtn');
 const clearChatBtn = document.getElementById('clearChatBtn');
 const privateChatPanel = document.getElementById('privateChatPanel');
-const privateChatBackBtn = document.getElementById('privateChatBackBtn');
 const privateChatCloseBtn = document.getElementById('privateChatCloseBtn');
 const privateChatClearBtn = document.getElementById('privateChatClearBtn');
 const privateChatSaveBtn = document.getElementById('privateChatSaveBtn');
@@ -3416,7 +3415,6 @@ if (privateChatForm && privateChatInput) {
     });
 }
 
-if (privateChatBackBtn) privateChatBackBtn.addEventListener('click', closePrivateChat);
 if (privateChatCloseBtn) privateChatCloseBtn.addEventListener('click', closePrivateChat);
 if (privateChatClearBtn) privateChatClearBtn.addEventListener('click', handleClearPrivateChatClick);
 if (privateChatSaveBtn) privateChatSaveBtn.addEventListener('click', handleSavePrivateChatClick);

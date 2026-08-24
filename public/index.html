@@ -280,7 +280,7 @@
                 <span id="remoteUsername" class="hide"></span>
             </div>
 
-            <div class="row justify-content-center">
+            <div class="row justify-content-center room-controls">
                 <!-- Button share Room -->
                 <button
                     id="shareRoomBtn"
@@ -479,100 +479,112 @@
             <!-- Settings Tab Content -->
             <div id="settingsContent" class="tab-content">
                 <div class="settings-section">
-                    <h3 class="settings-title">
-                        <i class="fas fa-globe"></i> <span data-i18n="settings.language">Language</span>
-                    </h3>
+                    <section class="settings-panel">
+                        <h3 class="settings-title">
+                            <i class="fas fa-video"></i>
+                            <span data-i18n="settings.mediaDevicesTitle">Media Devices</span>
+                        </h3>
 
-                    <div class="setting-group">
-                        <label for="languageSelect" class="setting-label">
-                            <i class="fas fa-language"></i>
-                            <span data-i18n="settings.selectLanguage">Select Language</span>
-                        </label>
-                        <select id="languageSelect" class="setting-select"></select>
-                    </div>
+                        <div class="setting-group">
+                            <label for="videoSelect" class="setting-label">
+                                <i class="fas fa-camera"></i> <span data-i18n="settings.videoInput">Camera</span>
+                            </label>
+                            <select id="videoSelect" class="setting-select">
+                                <option value="" data-i18n="settings.loadingCameras">Loading cameras...</option>
+                            </select>
+                        </div>
 
-                    <h3 class="settings-title">
-                        <i class="fas fa-sliders-h"></i>
-                        <span data-i18n="settings.generalTitle">General</span>
-                    </h3>
+                        <div class="setting-group">
+                            <label for="audioSelect" class="setting-label">
+                                <i class="fas fa-microphone"></i>
+                                <span data-i18n="settings.audioInput">Microphone</span>
+                            </label>
+                            <select id="audioSelect" class="setting-select">
+                                <option value="" data-i18n="settings.loadingMicrophones">Loading microphones...</option>
+                            </select>
+                        </div>
 
-                    <div class="setting-group setting-toggle-group">
-                        <label for="hideLocalVideoToggle" class="setting-label">
-                            <i class="fas fa-eye-slash"></i>
-                            <span data-i18n="settings.hideLocalVideo">Hide Local Video</span>
-                        </label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="hideLocalVideoToggle" />
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
+                        <div class="setting-group">
+                            <label for="audioOutputSelect" class="setting-label">
+                                <i class="fas fa-volume-up"></i> <span data-i18n="settings.audioOutput">Speaker</span>
+                            </label>
+                            <select id="audioOutputSelect" class="setting-select">
+                                <option value="" data-i18n="settings.loadingSpeakers">Loading speakers...</option>
+                            </select>
+                        </div>
 
-                    <div id="pushNotificationGroup" class="setting-group setting-toggle-group">
-                        <label for="pushNotificationToggle" class="setting-label">
-                            <i class="fas fa-bell"></i>
-                            <span data-i18n="settings.pushNotifications">Push Notifications</span>
-                        </label>
-                        <div class="push-toggle-wrapper">
+                        <div class="settings-actions">
+                            <button id="testDevicesBtn" class="btn btn-success btn-test-devices">
+                                <i class="fas fa-volume-up"></i>
+                                <span data-i18n="settings.testSpeaker">Test Speaker</span>
+                            </button>
+                            <button id="refreshDevicesBtn" class="btn btn-secondary btn-refresh-devices">
+                                <i class="fas fa-sync"></i> <span data-i18n="settings.refresh">Refresh</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="settings-panel">
+                        <h3 class="settings-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <span data-i18n="settings.generalTitle">General</span>
+                        </h3>
+
+                        <div class="setting-group setting-toggle-group">
+                            <label for="hideLocalVideoToggle" class="setting-label">
+                                <i class="fas fa-eye-slash"></i>
+                                <span data-i18n="settings.hideLocalVideo">Hide Local Video</span>
+                            </label>
                             <label class="toggle-switch">
-                                <input type="checkbox" id="pushNotificationToggle" />
+                                <input type="checkbox" id="hideLocalVideoToggle" />
                                 <span class="toggle-slider"></span>
                             </label>
-                            <button id="pushTestBtn" class="btn-setting" data-i18n="settings.testPush">Test</button>
                         </div>
-                    </div>
 
-                    <h3 class="settings-title">
-                        <i class="fas fa-video"></i> <span data-i18n="settings.mediaDevicesTitle">Media Devices</span>
-                    </h3>
+                        <div id="pushNotificationGroup" class="setting-group setting-toggle-group">
+                            <label for="pushNotificationToggle" class="setting-label">
+                                <i class="fas fa-bell"></i>
+                                <span data-i18n="settings.pushNotifications">Push Notifications</span>
+                            </label>
+                            <div class="push-toggle-wrapper">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="pushNotificationToggle" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <button id="pushTestBtn" class="btn-setting" data-i18n="settings.testPush">Test</button>
+                            </div>
+                        </div>
+                    </section>
 
-                    <div class="setting-group">
-                        <label for="videoSelect" class="setting-label">
-                            <i class="fas fa-camera"></i> <span data-i18n="settings.videoInput">Camera</span>
-                        </label>
-                        <select id="videoSelect" class="setting-select">
-                            <option value="" data-i18n="settings.loadingCameras">Loading cameras...</option>
-                        </select>
-                    </div>
+                    <section class="settings-panel">
+                        <h3 class="settings-title">
+                            <i class="fas fa-globe"></i> <span data-i18n="settings.language">Language</span>
+                        </h3>
 
-                    <div class="setting-group">
-                        <label for="audioSelect" class="setting-label">
-                            <i class="fas fa-microphone"></i> <span data-i18n="settings.audioInput">Microphone</span>
-                        </label>
-                        <select id="audioSelect" class="setting-select">
-                            <option value="" data-i18n="settings.loadingMicrophones">Loading microphones...</option>
-                        </select>
-                    </div>
+                        <div class="setting-group">
+                            <label for="languageSelect" class="setting-label">
+                                <i class="fas fa-language"></i>
+                                <span data-i18n="settings.selectLanguage">Select Language</span>
+                            </label>
+                            <select id="languageSelect" class="setting-select"></select>
+                        </div>
+                    </section>
 
-                    <div class="setting-group">
-                        <label for="audioOutputSelect" class="setting-label">
-                            <i class="fas fa-volume-up"></i> <span data-i18n="settings.audioOutput">Speaker</span>
-                        </label>
-                        <select id="audioOutputSelect" class="setting-select">
-                            <option value="" data-i18n="settings.loadingSpeakers">Loading speakers...</option>
-                        </select>
-                    </div>
-
-                    <div class="settings-actions">
-                        <button id="testDevicesBtn" class="btn btn-success btn-test-devices">
-                            <i class="fas fa-volume-up"></i> <span data-i18n="settings.testSpeaker">Test Speaker</span>
-                        </button>
-                        <button id="refreshDevicesBtn" class="btn btn-secondary btn-refresh-devices">
-                            <i class="fas fa-sync"></i> <span data-i18n="settings.refresh">Refresh</span>
-                        </button>
-                    </div>
-
-                    <h3 class="settings-title">
-                        <i class="fas fa-comments"></i>
-                        <span data-i18n="settings.chatSettingsTitle">Public Chat Settings</span>
-                    </h3>
-                    <div class="settings-actions">
-                        <button id="saveChatBtn" class="btn btn-success btn-save-chat">
-                            <i class="fas fa-download"></i> <span data-i18n="settings.saveMessages">Save Messages</span>
-                        </button>
-                        <button id="clearChatBtn" class="btn btn-danger btn-clear-chat">
-                            <i class="fas fa-trash"></i> <span data-i18n="settings.clearAll">Clear All</span>
-                        </button>
-                    </div>
+                    <section class="settings-panel">
+                        <h3 class="settings-title">
+                            <i class="fas fa-comments"></i>
+                            <span data-i18n="settings.chatSettingsTitle">Public Chat Settings</span>
+                        </h3>
+                        <div class="settings-actions">
+                            <button id="saveChatBtn" class="btn btn-success btn-save-chat">
+                                <i class="fas fa-download"></i>
+                                <span data-i18n="settings.saveMessages">Save Messages</span>
+                            </button>
+                            <button id="clearChatBtn" class="btn btn-danger btn-clear-chat">
+                                <i class="fas fa-trash"></i> <span data-i18n="settings.clearAll">Clear All</span>
+                            </button>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
@@ -580,9 +592,6 @@
         <!-- Private chat (direct message) panel -->
         <div id="privateChatPanel" class="private-chat-panel">
             <div class="private-chat-header">
-                <button id="privateChatBackBtn" class="btn btn-exit-sidebar" title="Back" data-i18n-title="chat.back">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
                 <div class="private-chat-title">
                     <div id="privateChatAvatar" class="user-avatar"></div>
                     <span id="privateChatWith" class="private-chat-with"></span>
