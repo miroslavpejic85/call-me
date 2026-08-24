@@ -44,41 +44,72 @@
     </head>
 
     <body>
-        <!-- The attribution text will be injected here -->
-        <p id="attribution"></p>
-
         <!-- Optional Random BG Images -->
         <img id="randomImage" src="background.jpg" alt="Random Background Image" />
 
-        <!-- GitHub project -->
-        <div id="githubDiv">
-            <a
-                class="github-button"
-                href="https://github.com/miroslavpejic85/call-me"
-                data-color-scheme="no-preference: light; light: light; dark: dark;"
-                data-size="large"
-                data-show-count="true"
-                aria-label="Star miroslavpejic85/call-me on GitHub"
-                >Star
-            </a>
-        </div>
-
         <!-- Sign-in Page -->
-        <div id="signInPage" class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-5 col-xl-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h1 id="appName" data-i18n="appName">Call-me</h1>
-                            <p class="sign-in-subtitle" data-i18n="signIn.subtitle">
-                                Instant Video Calls. No signup needed.
-                            </p>
+        <main id="signInPage" class="home-shell">
+            <section class="home-intro" aria-labelledby="appName">
+                <a class="home-brand" href="/" aria-label="Call-me home">
+                    <span class="home-brand-mark"><i class="fas fa-video"></i></span>
+                    <span>Call-me</span>
+                </a>
+                <div class="home-intro-content">
+                    <p class="home-eyebrow">Browser-to-browser click-to-call</p>
+                    <h1 id="appName" data-i18n="appName">Call-me</h1>
+                    <p class="home-lead" data-i18n="appDescription">Your Go-To for Instant Video Calls!</p>
+                    <div class="home-benefits" aria-label="Call benefits">
+                        <span><i class="fas fa-bolt"></i> No downloads</span>
+                        <span><i class="fas fa-shield-halved"></i> Private rooms</span>
+                        <span><i class="fas fa-display"></i> Any device</span>
+                    </div>
+                </div>
+                <div class="home-intro-footer">
+                    <div class="home-footer-links">
+                        <span>&copy; 2026 Call-me</span>
+                        <a href="/privacy">Privacy</a>
+                    </div>
+                    <!-- The photo attribution text is injected here. -->
+                    <p id="attribution"></p>
+                </div>
+            </section>
+
+            <section class="home-setup" aria-labelledby="setupTitle">
+                <div class="home-setup-topline">
+                    <span><i class="fas fa-shield-halved"></i> Secure connection</span>
+                    <div class="home-setup-links">
+                        <div id="githubDiv">
+                            <a
+                                href="https://github.com/miroslavpejic85/call-me"
+                                target="_blank"
+                                rel="noopener"
+                                title="GitHub"
+                                aria-label="View Call-me on GitHub"
+                            >
+                                <i class="fab fa-github"></i>
+                            </a>
                         </div>
-                        <div class="card-body">
+                        <a href="/api/v1/docs/" target="_blank" rel="noopener" title="API Docs" aria-label="API Docs">
+                            <i class="fas fa-code"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <p class="setup-eyebrow">Private meeting</p>
+                        <h2 id="setupTitle" data-i18n="signIn.title">Join</h2>
+                        <p class="sign-in-subtitle" data-i18n="signIn.subtitle">
+                            Instant Video Calls. No signup needed.
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <div class="meeting-fields">
                             <!-- Sign-in Form -->
                             <div class="mb-3">
+                                <label for="roomIn" data-i18n="signIn.room">Room name (default Public)</label>
                                 <!-- Input field for entering the room name -->
                                 <div class="username-input-wrapper">
+                                    <i class="field-leading-icon fas fa-hashtag"></i>
                                     <input
                                         id="roomIn"
                                         type="text"
@@ -105,8 +136,10 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label for="usernameIn" data-i18n="signIn.username">Choose a display name</label>
                                 <!-- Input field for entering the username -->
                                 <div class="username-input-wrapper">
+                                    <i class="field-leading-icon fas fa-user"></i>
                                     <input
                                         id="usernameIn"
                                         type="text"
@@ -132,66 +165,64 @@
                                     </button>
                                 </div>
                             </div>
-                            <!-- Media toggles -->
-                            <div class="media-toggles mb-3">
-                                <label class="media-toggle-item" for="joinAudioToggle">
-                                    <div class="media-toggle-icon">
-                                        <i class="fas fa-microphone"></i>
-                                    </div>
-                                    <span class="media-toggle-label" data-i18n="signIn.microphone">Microphone</span>
-                                    <div class="switch">
-                                        <input id="joinAudioToggle" type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </div>
-                                </label>
-                                <label class="media-toggle-item" for="joinVideoToggle">
-                                    <div class="media-toggle-icon">
-                                        <i class="fas fa-video"></i>
-                                    </div>
-                                    <span class="media-toggle-label" data-i18n="signIn.camera">Camera</span>
-                                    <div class="switch">
-                                        <input id="joinVideoToggle" type="checkbox" checked />
-                                        <span class="slider"></span>
-                                    </div>
-                                </label>
-                            </div>
-                            <!-- Sign-in button -->
-                            <button id="signInBtn" class="btn btn-primary" data-i18n="signIn.button">Join</button>
-
-                            <!-- Direct call section -->
-                            <div class="direct-call-section">
-                                <div class="direct-call-divider">
-                                    <span data-i18n="signIn.directCallLabel">Or call someone directly</span>
+                        </div>
+                        <!-- Media toggles -->
+                        <div class="media-toggles mb-3">
+                            <label class="media-toggle-item" for="joinAudioToggle">
+                                <div class="media-toggle-icon">
+                                    <i class="fas fa-microphone"></i>
                                 </div>
-                                <div class="direct-call-row">
-                                    <input
-                                        id="directCallInput"
-                                        type="text"
-                                        placeholder="Enter name to call"
-                                        data-i18n-placeholder="signIn.directCallPlaceholder"
-                                        autocomplete="off"
-                                    />
-                                    <button id="directCallBtn" class="btn btn-call-now">
-                                        <i class="fas fa-phone"></i>
-                                        <span data-i18n="signIn.directCallButton">Call Now</span>
-                                    </button>
+                                <span class="media-toggle-label" data-i18n="signIn.microphone">Microphone</span>
+                                <div class="switch">
+                                    <input id="joinAudioToggle" type="checkbox" checked />
+                                    <span class="slider"></span>
                                 </div>
-                            </div>
+                            </label>
+                            <label class="media-toggle-item" for="joinVideoToggle">
+                                <div class="media-toggle-icon">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <span class="media-toggle-label" data-i18n="signIn.camera">Camera</span>
+                                <div class="switch">
+                                    <input id="joinVideoToggle" type="checkbox" checked />
+                                    <span class="slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <!-- Sign-in button -->
+                        <button id="signInBtn" class="btn btn-primary">
+                            <span data-i18n="signIn.button">Join</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
 
-                            <div class="privacy-divider">
-                                <span><a href="/privacy" class="privacy-link">Privacy Policy</a></span>
-                                <span class="privacy-separator">·</span>
-                                <span
-                                    ><a href="/api/v1/docs/" class="privacy-link" target="_blank" rel="noopener"
-                                        >API Docs</a
-                                    ></span
-                                >
+                        <!-- Direct call section -->
+                        <div class="direct-call-section">
+                            <div class="direct-call-divider">
+                                <span data-i18n="signIn.directCallLabel">Or call someone directly</span>
                             </div>
+                            <div class="direct-call-row">
+                                <input
+                                    id="directCallInput"
+                                    type="text"
+                                    placeholder="Enter name to call"
+                                    data-i18n-placeholder="signIn.directCallPlaceholder"
+                                    autocomplete="off"
+                                />
+                                <button id="directCallBtn" class="btn btn-call-now">
+                                    <i class="fas fa-phone"></i>
+                                    <span data-i18n="signIn.directCallButton">Call Now</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="privacy-divider">
+                            <i class="fas fa-lock"></i>
+                            <span>Your call is encrypted between participants.</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
 
         <!-- Room Page -->
         <div id="roomPage" class="container">
@@ -623,7 +654,6 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.8/dist/sweetalert2.all.min.js"></script>
 
         <!-- Include GitHub buttons -->
-        <script src="https://buttons.github.io/buttons.js"></script>
 
         <!-- Include Emoji Mart for emoji picker -->
         <script defer src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>

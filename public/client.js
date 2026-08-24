@@ -300,7 +300,7 @@ async function resolveHostPassword() {
     }
 
     if (!isRequired) {
-        elemDisplay(signInPage, true);
+        elemDisplay(signInPage, true, 'grid');
         return '';
     }
 
@@ -310,7 +310,7 @@ async function resolveHostPassword() {
         try {
             const { data } = await axios.post('/api/hostPasswordValidate', { password: urlPassword });
             if (data && data.success) {
-                elemDisplay(signInPage, true);
+                elemDisplay(signInPage, true, 'grid');
                 return urlPassword;
             }
         } catch (error) {
@@ -367,7 +367,7 @@ async function promptHostPassword(maxRetries = 3, attempts = 0) {
                 timer: 1500,
                 showConfirmButton: false,
             });
-            elemDisplay(signInPage, true);
+            elemDisplay(signInPage, true, 'grid');
             return password;
         }
 
@@ -412,6 +412,9 @@ async function fetchRandomImage() {
     if (sessionStorage.cachedImage) {
         // If there's cached data, use it
         randomImage.src = sessionStorage.cachedImage;
+        if (sessionStorage.cachedAttribution) {
+            attribution.innerHTML = sessionStorage.cachedAttribution;
+        }
         console.log('Using cached image');
         return;
     }
@@ -429,6 +432,7 @@ async function fetchRandomImage() {
 
         // Create and display attribution
         const attributionText = `Photo by <a href="${data.user.links.html}?utm_source=call-me&utm_medium=referral" target="_blank">${data.user.name}</a> on <a href="https://unsplash.com/?utm_source=call-me&utm_medium=referral" target="_blank">Unsplash</a>`;
+        sessionStorage.cachedAttribution = attributionText;
 
         // Assuming you have an element with id 'attribution' for the attribution text
         attribution.innerHTML = attributionText;

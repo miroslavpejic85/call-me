@@ -136,11 +136,9 @@ body {
 
 /* Modern Unsplash and Author Attribution */
 #attribution {
-    z-index: 3;
-    position: absolute;
+    position: static;
+    margin: 0 0 0 auto;
     padding: var(--spacing-sm) var(--spacing-md);
-    bottom: 0;
-    right: var(--spacing-sm);
     font-size: var(--font-size-xs);
     color: var(--text-secondary);
     background: var(--glass-bg);
@@ -157,6 +155,10 @@ body {
     border-color: var(--glass-border-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+#attribution:empty {
+    display: none;
 }
 
 /* Random image */
@@ -311,51 +313,279 @@ button {
 }
 
 #signInPage {
-    position: absolute;
+    position: fixed;
+    inset: 0;
     display: none;
-    overflow: visible;
+    overflow: auto;
+    z-index: 2;
+}
+
+/* C2C-inspired home composition */
+.home-shell {
+    width: 100%;
+    min-height: 100%;
+    grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
+    background: rgba(8, 12, 18, 0.28);
+}
+
+.home-intro,
+.home-setup {
+    position: relative;
+    min-width: 0;
+    padding: clamp(28px, 4vw, 64px);
+}
+
+.home-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    color: var(--text-color);
+    background: linear-gradient(90deg, rgba(10, 15, 23, 0.94), rgba(10, 15, 23, 0.68));
+}
+
+.home-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-start;
+    color: var(--text-color);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+}
+
+.home-brand:hover {
+    color: var(--text-color);
+}
+
+.home-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--border-radius-sm);
+    color: #fff;
+    background: var(--primary-color);
+    box-shadow: var(--shadow-glow);
+}
+
+.home-intro-content {
+    width: min(620px, 100%);
+    margin: clamp(72px, 14vh, 140px) 0;
+}
+
+.home-eyebrow,
+.setup-eyebrow {
+    margin: 0 0 18px;
+    color: var(--primary-light);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.home-intro h1 {
+    max-width: 600px;
+    margin: 0;
+    color: #fff;
+    font-size: 6rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 0.94;
+    overflow-wrap: anywhere;
+}
+
+.home-lead {
+    max-width: 540px;
+    margin: 28px 0 0;
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    line-height: 1.7;
+}
+
+.home-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin-top: 40px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.home-benefits span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-benefits i,
+.home-setup-topline > span i,
+.privacy-divider i {
+    color: var(--success-color);
+}
+
+.home-intro-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.home-footer-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.home-intro-footer a {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+}
+
+.home-intro-footer a:hover {
+    color: var(--primary-light);
+}
+
+.home-setup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding-top: 110px;
+    padding-bottom: 64px;
+    background: rgba(15, 20, 25, 0.96);
+}
+
+.home-setup-topline {
+    position: absolute;
+    top: clamp(28px, 4vw, 52px);
+    left: clamp(28px, 4vw, 64px);
+    right: clamp(28px, 4vw, 64px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.home-setup-topline > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-setup-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-setup-topline a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.home-setup-topline a:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-light);
 }
 
 /* Modern Card Styles with Glassmorphism */
 .card {
-    max-width: 90% !important;
+    width: min(520px, 100%);
+    max-width: none !important;
     margin: 0 auto !important;
     color: var(--text-color) !important;
     font-weight: var(--font-weight-medium) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: var(--border-radius-lg) !important;
-    background: rgba(15, 20, 30, 0.82) !important;
-    backdrop-filter: blur(20px) saturate(1.2) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
-    box-shadow:
-        var(--shadow-xl),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
-    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
     transition: all var(--transition-base) !important;
 }
 
 .card:hover {
-    border-color: var(--glass-border-hover) !important;
-    transform: translateY(-2px) !important;
+    transform: none !important;
 }
 
 .card-header {
-    background: rgba(59, 130, 246, 0.15) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: var(--spacing-lg) !important;
-    text-align: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 0 var(--spacing-xl) !important;
+    text-align: left !important;
 }
 
-.card-header h1 {
+.card-header h2 {
     margin: 0 !important;
-    font-size: var(--font-size-3xl) !important;
+    font-size: 2.25rem !important;
     font-weight: var(--font-weight-bold) !important;
     color: #fff !important;
 }
 
 .card-body {
-    padding: var(--spacing-xl) !important;
-    text-align: center !important;
+    padding: 0 !important;
+    text-align: left !important;
+}
+
+.meeting-fields label {
+    display: block;
+    margin: 0 0 8px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+}
+
+.field-leading-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    z-index: 2;
+    color: var(--text-muted);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.meeting-fields #roomIn,
+.meeting-fields #usernameIn {
+    padding-left: 48px;
+}
+
+#signInBtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--border-radius-sm);
+    background: var(--primary-color);
+    font-weight: var(--font-weight-bold);
+    transition:
+        background var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+#signInBtn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
 }
 
 /* Media toggle switches on sign-in card */
@@ -1397,9 +1627,7 @@ input {
 
 /* GitHub div */
 #githubDiv {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    display: flex;
 }
 
 /* User Sidebar with Modern Design */
@@ -3517,17 +3745,6 @@ z-index:
     .card-body {
         padding: var(--spacing-md) !important;
     }
-
-    /* Attribution: prevent overlap with card on short viewports */
-    #attribution {
-        position: fixed;
-        bottom: var(--spacing-xs);
-        right: var(--spacing-xs);
-        font-size: 0.65rem;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        max-width: 60%;
-        z-index: 3;
-    }
 }
 
 /* Large screens: compact sign-in card */
@@ -3579,18 +3796,12 @@ z-index:
     }
 }
 
-/* Landscape mobile: ensure card and attribution don't collide */
+/* Landscape mobile: keep the sign-in content reachable. */
 @media (max-width: 768px) and (orientation: landscape) {
     #signInPage {
         max-height: 100vh;
         padding-bottom: 32px;
         align-items: flex-start;
-    }
-
-    #attribution {
-        position: fixed;
-        bottom: var(--spacing-xs);
-        right: var(--spacing-xs);
     }
 }
 
@@ -3619,6 +3830,211 @@ z-index:
 .privacy-divider .privacy-separator {
     margin: 0 var(--spacing-sm);
     color: var(--text-muted);
+}
+
+/* Home layout overrides must follow the legacy sign-in card breakpoints. */
+.home-setup .card {
+    width: min(520px, 100%);
+    max-width: none !important;
+}
+
+@media (max-width: 900px) {
+    html:has(#signInPage[style*='grid']) {
+        scrollbar-gutter: auto;
+    }
+
+    #signInPage {
+        scrollbar-width: none;
+    }
+
+    #signInPage::-webkit-scrollbar {
+        display: none;
+    }
+
+    .home-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .home-intro {
+        min-height: auto;
+        padding-bottom: 48px;
+        background: rgba(10, 15, 23, 0.82);
+    }
+
+    .home-intro-content {
+        margin: 72px 0 56px;
+    }
+
+    .home-intro h1 {
+        font-size: 4.5rem;
+    }
+
+    .home-brand,
+    .home-intro-footer a {
+        min-height: 40px;
+        align-items: center;
+    }
+
+    .home-setup {
+        min-height: auto;
+        padding-top: 96px;
+    }
+
+    .home-setup-topline a {
+        width: 40px;
+        height: 40px;
+    }
+
+    .random-username-btn,
+    .copy-username-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+    }
+
+    .random-username-btn {
+        right: 44px;
+    }
+
+    .copy-username-btn {
+        right: 4px;
+    }
+
+    .meeting-fields #roomIn,
+    .meeting-fields #usernameIn {
+        padding-right: 88px;
+    }
+
+    .home-intro-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    #attribution {
+        margin-left: 0;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 901px) and (max-height: 850px) {
+    .home-setup {
+        padding-top: 72px;
+        padding-bottom: 24px;
+    }
+
+    .home-setup-topline {
+        top: 20px;
+    }
+
+    .card-header {
+        padding-bottom: 16px !important;
+    }
+
+    .setup-eyebrow {
+        margin-bottom: 8px;
+    }
+
+    .card-header h2 {
+        font-size: 2rem !important;
+    }
+
+    .sign-in-subtitle {
+        margin-top: 4px;
+    }
+
+    .meeting-fields .mb-3 {
+        margin-bottom: 10px !important;
+    }
+
+    .meeting-fields #roomIn,
+    .meeting-fields #usernameIn {
+        padding-top: 11px;
+        padding-bottom: 11px;
+    }
+
+    .media-toggles {
+        gap: 8px;
+        margin-bottom: 10px !important;
+    }
+
+    .media-toggle-item {
+        padding: 8px 12px;
+    }
+
+    .media-toggle-icon {
+        width: 32px;
+        height: 32px;
+        font-size: var(--font-size-base);
+    }
+
+    #signInBtn {
+        min-height: 48px;
+    }
+
+    .direct-call-section {
+        margin-top: 14px;
+    }
+
+    .direct-call-divider {
+        margin-bottom: 10px;
+    }
+
+    .direct-call-row input,
+    .btn-call-now {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .privacy-divider {
+        margin-top: 10px;
+        font-size: var(--font-size-xs);
+    }
+}
+
+@media (max-width: 540px) {
+    .home-intro,
+    .home-setup {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .home-intro-content {
+        margin: 64px 0 48px;
+    }
+
+    .home-intro h1 {
+        font-size: 3.25rem;
+    }
+
+    .home-benefits {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 32px;
+    }
+
+    .home-benefits span:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .home-setup {
+        padding-top: 88px;
+        padding-bottom: 40px;
+    }
+
+    .home-setup-topline {
+        top: 24px;
+        right: 20px;
+        left: 20px;
+    }
+
+    .card-header {
+        padding: 0 0 var(--spacing-lg) !important;
+    }
+
+    .card-header h2 {
+        font-size: 1.75rem !important;
+    }
 }
 
 /* Privacy Policy Page */
