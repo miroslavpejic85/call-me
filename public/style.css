@@ -39,6 +39,7 @@
     --glass-bg-strong: rgba(30, 35, 50, 0.9);
     --glass-border: rgba(255, 255, 255, 0.12);
     --glass-border-hover: rgba(255, 255, 255, 0.25);
+    --page-overlay-bg: rgba(8, 12, 18, 0.28);
 
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -325,7 +326,7 @@ button {
     width: 100%;
     min-height: 100%;
     grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
-    background: rgba(8, 12, 18, 0.28);
+    background: var(--page-overlay-bg);
 }
 
 .home-intro,
@@ -955,7 +956,7 @@ video::-webkit-media-controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--glass-bg);
+    background: var(--page-overlay-bg);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--glass-border);
     overflow: hidden;
@@ -977,7 +978,7 @@ video::-webkit-media-controls {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background: rgba(0, 0, 0, 0.5);
+    background: transparent;
     border-radius: var(--border-radius);
     border: none;
     transition: transform 0.3s ease;
@@ -3811,9 +3812,19 @@ z-index:
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: var(--spacing-sm);
     margin-top: var(--spacing-md);
     color: var(--text-muted);
     font-size: var(--font-size-sm);
+}
+
+.privacy-divider > i {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    line-height: 1;
 }
 
 .privacy-divider .privacy-link {
