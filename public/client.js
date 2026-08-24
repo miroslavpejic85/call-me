@@ -1007,10 +1007,7 @@ async function handleCopyUsername() {
 // Generate random room name
 function handleRandomRoom() {
     if (!roomIn) return;
-    const rooms = ['Support', 'Sales', 'Reception', 'Meeting', 'Lounge', 'Team', 'Office', 'Help', 'Desk', 'Front'];
-    const room = rooms[Math.floor(Math.random() * rooms.length)];
-    const num = Math.floor(Math.random() * 1000);
-    roomIn.value = `${room}${num}`;
+    roomIn.value = crypto.randomUUID();
     roomIn.focus();
 }
 
