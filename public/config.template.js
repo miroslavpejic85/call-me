@@ -4,7 +4,6 @@ window.myAppConfig = {
     title: 'Call-me',
     name: 'Call-me',
     showGithub: true,
-    attribution: true,
 
     // Optional per-room visual overrides (branding only, NOT security).
     // Keys are room names (as used in ?room=Name). Any omitted field falls

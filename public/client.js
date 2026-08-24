@@ -15,8 +15,6 @@ const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 // DOM elements
 const appTitle = document.getElementById('appTitle');
 const appName = document.getElementById('appName');
-const attribution = document.getElementById('attribution');
-const randomImage = document.getElementById('randomImage');
 const sessionTime = document.getElementById('sessionTime');
 const roomNameLabel = document.getElementById('roomNameLabel');
 const roomNameLabelValue = document.getElementById('roomNameLabelValue');
@@ -180,7 +178,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     await handleDirectJoin();
     handleListeners();
     initializeFileSharing();
-    await fetchRandomImage();
 });
 
 // Create the Socket.IO connection, supplying the host password (if any) in
@@ -273,17 +270,9 @@ function applyBranding(room) {
         root.style.setProperty('--primary-hover', cfg.themeColor);
     }
 
-    // Hide elements based on config conditions
-    const elementsToHide = [
-        { condition: !(cfg?.showGithub ?? true), element: githubDiv },
-        { condition: !(cfg?.attribution ?? true), element: attribution },
-    ];
-
-    elementsToHide.forEach(({ condition, element }) => {
-        if (condition && element) {
-            elemDisplay(element, false);
-        }
-    });
+    if (!(cfg?.showGithub ?? true) && githubDiv) {
+        elemDisplay(githubDiv, false);
+    }
 }
 
 // Resolve the host password before opening the Socket.IO connection.
@@ -403,40 +392,6 @@ async function promptHostPassword(maxRetries = 3, attempts = 0) {
             text: t('host.joinError'),
         });
         return null;
-    }
-}
-
-// Get Random Images
-async function fetchRandomImage() {
-    if (sessionStorage.cachedImage) {
-        // If there's cached data, use it
-        randomImage.src = sessionStorage.cachedImage;
-        if (sessionStorage.cachedAttribution) {
-            attribution.innerHTML = sessionStorage.cachedAttribution;
-        }
-        console.log('Using cached image');
-        return;
-    }
-
-    try {
-        const response = await axios.get('/randomImage');
-        const data = response.data;
-
-        // Cache the image URL for subsequent calls
-        sessionStorage.cachedImage = data.urls.regular;
-
-        // Update the image source
-        randomImage.src = sessionStorage.cachedImage;
-        console.log('Fetched and cached image');
-
-        // Create and display attribution
-        const attributionText = `Photo by <a href="${data.user.links.html}?utm_source=call-me&utm_medium=referral" target="_blank">${data.user.name}</a> on <a href="https://unsplash.com/?utm_source=call-me&utm_medium=referral" target="_blank">Unsplash</a>`;
-        sessionStorage.cachedAttribution = attributionText;
-
-        // Assuming you have an element with id 'attribution' for the attribution text
-        attribution.innerHTML = attributionText;
-    } catch (error) {
-        console.error('Error fetching image', error.message);
     }
 }
 
@@ -1650,7 +1605,6 @@ async function handleSignIn(data) {
         if (userInfo.device.isMobile) userSidebar.style.width = '100%';
 
         elemDisplay(githubDiv, false);
-        elemDisplay(attribution, false);
         elemDisplay(signInPage, false);
         elemDisplay(roomPage, true);
 

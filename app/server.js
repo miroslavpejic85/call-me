@@ -117,7 +117,6 @@ const config = {
     pushVapidPublicKey: process.env.PUSH_VAPID_PUBLIC_KEY || '',
     pushVapidPrivateKey: process.env.PUSH_VAPID_PRIVATE_KEY || '',
     pushVapidEmail: process.env.PUSH_VAPID_EMAIL || 'mailto:admin@example.com',
-    randomImageUrl: process.env.RANDOM_IMAGE_URL || '',
     ringTimeout: parseInt(process.env.RINGING_TIMEOUT, 10) || 30,
     // Outbound webhooks for call lifecycle events (external integrations)
     webhookEnabled: process.env.WEBHOOK_ENABLED === 'true',
@@ -320,19 +319,6 @@ app.get('/', (req, res) => {
 // Serve the privacy policy page
 app.get('/privacy', (req, res) => {
     res.sendFile(PRIVACY);
-});
-
-// Get Random Background Images
-app.get('/randomImage', async (req, res) => {
-    if (config.randomImageUrl === '') return; // Keep client default bg image
-
-    try {
-        const response = await axios.get(config.randomImageUrl);
-        const data = response.data;
-        res.send(data);
-    } catch (error) {
-        log.error('Error fetching image', error.message);
-    }
 });
 
 // List available locales (derived from app/locales/*.json)

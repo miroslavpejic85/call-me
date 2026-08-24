@@ -111,17 +111,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background:
-        linear-gradient(135deg, rgba(15, 20, 25, 0.95) 0%, rgba(26, 31, 46, 0.95) 100%),
-        url('background.jpg') center/cover no-repeat fixed,
-        var(--fallback-bg);
-    will-change: background;
-}
-
-@media (max-width: 768px) {
-    body {
-        background-attachment: scroll;
-    }
+    background: var(--fallback-bg);
 }
 
 /* Selection Color */
@@ -135,45 +125,8 @@ body {
     color: white;
 }
 
-/* Modern Unsplash and Author Attribution */
-#attribution {
-    position: static;
-    margin: 0 0 0 auto;
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--border-radius);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-base);
-}
-
-#attribution:hover {
-    background: var(--glass-bg-strong);
-    border-color: var(--glass-border-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-#attribution:empty {
-    display: none;
-}
-
-/* Random image */
+/* Image defaults */
 img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Ensure the random image spans the entire screen */
-#randomImage {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -339,8 +292,8 @@ button {
 .home-shell {
     width: 100%;
     min-height: 100%;
-    grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
-    background: var(--page-overlay-bg);
+    grid-template-columns: minmax(360px, 0.72fr) minmax(560px, 1.28fr);
+    background: #0c1117;
 }
 
 .home-intro,
@@ -356,7 +309,8 @@ button {
     justify-content: space-between;
     min-height: 100vh;
     color: var(--text-color);
-    background: linear-gradient(90deg, rgba(10, 15, 23, 0.94), rgba(10, 15, 23, 0.68));
+    background: linear-gradient(90deg, rgba(7, 11, 16, 0.94), rgba(7, 11, 16, 0.72));
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .home-brand {
@@ -383,12 +337,13 @@ button {
     border-radius: var(--border-radius-sm);
     color: #fff;
     background: var(--primary-color);
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.28);
 }
 
 .home-intro-content {
-    width: min(620px, 100%);
-    margin: clamp(72px, 14vh, 140px) 0;
+    width: min(520px, 100%);
+    margin: auto 0;
+    padding: 72px 0;
 }
 
 .home-eyebrow,
@@ -402,28 +357,28 @@ button {
 }
 
 .home-intro h1 {
-    max-width: 600px;
+    max-width: 520px;
     margin: 0;
     color: #fff;
-    font-size: 6rem;
+    font-size: clamp(3.5rem, 5.6vw, 5rem);
     font-weight: var(--font-weight-bold);
-    line-height: 0.94;
+    line-height: 1;
     overflow-wrap: anywhere;
 }
 
 .home-lead {
     max-width: 540px;
-    margin: 28px 0 0;
+    margin: 20px 0 0;
     color: var(--text-secondary);
-    font-size: 1.15rem;
-    line-height: 1.7;
+    font-size: 1.05rem;
+    line-height: 1.65;
 }
 
 .home-benefits {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 32px;
     color: var(--text-secondary);
     font-size: var(--font-size-sm);
 }
@@ -432,6 +387,9 @@ button {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .home-benefits i,
@@ -470,16 +428,19 @@ button {
 .home-setup {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 100vh;
-    padding-top: 110px;
-    padding-bottom: 64px;
-    background: rgba(15, 20, 25, 0.96);
+    padding-top: 84px;
+    padding-bottom: 40px;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px), #0c1117;
+    background-size: 32px 32px;
 }
 
 .home-setup-topline {
     position: absolute;
-    top: clamp(28px, 4vw, 52px);
+    top: 28px;
     left: clamp(28px, 4vw, 64px);
     right: clamp(28px, 4vw, 64px);
     display: flex;
@@ -3319,7 +3280,7 @@ textarea:focus-visible {
 z-index:
     - 1. remoteVideo
     - 2. streamStatusContainer
-    - 3. localVideoContainer, attribution
+    - 3. localVideoContainer
     - 4. sessionTime
     - 5. userSidebar
     - 6. file-transfer-status
@@ -3913,8 +3874,65 @@ z-index:
 
 /* Home layout overrides must follow the legacy sign-in card breakpoints. */
 .home-setup .card {
-    width: min(520px, 100%);
+    flex: 0 0 auto;
+    width: min(620px, 100%);
     max-width: none !important;
+    padding: clamp(22px, 3vw, 32px) !important;
+    background: rgba(17, 23, 31, 0.94) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38) !important;
+    overflow: hidden !important;
+}
+
+.home-setup .card-header {
+    padding: 0 0 22px !important;
+}
+
+.home-setup .card-body {
+    padding: 0 !important;
+}
+
+.home-setup .card-header h2 {
+    font-size: 2rem !important;
+}
+
+.home-setup .media-toggles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.home-setup .media-toggle-item {
+    padding: 10px 12px;
+    border-width: 1px;
+    border-radius: 9px;
+    background: rgba(8, 12, 17, 0.72);
+}
+
+.home-setup .media-toggle-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.home-setup #roomIn,
+.home-setup #usernameIn,
+.home-setup .direct-call-row input {
+    border-width: 1px;
+    border-radius: 9px;
+    background-color: rgba(8, 12, 17, 0.72);
+}
+
+.home-setup #roomIn:focus,
+.home-setup #usernameIn:focus,
+.home-setup .direct-call-row input:focus {
+    transform: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+
+.home-setup #signInBtn,
+.home-setup .btn-call-now {
+    border-radius: 9px;
 }
 
 @media (max-width: 900px) {
@@ -3936,16 +3954,15 @@ z-index:
 
     .home-intro {
         min-height: auto;
-        padding-bottom: 48px;
-        background: rgba(10, 15, 23, 0.82);
+        padding: 20px 28px;
+        background: rgba(7, 11, 16, 0.96);
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .home-intro-content {
-        margin: 72px 0 56px;
-    }
-
-    .home-intro h1 {
-        font-size: 4.5rem;
+    .home-intro-content,
+    .home-intro-footer {
+        display: none;
     }
 
     .home-brand,
@@ -3955,8 +3972,15 @@ z-index:
     }
 
     .home-setup {
-        min-height: auto;
-        padding-top: 96px;
+        justify-content: flex-start;
+        min-height: calc(100dvh - 79px);
+        padding: 84px clamp(24px, 6vw, 48px) 36px;
+    }
+
+    .home-setup-topline {
+        top: 22px;
+        right: clamp(24px, 6vw, 48px);
+        left: clamp(24px, 6vw, 48px);
     }
 
     .home-setup-topline a {
@@ -3982,16 +4006,6 @@ z-index:
     .meeting-fields #roomIn,
     .meeting-fields #usernameIn {
         padding-right: 88px;
-    }
-
-    .home-intro-footer {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    #attribution {
-        margin-left: 0;
-        max-width: 100%;
     }
 }
 
@@ -4073,45 +4087,45 @@ z-index:
 @media (max-width: 540px) {
     .home-intro,
     .home-setup {
-        padding-right: 20px;
-        padding-left: 20px;
+        padding-right: 16px;
+        padding-left: 16px;
     }
 
-    .home-intro-content {
-        margin: 64px 0 48px;
+    .home-intro {
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
 
-    .home-intro h1 {
-        font-size: 3.25rem;
-    }
-
-    .home-benefits {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-top: 32px;
-    }
-
-    .home-benefits span:last-child {
-        grid-column: 1 / -1;
+    .home-brand-mark {
+        width: 34px;
+        height: 34px;
     }
 
     .home-setup {
-        padding-top: 88px;
-        padding-bottom: 40px;
+        min-height: calc(100dvh - 67px);
+        padding-top: 72px;
+        padding-bottom: 24px;
     }
 
     .home-setup-topline {
-        top: 24px;
-        right: 20px;
-        left: 20px;
+        top: 16px;
+        right: 16px;
+        left: 16px;
     }
 
-    .card-header {
-        padding: 0 0 var(--spacing-lg) !important;
+    .home-setup .card {
+        padding: 18px !important;
     }
 
-    .card-header h2 {
+    .home-setup .card-header {
+        padding-bottom: 18px !important;
+    }
+
+    .home-setup .media-toggles {
+        grid-template-columns: 1fr;
+    }
+
+    .home-setup .card-header h2 {
         font-size: 1.75rem !important;
     }
 }
