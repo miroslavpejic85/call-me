@@ -565,10 +565,17 @@ function unauthorized(res) {
     res.json({ data: '401 Unauthorized' });
 }
 
-// Utility function to check API key authorization
+// Utility function to check API key authorization.
+// Fails closed: an unset/empty API_KEY_SECRET rejects every request instead
+// of matching a missing header (undefined === undefined). Uses a constant-time
+// comparison to avoid leaking the secret through timing side-channels.
 const isAuthorized = (req) => {
+    if (!config.apiKeySecret) return false;
     const { authorization } = req.headers;
-    return authorization === config.apiKeySecret;
+    if (typeof authorization !== 'string') return false;
+    const provided = Buffer.from(authorization);
+    const expected = Buffer.from(config.apiKeySecret);
+    return provided.length === expected.length && crypto.timingSafeEqual(provided, expected);
 };
 
 // Warn if the API key is missing or still set to the default value.
