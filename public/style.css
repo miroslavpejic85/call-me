@@ -3097,20 +3097,81 @@ input {
 
 /* Toastify custom styles */
 .toastify-custom {
+    --toast-accent: var(--info-color);
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    width: max-content !important;
+    min-width: min(280px, calc(100vw - 32px));
+    max-width: min(420px, calc(100vw - 32px)) !important;
+    padding: 12px 14px !important;
+    color: var(--text-color) !important;
+    background: var(--glass-bg-strong) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-left: 3px solid var(--toast-accent) !important;
+    border-radius: var(--border-radius) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: var(--shadow-lg) !important;
     cursor: default !important;
-    text-align: center;
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+    text-align: left;
+}
+
+.toastify-success {
+    --toast-accent: var(--success-color);
+}
+
+.toastify-warning {
+    --toast-accent: var(--warning-color);
+}
+
+.toastify-error {
+    --toast-accent: var(--danger-color);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.toast-icon {
+    flex: 0 0 auto;
+    color: var(--toast-accent);
+    font-size: var(--font-size-base);
+}
+
+.toast-message {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .toastify-custom .toast-close {
-    color: #fff !important;
-    opacity: 0.8;
-    padding-left: 8px;
+    display: grid;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    margin: -4px -4px -4px 0;
+    padding: 0;
+    place-items: center;
+    color: var(--text-secondary) !important;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    opacity: 1;
+    line-height: 1;
+    transition:
+        color var(--transition-fast),
+        background var(--transition-fast);
 }
 
 .toastify-custom .toast-close:hover {
-    opacity: 1;
+    color: var(--text-color) !important;
+    background: rgba(255, 255, 255, 0.16);
 }
 
 .swal2-timer-progress-bar {

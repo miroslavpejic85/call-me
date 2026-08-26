@@ -2242,46 +2242,36 @@ function handleLeave(disconnect = true) {
 
 // Display toast messages using Toastify
 function toast(message, icon = 'info', position = 'top', timer = 3000) {
-    const backgroundMap = {
-        success: 'linear-gradient(to right, #10b981, #059669)',
-        warning: 'linear-gradient(to right, #f59e0b, #d97706)',
-        error: 'linear-gradient(to right, #ef4444, #dc2626)',
-        info: 'linear-gradient(to right, #3b82f6, #2563eb)',
-    };
-
     const iconMap = {
-        success: '<i class="fas fa-check-circle"></i>',
-        warning: '<i class="fas fa-exclamation-triangle"></i>',
-        error: '<i class="fas fa-times-circle"></i>',
-        info: '<i class="fas fa-info-circle"></i>',
+        success: 'fa-check-circle',
+        warning: 'fa-exclamation-triangle',
+        error: 'fa-times-circle',
+        info: 'fa-info-circle',
     };
 
     const gravity = position === 'bottom' ? 'bottom' : 'top';
-    const toastIcon = iconMap[icon] || iconMap.info;
-    const background = backgroundMap[icon] || backgroundMap.info;
+    const toastType = iconMap[icon] ? icon : 'info';
 
     const node = document.createElement('span');
-    node.innerHTML = `${toastIcon}  ${message}`;
-    node.style.display = 'inline-flex';
-    node.style.alignItems = 'center';
-    node.style.gap = '8px';
+    node.className = 'toast-content';
+    node.setAttribute('role', toastType === 'error' ? 'alert' : 'status');
+
+    const iconNode = document.createElement('i');
+    iconNode.className = `toast-icon fas ${iconMap[toastType]}`;
+    iconNode.setAttribute('aria-hidden', 'true');
+
+    const messageNode = document.createElement('span');
+    messageNode.className = 'toast-message';
+    messageNode.textContent = String(message);
+
+    node.append(iconNode, messageNode);
 
     Toastify({
         node,
         duration: timer,
         gravity,
         position: 'center',
-        escapeMarkup: false,
-        className: 'toastify-custom',
-        style: {
-            background,
-            borderRadius: 'var(--border-radius, 12px)',
-            fontFamily: 'inherit',
-            fontSize: '0.9rem',
-            padding: '12px 20px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            maxWidth: '400px',
-        },
+        className: `toastify-custom toastify-${toastType}`,
         close: timer > 3000,
         stopOnFocus: true,
     }).showToast();
