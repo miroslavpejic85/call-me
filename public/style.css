@@ -3540,9 +3540,9 @@ z-index:
     right: 0;
     bottom: 0;
     z-index: 150;
-    background: rgba(15, 20, 25, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(9, 13, 20, 0.86);
+    backdrop-filter: blur(18px) saturate(0.8);
+    -webkit-backdrop-filter: blur(18px) saturate(0.8);
     display: none;
     align-items: center;
     justify-content: center;
@@ -3555,41 +3555,53 @@ z-index:
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl);
+}
+
+.calling-avatar-wrap {
+    position: relative;
+    width: 112px;
+    height: 112px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.calling-pulse-ring,
+.calling-avatar {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
 }
 
 .calling-pulse-ring {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
     border: 3px solid var(--primary-color);
     animation: callingPulse 1.5s ease-out infinite;
-    position: absolute;
 }
 
-.calling-icon {
-    font-size: 2.5rem;
-    color: var(--primary-light);
-    width: 100px;
-    height: 100px;
+.calling-avatar {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(59, 130, 246, 0.15);
-    border-radius: 50%;
-    border: 2px solid var(--primary-color);
-    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(145deg, #2563eb, #059669);
+    border: 2px solid rgba(255, 255, 255, 0.34);
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.35);
+    font-size: 2.25rem;
+    font-weight: var(--font-weight-bold);
 }
 
 .calling-status {
-    color: var(--text-color);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
     margin: 0;
 }
 
 .calling-username {
-    color: var(--primary-light);
+    max-width: min(80vw, 420px);
+    overflow-wrap: anywhere;
+    color: var(--text-color);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     margin: 0;
@@ -3598,13 +3610,22 @@ z-index:
 .calling-timer {
     color: var(--text-muted);
     font-size: var(--font-size-sm);
+    min-height: 1.4em;
 }
 
 .btn-cancel-call {
-    margin-top: var(--spacing-md);
-    padding: 10px 32px !important;
-    border-radius: 24px !important;
-    font-size: var(--font-size-base) !important;
+    margin-top: var(--spacing-xl);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 8px 28px rgba(239, 68, 68, 0.38);
+}
+
+.btn-cancel-call:hover {
+    box-shadow: 0 10px 34px rgba(239, 68, 68, 0.52);
+}
+
+.btn-cancel-call:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 4px;
 }
 
 @keyframes callingPulse {
@@ -3617,6 +3638,17 @@ z-index:
         transform: scale(1.8);
         opacity: 0;
         border-color: var(--primary-light);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .calling-overlay,
+    .calling-pulse-ring {
+        animation: none;
+    }
+
+    .btn-cancel-call {
+        transition: none;
     }
 }
 

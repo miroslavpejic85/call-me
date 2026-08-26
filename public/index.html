@@ -234,15 +234,33 @@
             <span id="sessionTime">0s</span>
 
             <!-- Calling overlay (outgoing) -->
-            <div id="callingOverlay" class="calling-overlay">
+            <div
+                id="callingOverlay"
+                class="calling-overlay"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="callingUsername"
+                aria-describedby="callingStatus callingTimer"
+                aria-hidden="true"
+            >
                 <div class="calling-overlay-content">
-                    <div class="calling-pulse-ring"></div>
-                    <i class="fas fa-phone calling-icon"></i>
-                    <p class="calling-status" data-i18n="room.callingOverlay">Calling...</p>
+                    <div class="calling-avatar-wrap" aria-hidden="true">
+                        <div class="calling-pulse-ring"></div>
+                        <div id="callingAvatar" class="calling-avatar"></div>
+                    </div>
                     <p id="callingUsername" class="calling-username"></p>
-                    <span id="callingTimer" class="calling-timer">0s</span>
-                    <button id="cancelCallBtn" class="btn btn-danger btn-cancel-call" data-i18n="room.cancelCall">
-                        Cancel
+                    <p id="callingStatus" class="calling-status" data-i18n="room.callingOverlay" aria-live="polite">
+                        Calling...
+                    </p>
+                    <span id="callingTimer" class="calling-timer"></span>
+                    <button
+                        id="cancelCallBtn"
+                        class="btn-call-action btn-cancel-call"
+                        type="button"
+                        title="Cancel call"
+                        aria-label="Cancel call"
+                    >
+                        <i class="fas fa-phone-slash" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>

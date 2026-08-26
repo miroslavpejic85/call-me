@@ -83,6 +83,7 @@ const directCallInput = document.getElementById('directCallInput');
 const directCallBtn = document.getElementById('directCallBtn');
 
 const callingOverlay = document.getElementById('callingOverlay');
+const callingAvatar = document.getElementById('callingAvatar');
 const callingUsername = document.getElementById('callingUsername');
 const callingTimer = document.getElementById('callingTimer');
 const cancelCallBtn = document.getElementById('cancelCallBtn');
@@ -106,6 +107,7 @@ let connectedUser;
 let pendingUser; // Track outgoing call target
 let callingTimerId = null; // Timer for calling overlay
 let callingElapsed = 0; // Seconds elapsed while calling
+let callingPreviousFocus = null;
 let incomingCallData = null; // Pending incoming call data
 let incomingCallTimerId = null; // Auto-decline timer for incoming call
 let ringTimeout = 30; // Seconds before unanswered call is auto-cancelled/declined (from server)
@@ -672,6 +674,7 @@ function handleListeners() {
     directCallBtn.addEventListener('click', handleDirectCallClick);
     directCallInput.addEventListener('keyup', (e) => handleKeyUp(e, handleDirectCallClick));
     cancelCallBtn.addEventListener('click', handleCancelCall);
+    document.addEventListener('keydown', handleCallingOverlayKeydown);
     acceptCallBtn.addEventListener('click', handleAcceptIncomingCall);
     declineCallBtn.addEventListener('click', handleDeclineIncomingCall);
 
@@ -877,29 +880,65 @@ function handleDirectCallClick() {
 function showCallingOverlay(targetUser) {
     if (!callingOverlay) return;
     callingElapsed = 0;
+    callingPreviousFocus = document.activeElement;
+    if (callingAvatar) {
+        callingAvatar.textContent = targetUser
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) => Array.from(part)[0])
+            .join('')
+            .toUpperCase();
+    }
     if (callingUsername) callingUsername.textContent = targetUser;
-    if (callingTimer) callingTimer.textContent = '0s';
+    updateCallingCountdown();
+    if (cancelCallBtn) {
+        const cancelLabel = t('room.cancelCall');
+        cancelCallBtn.title = cancelLabel;
+        cancelCallBtn.setAttribute('aria-label', cancelLabel);
+    }
+    callingOverlay.setAttribute('aria-hidden', 'false');
     callingOverlay.style.display = 'flex';
+    cancelCallBtn?.focus();
 
     if (callingTimerId) clearInterval(callingTimerId);
     callingTimerId = setInterval(() => {
         callingElapsed++;
-        if (callingTimer) callingTimer.textContent = callingElapsed + 's';
         if (callingElapsed >= ringTimeout) {
-            handleCancelCall();
+            handleCallTimeout();
+            return;
         }
+        updateCallingCountdown();
     }, 1000);
+}
+
+function updateCallingCountdown() {
+    if (!callingTimer) return;
+    callingTimer.textContent = t('room.callingCountdown', {
+        seconds: Math.max(ringTimeout - callingElapsed, 0),
+    });
 }
 
 // Hide calling overlay
 function hideCallingOverlay() {
     if (!callingOverlay) return;
     callingOverlay.style.display = 'none';
+    callingOverlay.setAttribute('aria-hidden', 'true');
     if (callingTimerId) {
         clearInterval(callingTimerId);
         callingTimerId = null;
     }
     callingElapsed = 0;
+    if (callingPreviousFocus?.isConnected) {
+        callingPreviousFocus.focus();
+    }
+    callingPreviousFocus = null;
+}
+
+function handleCallingOverlayKeydown(event) {
+    if (event.key !== 'Escape' || callingOverlay?.getAttribute('aria-hidden') !== 'false') return;
+    event.preventDefault();
+    handleCancelCall();
 }
 
 // Handle cancel call button click
@@ -911,6 +950,16 @@ function handleCancelCall() {
         pendingUser = null;
     }
     toast(t('messages.callEnded'), 'info', 'top', 2000);
+}
+
+function handleCallTimeout() {
+    const timedOutUser = pendingUser;
+    hideCallingOverlay();
+    if (timedOutUser) {
+        sendMsg({ type: 'leave', name: timedOutUser });
+        pendingUser = null;
+        toast(t('room.callTimeout', { username: timedOutUser }), 'warning', 'top', 4000);
+    }
 }
 
 // Share Room click handler

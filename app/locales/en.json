@@ -44,6 +44,7 @@
         "noChatMessages": "No messages yet. Start chatting once connected!",
         "noActiveCall": "Select a user to start a video call",
         "callingOverlay": "Calling...",
+        "callingCountdown": "No answer in __seconds__s",
         "incomingCall": "Incoming call",
         "cancelCall": "Cancel",
         "callDeclined": "__username__ declined the call",
