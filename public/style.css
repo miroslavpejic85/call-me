@@ -543,6 +543,94 @@ button {
     padding-left: 48px;
 }
 
+.room-input-wrapper::after {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--success-color);
+    border-radius: 9px;
+    content: '';
+    opacity: 0;
+    pointer-events: none;
+}
+
+.room-generated .room-input-wrapper::after {
+    animation: room-generated-ring 650ms ease-out;
+}
+
+.room-generated #roomIn {
+    border-color: rgba(16, 185, 129, 0.65);
+}
+
+.room-generated-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-height: 0;
+    margin-top: 0;
+    color: var(--success-color);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-6px);
+    transition:
+        max-height var(--transition-base),
+        margin-top var(--transition-base),
+        opacity var(--transition-base),
+        transform var(--transition-base);
+}
+
+.room-generated .room-generated-status {
+    max-height: 32px;
+    margin-top: 8px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.room-generated-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: #07140f;
+    background: var(--success-color);
+    transform: scale(0.7);
+}
+
+.room-generated .room-generated-check {
+    animation: room-generated-check 350ms 100ms cubic-bezier(0.2, 0.9, 0.3, 1.35) forwards;
+}
+
+@keyframes room-generated-ring {
+    0% {
+        opacity: 0.9;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.035, 1.18);
+    }
+}
+
+@keyframes room-generated-check {
+    to {
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .room-generated .room-input-wrapper::after,
+    .room-generated .room-generated-check {
+        animation: none;
+    }
+
+    .room-generated-status {
+        transition: none;
+    }
+}
+
 #signInBtn {
     display: flex;
     align-items: center;

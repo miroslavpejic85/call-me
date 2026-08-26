@@ -22,6 +22,7 @@ const githubDiv = document.getElementById('githubDiv');
 const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
 const roomIn = document.getElementById('roomIn');
+const roomField = document.getElementById('roomField');
 const signInBtn = document.getElementById('signInBtn');
 const joinVideoToggle = document.getElementById('joinVideoToggle');
 const joinAudioToggle = document.getElementById('joinAudioToggle');
@@ -643,7 +644,10 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
-    if (roomIn) roomIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    if (roomIn) {
+        roomIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+        roomIn.addEventListener('input', () => roomField?.classList.remove('room-generated'));
+    }
     document.getElementById('randomUsernameBtn').addEventListener('click', handleRandomUsername);
     document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
     document.getElementById('randomRoomBtn').addEventListener('click', handleRandomRoom);
@@ -962,6 +966,9 @@ async function handleCopyUsername() {
 function handleRandomRoom() {
     if (!roomIn) return;
     roomIn.value = crypto.randomUUID();
+    roomField?.classList.remove('room-generated');
+    void roomField?.offsetWidth;
+    roomField?.classList.add('room-generated');
     roomIn.focus();
 }
 

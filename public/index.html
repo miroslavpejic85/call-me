@@ -101,36 +101,6 @@
                         <div class="meeting-fields">
                             <!-- Sign-in Form -->
                             <div class="mb-3">
-                                <label for="roomIn" data-i18n="signIn.room">Room name (default Public)</label>
-                                <!-- Input field for entering the room name -->
-                                <div class="username-input-wrapper">
-                                    <i class="field-leading-icon fas fa-hashtag"></i>
-                                    <input
-                                        id="roomIn"
-                                        type="text"
-                                        placeholder="Room name (e.g. Support)"
-                                        data-i18n-placeholder="signIn.room"
-                                        autocomplete="off"
-                                    />
-                                    <button
-                                        id="randomRoomBtn"
-                                        class="random-username-btn"
-                                        type="button"
-                                        title="Generate random room name"
-                                    >
-                                        <i class="fas fa-random"></i>
-                                    </button>
-                                    <button
-                                        id="copyRoomBtn"
-                                        class="copy-username-btn"
-                                        type="button"
-                                        title="Copy room name"
-                                    >
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="mb-3">
                                 <label for="usernameIn" data-i18n="signIn.username">Choose a display name</label>
                                 <!-- Input field for entering the username -->
                                 <div class="username-input-wrapper">
@@ -158,6 +128,45 @@
                                     >
                                         <i class="fas fa-copy"></i>
                                     </button>
+                                </div>
+                            </div>
+                            <div id="roomField" class="mb-3 room-field">
+                                <label for="roomIn" data-i18n="signIn.room">Room name (default Public)</label>
+                                <!-- Input field for entering the room name -->
+                                <div class="username-input-wrapper room-input-wrapper">
+                                    <i class="field-leading-icon fas fa-hashtag"></i>
+                                    <input
+                                        id="roomIn"
+                                        type="text"
+                                        placeholder="Room name (e.g. Support)"
+                                        data-i18n-placeholder="signIn.room"
+                                        autocomplete="off"
+                                    />
+                                    <button
+                                        id="randomRoomBtn"
+                                        class="random-username-btn"
+                                        type="button"
+                                        title="Generate random room name"
+                                    >
+                                        <i class="fas fa-random"></i>
+                                    </button>
+                                    <button
+                                        id="copyRoomBtn"
+                                        class="copy-username-btn"
+                                        type="button"
+                                        title="Copy room name"
+                                    >
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div
+                                    id="roomGeneratedStatus"
+                                    class="room-generated-status"
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    <span class="room-generated-check"><i class="fas fa-check"></i></span>
+                                    <span>Private room ready</span>
                                 </div>
                             </div>
                         </div>
