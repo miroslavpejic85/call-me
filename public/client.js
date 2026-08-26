@@ -15,6 +15,9 @@ const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 // DOM elements
 const appTitle = document.getElementById('appTitle');
 const appName = document.getElementById('appName');
+const homeBrandLink = document.getElementById('homeBrandLink');
+const homeBrandName = document.getElementById('homeBrandName');
+const homeFooterName = document.getElementById('homeFooterName');
 const sessionTime = document.getElementById('sessionTime');
 const roomNameLabel = document.getElementById('roomNameLabel');
 const roomNameLabelValue = document.getElementById('roomNameLabelValue');
@@ -242,40 +245,37 @@ function handleConfig() {
     // Apply branding for the room in the URL (?room=Name), if any. When the
     // user joins a room via the sign-in form instead, applyBranding() is called
     // again from handleSignIn() with the room actually joined.
-    const room = new URLSearchParams(window.location.search).get('room');
+    const room = roomName || new URLSearchParams(window.location.search).get('room');
     applyBranding(room);
 }
 
 // Apply the global config, overlaying any per-room visual overrides for `room`.
 // Branding only (NOT security). Safe to call multiple times.
 function applyBranding(room) {
-    const roomCfg = (room && app?.rooms && app.rooms[room]) || {};
+    const roomCfg = (room && app.rooms && app.rooms[room]) || {};
     const cfg = { ...app, ...roomCfg };
+    const title = cfg.title || t('appTitle');
+    const name = cfg.name || t('appName');
 
-    // Only override if custom values are provided in config
-    if (cfg?.title && cfg.title !== 'Call-me') {
-        appTitle.innerText = cfg.title;
-    }
-    if (cfg?.name && cfg.name !== 'Call-me') {
-        appName.innerText = cfg.name;
-    }
+    appTitle.textContent = title;
+    appName.textContent = name;
+    if (homeBrandLink) homeBrandLink.setAttribute('aria-label', `${name} home`);
+    if (homeBrandName) homeBrandName.textContent = name;
+    if (homeFooterName) homeFooterName.textContent = name;
 
-    // Optional per-room welcome subtitle
     const subtitleEl = document.querySelector('.sign-in-subtitle');
-    if (subtitleEl && cfg?.subtitle) {
-        subtitleEl.innerText = cfg.subtitle;
-    }
+    if (subtitleEl) subtitleEl.textContent = cfg.subtitle || t('signIn.subtitle');
 
-    // Optional per-room theme color (drives the --primary-color CSS variable)
-    if (cfg?.themeColor) {
-        const root = document.documentElement;
+    const root = document.documentElement;
+    if (cfg.themeColor) {
         root.style.setProperty('--primary-color', cfg.themeColor);
         root.style.setProperty('--primary-hover', cfg.themeColor);
+    } else {
+        root.style.removeProperty('--primary-color');
+        root.style.removeProperty('--primary-hover');
     }
 
-    if (!(cfg?.showGithub ?? true) && githubDiv) {
-        elemDisplay(githubDiv, false);
-    }
+    if (githubDiv) githubDiv.style.display = (cfg.showGithub ?? true) ? '' : 'none';
 }
 
 // Resolve the host password before opening the Socket.IO connection.
