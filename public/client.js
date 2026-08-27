@@ -102,6 +102,12 @@ const pushTestBtn = document.getElementById('pushTestBtn');
 // Ensure app is defined, even if config.js is not loaded
 const app = window.myAppConfig || {};
 
+const SCRAMBLE_POOLS = {
+    upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    lower: 'abcdefghijklmnopqrstuvwxyz',
+    digit: '0123456789',
+};
+
 // User and connection information
 let userInfo;
 let userName;
@@ -648,7 +654,6 @@ function handleListeners() {
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
     if (roomIn) {
         roomIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
-        roomIn.addEventListener('input', () => roomField?.classList.remove('room-generated'));
     }
     document.getElementById('randomUsernameBtn').addEventListener('click', handleRandomUsername);
     document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
@@ -984,6 +989,74 @@ async function handleShareRoomClick() {
     }
 }
 
+// Pick a decoy glyph that keeps the same visual shape as the final character
+function randomGlyphFor(char) {
+    if (/[A-Z]/.test(char)) return pickRandom(SCRAMBLE_POOLS.upper);
+    if (/[a-z]/.test(char)) return pickRandom(SCRAMBLE_POOLS.lower);
+    if (/[0-9]/.test(char)) return pickRandom(SCRAMBLE_POOLS.digit);
+    return char;
+}
+
+function pickRandom(pool) {
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// Reveal a value inside an input with a fast left-to-right decoding flicker
+function scrambleTextInto(input, finalValue, { duration = 480, flickerRate = 34, onComplete } = {}) {
+    if (!input) return;
+
+    if (input._scrambleRaf) {
+        cancelAnimationFrame(input._scrambleRaf);
+        input._scrambleRaf = null;
+    }
+
+    const finish = () => {
+        input.value = finalValue;
+        input.classList.remove('is-scrambling');
+        input._scrambleRaf = null;
+        onComplete?.();
+    };
+
+    const chars = [...finalValue];
+    if (!chars.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finish();
+        return;
+    }
+
+    const revealStep = duration / chars.length;
+    const start = performance.now();
+    let lastFlicker = 0;
+    let frame = chars.map(randomGlyphFor);
+
+    input.classList.add('is-scrambling');
+
+    const tick = (now) => {
+        const revealed = Math.floor((now - start) / revealStep);
+        if (revealed >= chars.length) {
+            finish();
+            return;
+        }
+        if (now - lastFlicker >= flickerRate) {
+            lastFlicker = now;
+            frame = chars.map(randomGlyphFor);
+        }
+        input.value = chars.map((char, i) => (i < revealed ? char : frame[i])).join('');
+        input._scrambleRaf = requestAnimationFrame(tick);
+    };
+
+    input._scrambleRaf = requestAnimationFrame(tick);
+}
+
+// Spin the trigger icon while the value is being decoded
+function pulseGenerateBtn(btn) {
+    const icon = btn?.querySelector('i');
+    if (!icon) return;
+    icon.classList.remove('is-shuffling');
+    void icon.offsetWidth;
+    icon.classList.add('is-shuffling');
+    icon.addEventListener('animationend', () => icon.classList.remove('is-shuffling'), { once: true });
+}
+
 // Generate random username
 function handleRandomUsername() {
     const adjectives = ['Cool', 'Fast', 'Bright', 'Swift', 'Bold', 'Calm', 'Lucky', 'Brave', 'Clever', 'Happy'];
@@ -991,7 +1064,8 @@ function handleRandomUsername() {
     const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
     const num = Math.floor(Math.random() * 1000);
-    usernameIn.value = `${adj}${noun}${num}`;
+    pulseGenerateBtn(document.getElementById('randomUsernameBtn'));
+    scrambleTextInto(usernameIn, `${adj}${noun}${num}`, { duration: 420 });
     usernameIn.focus();
 }
 
@@ -1014,10 +1088,15 @@ async function handleCopyUsername() {
 // Generate random room name
 function handleRandomRoom() {
     if (!roomIn) return;
-    roomIn.value = crypto.randomUUID();
     roomField?.classList.remove('room-generated');
-    void roomField?.offsetWidth;
-    roomField?.classList.add('room-generated');
+    pulseGenerateBtn(document.getElementById('randomRoomBtn'));
+    scrambleTextInto(roomIn, crypto.randomUUID(), {
+        duration: 620,
+        onComplete: () => {
+            void roomField?.offsetWidth;
+            roomField?.classList.add('room-generated');
+        },
+    });
     roomIn.focus();
 }
 
