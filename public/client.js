@@ -22,6 +22,8 @@ const sessionTime = document.getElementById('sessionTime');
 const roomNameLabel = document.getElementById('roomNameLabel');
 const roomNameLabelValue = document.getElementById('roomNameLabelValue');
 const githubDiv = document.getElementById('githubDiv');
+const aboutDiv = document.getElementById('aboutDiv');
+const aboutLink = document.getElementById('aboutLink');
 const signInPage = document.getElementById('signInPage');
 const usernameIn = document.getElementById('usernameIn');
 const roomIn = document.getElementById('roomIn');
@@ -282,6 +284,14 @@ function applyBranding(room) {
     }
 
     if (githubDiv) githubDiv.style.display = (cfg.showGithub ?? true) ? '' : 'none';
+    if (aboutDiv && aboutLink) {
+        const showAbout = Boolean(cfg.about?.enable && cfg.about.url);
+        aboutDiv.style.display = showAbout ? 'flex' : 'none';
+        if (showAbout) {
+            aboutLink.href = cfg.about.url;
+            aboutLink.setAttribute('aria-label', `About ${name}`);
+        }
+    }
 }
 
 // Resolve the host password before opening the Socket.IO connection.

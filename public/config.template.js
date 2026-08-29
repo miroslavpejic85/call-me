@@ -4,6 +4,10 @@ window.myAppConfig = {
     title: 'Call-me',
     name: 'Call-me',
     showGithub: true,
+    about: {
+        enable: true,
+        url: 'https://docs.mirotalk.com/sites/cme.html',
+    },
 
     // Optional per-room visual overrides (branding only, NOT security).
     // Keys are room names (as used in ?room=Name). Any omitted field falls

@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.5.23",
+    "version": "1.5.24",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -21,13 +21,13 @@
     },
     "dependencies": {
         "@ngrok/ngrok": "1.7.0",
-        "@sentry/node": "^10.71.0",
+        "@sentry/node": "^10.72.0",
         "axios": "^1.20.0",
         "colors": "^1.4.0",
         "cors": "^2.8.6",
         "dotenv": "^17.4.2",
         "express": "^5.2.1",
-        "express-rate-limit": "^8.6.2",
+        "express-rate-limit": "^8.7.0",
         "helmet": "^8.3.0",
         "httpolyglot": "0.1.2",
         "js-yaml": "5.4.1",
