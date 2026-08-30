@@ -40,6 +40,8 @@ href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 
 ## Getting Started
 
+**Jump to:** [Features](#features) · [Quick Start](#quick-start) · [Click to Call](#click-to-call) · [Self-Hosting](#self-hosting) · [Fast Integration](#fast-integration) · [API](#api) · [Webhooks](#webhooks)
+
 ### Features
 
 - `End-to-End Encryption` for secure and private communications.
@@ -64,7 +66,10 @@ href="https://github.com/sponsors/miroslavpejic85">Sponsor</a>
 
 ### Quick Start
 
-- #### Using NodeJs
+<details open>
+<summary><strong>Using Node.js</strong></summary>
+
+<br/>
 
 ![nodejs](public/assets/nodejs.png)
 
@@ -90,9 +95,14 @@ npm install
 npm start
 ```
 
+</details>
+
 ---
 
-- #### Using Docker
+<details>
+<summary><strong>Using Docker</strong></summary>
+
+<br/>
 
 ![docker](public/assets/docker.png)
 
@@ -121,6 +131,8 @@ docker-compose pull
 docker-compose up
 ```
 
+</details>
+
 ---
 
 1. `Open` your browser and visit [http://localhost:8000](http://localhost:8000).
@@ -134,6 +146,11 @@ docker-compose up
 ---
 
 ## Click to Call
+
+<details>
+<summary><strong>Direct links, rooms, and per-room branding</strong></summary>
+
+<br/>
 
 Allows a user to `join` the room as a `user1`
 
@@ -168,10 +185,14 @@ You can explore a `widget` example that demonstrates this functionality [here](.
 
 Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in [`public/config.template.js`](./public/config.template.js). Rooms without an entry keep the default look. Visual only — not a security feature.
 
+</details>
+
 ---
 
-<details open>
-<summary>Self-Hosting</summary>
+## Self-Hosting
+
+<details>
+<summary><strong>Ubuntu requirements and install scripts</strong></summary>
 
 </br>
 
@@ -232,6 +253,11 @@ Easily integrate `Call-Me` into your website or application with a [simple ifram
 
 ## API
 
+<details>
+<summary><strong>REST endpoints and curl examples</strong></summary>
+
+<br/>
+
 Get all connected users
 
 ```shell
@@ -268,6 +294,8 @@ curl -X GET "http://localhost:8000/api/v1/stats" -H "authorization: call_me_api_
 ```
 
 Docs: http://localhost:8000/api/v1/docs/ or you can check it out live in prod [here](https://cme.mirotalk.com/api/v1/docs/).
+
+</details>
 
 ---
 
