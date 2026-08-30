@@ -1907,24 +1907,23 @@ function initializeConnection() {
         setupDataChannel(channel);
     };
 
-    // Add existing tracks from local stream
-    stream.getTracks().forEach((track) => thisConnection.addTrack(track, stream));
+    // Never negotiate stopped tracks (for example, a camera disabled before the call).
+    // Reserve a sendrecv transceiver instead so audio and video remain independent and
+    // either kind can be enabled later with replaceTrack(), without renegotiation.
+    const liveTracks = stream.getTracks().filter((track) => track.readyState === 'live');
+    liveTracks.forEach((track) => thisConnection.addTrack(track, stream));
 
-    // Ensure we have transceivers for both audio and video, even if we don't have those tracks
-    // This allows us to receive video/audio from remote peer even if we don't have camera/mic
-    const hasVideo = stream.getVideoTracks().length > 0;
-    const hasAudio = stream.getAudioTracks().length > 0;
+    const hasLiveVideo = liveTracks.some((track) => track.kind === 'video');
+    const hasLiveAudio = liveTracks.some((track) => track.kind === 'audio');
 
-    if (!hasVideo) {
-        // Add video transceiver to receive video from remote peer
-        thisConnection.addTransceiver('video', { direction: 'recvonly' });
-        console.log('Added recvonly video transceiver (no local camera)');
+    if (!hasLiveVideo) {
+        thisConnection.addTransceiver('video', { direction: 'sendrecv' });
+        console.log('Added empty sendrecv video transceiver');
     }
 
-    if (!hasAudio) {
-        // Add audio transceiver to receive audio from remote peer
-        thisConnection.addTransceiver('audio', { direction: 'recvonly' });
-        console.log('Added recvonly audio transceiver (no local microphone)');
+    if (!hasLiveAudio) {
+        thisConnection.addTransceiver('audio', { direction: 'sendrecv' });
+        console.log('Added empty sendrecv audio transceiver');
     }
 
     thisConnection.ontrack = (e) => {
