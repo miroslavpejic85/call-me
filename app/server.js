@@ -91,6 +91,17 @@ const socketConnectionsPerIp = new Map();
 // API endpoints. (key: room + sorted participant pair -> { startedAt, caller, callee, room })
 const callSessions = new Map();
 
+// One-time consent granted by a callee to a specific caller after the callee accepted an
+// incoming call via the offerAccept -> offerCreate handshake. Required before a raw 'offer'
+// signaling message is relayed; prevents an attacker from pushing an offer straight to a
+// victim and triggering the client's auto-answer path (key: roomKey(room, callee) -> { caller, expiresAt }).
+const pendingOfferConsent = new Map();
+
+// Tracks the pair of users currently exchanging signaling for a consented call (populated once
+// a consented 'offer' is relayed). Required before 'answer'/'candidate'/media-status signaling
+// is relayed, so only the two participants of that call can exchange it (key: callKey(room, a, b)).
+const activeSignalingPairs = new Map();
+
 // Timestamp (ms) when the server process started, used for uptime reporting.
 const serverStartedAt = Date.now();
 
@@ -911,6 +922,15 @@ function handleConnection(socket) {
                         ...data,
                         callerMediaStatus: callerMediaStatus,
                     };
+                    if (type === 'offerCreate') {
+                        // This socket (the callee) just accepted the incoming call: grant
+                        // the original caller (toName) one-time consent to send a real
+                        // 'offer' to this callee, expiring with the ring window.
+                        pendingOfferConsent.set(roomKey(room, socket.username), {
+                            caller: toName,
+                            expiresAt: Date.now() + config.ringTimeout * 1000,
+                        });
+                    }
                     sendMsgTo(recipientSocket, offerData);
                 } else {
                     // User is offline — try push notification
@@ -996,11 +1016,41 @@ function handleConnection(socket) {
                     log.debug('Leave room', socket.username);
                     sendMsgTo(recipientSocket, { type: 'leave', name: socket.username });
                 }
+                pendingOfferConsent.delete(roomKey(socket.room, socket.username));
+                activeSignalingPairs.delete(callKey(socket.room, socket.username, name));
                 // A call has ended: report it (with duration) if it was tracked.
                 endCall(socket.room, socket.username, name);
                 break;
+            case 'offer': {
+                // Only relay a raw offer if the target explicitly consented to receive one
+                // from this sender via the offerAccept -> offerCreate handshake. This closes
+                // the gap where an attacker could push an offer straight to a victim and
+                // trigger the client's auto-answer path with no accept click.
+                const consentKey = roomKey(socket.room, name);
+                const consent = pendingOfferConsent.get(consentKey);
+                const isConsented = consent && consent.caller === socket.username && consent.expiresAt > Date.now();
+                if (!isConsented) {
+                    log.warn('Rejected unauthorized offer', { from: socket.username, to: name });
+                    break;
+                }
+                pendingOfferConsent.delete(consentKey);
+                if (recipientSocket !== undefined) {
+                    // Authorize this specific pair to exchange the rest of the handshake
+                    // (answer/candidate) until the call ends.
+                    activeSignalingPairs.set(callKey(socket.room, socket.username, name), true);
+                    sendMsgTo(recipientSocket, { ...data, name: socket.username });
+                }
+                break;
+            }
             default:
                 if (recipientSocket !== undefined) {
+                    // 'answer'/'candidate'/media-status messages are only relayed between the
+                    // two participants of an already-consented call (established by 'offer'
+                    // above), preventing signaling spoofing/hijacking from other room members.
+                    if (!activeSignalingPairs.has(callKey(socket.room, socket.username, name))) {
+                        log.warn('Rejected unauthorized signaling message', { type, from: socket.username, to: name });
+                        break;
+                    }
                     // The 'answer' relay marks the point where the WebRTC session is
                     // established between the two peers: treat it as call.started.
                     if (type === 'answer') {
@@ -1080,6 +1130,8 @@ function handleConnection(socket) {
             const key = roomKey(room, name);
             users.delete(key);
             userMediaStatus.delete(key); // Clean up media status
+            pendingOfferConsent.delete(key);
+            clearActiveSignalingPairsFor(room, name);
             broadcastConnectedUsers(room);
             // End any active call this user was part of, then report the departure.
             endCallsForUser(room, name);
@@ -1236,6 +1288,18 @@ function endCallsForUser(room, user) {
                 callee: session.callee,
                 durationSeconds,
             });
+        }
+    }
+}
+
+// Revoke any consented signaling authorization involving a user (used on disconnect/leave)
+// so a departed participant's pair can't be reused to relay further offer/answer/candidate
+// messages.
+function clearActiveSignalingPairsFor(room, user) {
+    const prefix = `${room}\u001f`;
+    for (const key of activeSignalingPairs.keys()) {
+        if (key.startsWith(prefix) && key.split('\u001f').slice(1).includes(user)) {
+            activeSignalingPairs.delete(key);
         }
     }
 }
