@@ -272,7 +272,7 @@ definitions:
         properties:
             version:
                 type: string
-                example: '1.5.28'
+                example: '1.5.29'
             startedAt:
                 type: integer
                 format: int64

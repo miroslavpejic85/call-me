@@ -91,6 +91,11 @@ const socketConnectionsPerIp = new Map();
 // API endpoints. (key: room + sorted participant pair -> { startedAt, caller, callee, room })
 const callSessions = new Map();
 
+// Tracks call invitations relayed by the server, allowing the caller to cancel a ring before
+// signaling starts without permitting unrelated room members to send disruptive 'leave' messages
+// (key: callKey(room, caller, callee)).
+const pendingCallInvitations = new Set();
+
 // One-time consent granted by a callee to a specific caller after the callee accepted an
 // incoming call via the offerAccept -> offerCreate handshake. Required before a raw 'offer'
 // signaling message is relayed; prevents an attacker from pushing an offer straight to a
@@ -916,13 +921,23 @@ function handleConnection(socket) {
             case 'offerAccept':
             case 'offerCreate':
                 if (recipientSocket) {
+                    const invitationKey = callKey(room, socket.username, toName);
+                    if (type === 'offerCreate' && !pendingCallInvitations.has(invitationKey)) {
+                        log.warn('Rejected offerCreate without a pending invitation', {
+                            from: socket.username,
+                            to: toName,
+                        });
+                        break;
+                    }
                     // Include caller's media status when sending offer
                     const callerMediaStatus = userMediaStatus.get(roomKey(room, socket.username));
                     const offerData = {
                         ...data,
                         callerMediaStatus: callerMediaStatus,
                     };
-                    if (type === 'offerCreate') {
+                    if (type === 'offerAccept') {
+                        pendingCallInvitations.add(invitationKey);
+                    } else {
                         // This socket (the callee) just accepted the incoming call: grant
                         // the original caller (toName) one-time consent to send a real
                         // 'offer' to this callee, expiring with the ring window.
@@ -950,12 +965,14 @@ function handleConnection(socket) {
                 break;
             case 'offerDecline':
                 log.warn(`User ${name} declined your call`);
+                pendingCallInvitations.delete(callKey(room, socket.username, toName));
                 if (recipientSocket) {
                     sendMsgTo(recipientSocket, { type: 'offerDecline', from: name });
                 }
                 break;
             case 'offerBusy':
                 log.warn(`User ${name} busy in another call`);
+                pendingCallInvitations.delete(callKey(room, socket.username, toName));
                 if (recipientSocket) {
                     sendMsgTo(recipientSocket, { type: 'offerBusy', from: name });
                 }
@@ -1011,16 +1028,26 @@ function handleConnection(socket) {
         const recipientSocket = users.get(roomKey(socket.room, name));
 
         switch (type) {
-            case 'leave':
+            case 'leave': {
+                const pairKey = callKey(socket.room, socket.username, name);
+                const isActivePair = activeSignalingPairs.has(pairKey);
+                const canCancelInvitation =
+                    pendingCallInvitations.has(pairKey) && !hasActiveSignalingPairFor(socket.room, name);
+                if (!isActivePair && !canCancelInvitation) {
+                    log.warn('Rejected unauthorized leave', { from: socket.username, to: name });
+                    break;
+                }
                 if (recipientSocket !== undefined) {
                     log.debug('Leave room', socket.username);
                     sendMsgTo(recipientSocket, { type: 'leave', name: socket.username });
                 }
+                pendingCallInvitations.delete(pairKey);
                 pendingOfferConsent.delete(roomKey(socket.room, socket.username));
-                activeSignalingPairs.delete(callKey(socket.room, socket.username, name));
+                activeSignalingPairs.delete(pairKey);
                 // A call has ended: report it (with duration) if it was tracked.
                 endCall(socket.room, socket.username, name);
                 break;
+            }
             case 'offer': {
                 // Only relay a raw offer if the target explicitly consented to receive one
                 // from this sender via the offerAccept -> offerCreate handshake. This closes
@@ -1034,6 +1061,7 @@ function handleConnection(socket) {
                     break;
                 }
                 pendingOfferConsent.delete(consentKey);
+                pendingCallInvitations.delete(callKey(socket.room, socket.username, name));
                 if (recipientSocket !== undefined) {
                     // Authorize this specific pair to exchange the rest of the handshake
                     // (answer/candidate) until the call ends.
@@ -1131,6 +1159,7 @@ function handleConnection(socket) {
             users.delete(key);
             userMediaStatus.delete(key); // Clean up media status
             pendingOfferConsent.delete(key);
+            clearPairEntriesFor(pendingCallInvitations, room, name);
             clearActiveSignalingPairsFor(room, name);
             broadcastConnectedUsers(room);
             // End any active call this user was part of, then report the departure.
@@ -1296,10 +1325,24 @@ function endCallsForUser(room, user) {
 // so a departed participant's pair can't be reused to relay further offer/answer/candidate
 // messages.
 function clearActiveSignalingPairsFor(room, user) {
+    clearPairEntriesFor(activeSignalingPairs, room, user);
+}
+
+function hasActiveSignalingPairFor(room, user) {
     const prefix = `${room}\u001f`;
     for (const key of activeSignalingPairs.keys()) {
         if (key.startsWith(prefix) && key.split('\u001f').slice(1).includes(user)) {
-            activeSignalingPairs.delete(key);
+            return true;
+        }
+    }
+    return false;
+}
+
+function clearPairEntriesFor(entries, room, user) {
+    const prefix = `${room}\u001f`;
+    for (const key of entries.keys()) {
+        if (key.startsWith(prefix) && key.split('\u001f').slice(1).includes(user)) {
+            entries.delete(key);
         }
     }
 }

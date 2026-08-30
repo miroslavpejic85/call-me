@@ -1640,7 +1640,10 @@ function checkVideoAudioStatus() {
 
 // Handle leave button click
 function handleLeaveClick() {
-    sendMsg({ type: 'leave', name: socket.recipient });
+    const recipient = connectedUser || pendingUser || socket.recipient;
+    if (userSignedIn && recipient) {
+        sendMsg({ type: 'leave', name: recipient });
+    }
     handleLeave();
 }
 
@@ -2337,6 +2340,8 @@ function handleLeave(disconnect = true) {
         // Disconnect from server and reset state
         disconnectConnection();
         connectedUser = null;
+        pendingUser = null;
+        socket.recipient = null;
         lastAppliedMediaStatus = null; // Clear stored media status
         updateUsernameDisplay();
 
@@ -2369,6 +2374,8 @@ function handleLeave(disconnect = true) {
 
         // Reset state
         connectedUser = null;
+        pendingUser = null;
+        socket.recipient = null;
         lastAppliedMediaStatus = null; // Clear stored media status
         updateUsernameDisplay();
         renderUserList();
