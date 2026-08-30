@@ -32,6 +32,7 @@ const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
 const webpush = require('web-push');
 const packageJson = require('../package.json');
+const { isTrustedPushEndpoint, MAX_PUSH_SUBSCRIPTIONS_PER_USER } = require('./pushEndpoint');
 
 // Logs
 const logs = require('./logs');
@@ -539,7 +540,7 @@ app.post(`${config.apiBasePath}/pushSubscription`, express.json(), (req, res) =>
         return res.status(400).json({ error: 'Push notifications not enabled' });
     }
     const { subscription } = req.body;
-    if (!subscription || !subscription.endpoint) {
+    if (!subscription || !isTrustedPushEndpoint(subscription.endpoint)) {
         return res.status(400).json({ error: 'Invalid subscription' });
     }
     // We can't reliably map this to a username from REST alone,
@@ -800,7 +801,12 @@ function handleConnection(socket) {
         const username = socket.username;
         const key = roomKey(socket.room, username);
 
-        if (!config.pushEnabled || !username || !subscription || !subscription.endpoint) {
+        if (!config.pushEnabled || !username || !subscription) {
+            return;
+        }
+
+        if (!isTrustedPushEndpoint(subscription.endpoint)) {
+            log.warn('Rejected untrusted push subscription endpoint', { username });
             return;
         }
 
@@ -812,6 +818,9 @@ function handleConnection(socket) {
             existing[idx] = subscription;
         } else {
             existing.push(subscription);
+        }
+        if (existing.length > MAX_PUSH_SUBSCRIPTIONS_PER_USER) {
+            existing.splice(0, existing.length - MAX_PUSH_SUBSCRIPTIONS_PER_USER);
         }
         pushSubscriptions.set(key, existing);
         log.debug('Push subscription stored for', username, { devices: existing.length });
@@ -852,7 +861,16 @@ function handleConnection(socket) {
             body: 'Push notifications are working!',
         });
 
-        for (const sub of subscriptions) {
+        const validSubscriptions = subscriptions.filter((sub) => isTrustedPushEndpoint(sub.endpoint));
+        if (validSubscriptions.length !== subscriptions.length) {
+            if (validSubscriptions.length > 0) {
+                pushSubscriptions.set(roomKey(socket.room, username), validSubscriptions);
+            } else {
+                pushSubscriptions.delete(roomKey(socket.room, username));
+            }
+        }
+
+        for (const sub of validSubscriptions) {
             try {
                 await webpush.sendNotification(sub, payload);
                 log.debug('Test push sent to', username);
@@ -1199,6 +1217,10 @@ async function sendPushNotification(room, targetUsername, callerUsername) {
     const invalidIndices = [];
 
     for (let i = 0; i < subscriptions.length; i++) {
+        if (!isTrustedPushEndpoint(subscriptions[i].endpoint)) {
+            invalidIndices.push(i);
+            continue;
+        }
         try {
             await webpush.sendNotification(subscriptions[i], payload);
             anySent = true;
