@@ -1,4 +1,8 @@
-<h1 align="center">Call-me</h1>
+<h1 align="center">MiroTalk CME - Open Source Self-Hosted WebRTC Click-to-Call for Websites</h1>
+
+<h3 align="center">
+Add video calling to your website with a self-hosted WebRTC Call-Me widget for instant customer communication.
+</h3>
 
 <br/>
 
