@@ -33,6 +33,7 @@ const swaggerUi = require('swagger-ui-express');
 const webpush = require('web-push');
 const packageJson = require('../package.json');
 const { isTrustedPushEndpoint, MAX_PUSH_SUBSCRIPTIONS_PER_USER } = require('./pushEndpoint');
+const { FailedAttemptLimiter } = require('./failedAttemptLimiter');
 
 // Logs
 const logs = require('./logs');
@@ -111,6 +112,17 @@ const activeSignalingPairs = new Map();
 // Timestamp (ms) when the server process started, used for uptime reporting.
 const serverStartedAt = Date.now();
 
+function parseNonNegativeInt(value, fallback) {
+    if (value === undefined || value === '') return fallback;
+    const parsed = Number.parseInt(value, 10);
+    return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function parsePositiveInt(value, fallback) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 // Configuration settings
 const config = {
     iceServers: [],
@@ -144,12 +156,19 @@ const config = {
     rateLimitEnabled: process.env.RATE_LIMIT_ENABLED !== 'false',
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60 * 1000,
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX, 10) || 300,
+    hostPasswordRateLimitWindowMs: parsePositiveInt(process.env.HOST_PASSWORD_RATE_LIMIT_WINDOW_MS, 60 * 1000),
+    hostPasswordRateLimitMax: parseNonNegativeInt(process.env.HOST_PASSWORD_RATE_LIMIT_MAX, 5),
     socketMaxConnectionsPerIp: parseInt(process.env.SOCKET_MAX_CONNECTIONS_PER_IP, 10) || 20,
     socketRateLimitWindowMs: parseInt(process.env.SOCKET_RATE_LIMIT_WINDOW_MS, 10) || 10 * 1000,
     socketRateLimitMax: parseInt(process.env.SOCKET_RATE_LIMIT_MAX, 10) || 100,
     apiBasePath: '/api/v1',
     swaggerDocument: yaml.load(fs.readFileSync(path.join(__dirname, '/api/swagger.yaml'), 'utf8')),
 };
+
+const hostPasswordAttemptLimiter = new FailedAttemptLimiter({
+    maxAttempts: config.hostPasswordRateLimitMax,
+    windowMs: config.hostPasswordRateLimitWindowMs,
+});
 
 // If no room password is specified, a random one is generated (if room password is enabled)
 config.hostPassword = process.env.HOST_PASSWORD || (config.hostPasswordEnabled ? generatePassword() : '');
@@ -390,8 +409,19 @@ app.get('/join/', (req, res) => {
             return res.sendFile(HOME);
         }
 
-        if (config.hostPasswordEnabled && password !== config.hostPassword) {
-            return unauthorized(res);
+        if (config.hostPasswordEnabled) {
+            const ip = req.ip;
+            const retryAfterMs = hostPasswordAttemptLimiter.retryAfterMs(ip);
+            if (retryAfterMs > 0) {
+                res.set('Retry-After', String(Math.ceil(retryAfterMs / 1000)));
+                log.warn('Host password attempt limit exceeded', { ip, transport: 'direct-join' });
+                return res.status(429).json({ error: 'Too many password attempts. Please try again later.' });
+            }
+            if (password !== config.hostPassword) {
+                hostPasswordAttemptLimiter.recordFailure(ip);
+                return unauthorized(res);
+            }
+            hostPasswordAttemptLimiter.reset(ip);
         }
 
         const isValidUser = isValidUsername(user);
@@ -557,9 +587,24 @@ app.get('/api/hostPassword', (req, res) => {
 
 // Check if Host password valid
 app.post('/api/hostPasswordValidate', (req, res) => {
+    const ip = req.ip;
+    const retryAfterMs = hostPasswordAttemptLimiter.retryAfterMs(ip);
+    if (config.hostPasswordEnabled && retryAfterMs > 0) {
+        res.set('Retry-After', String(Math.ceil(retryAfterMs / 1000)));
+        log.warn('Host password attempt limit exceeded', { ip, transport: 'http' });
+        return res.status(429).json({ success: false, error: 'Too many password attempts. Please try again later.' });
+    }
+
     const { password } = req.body;
     const success = password === config.hostPassword;
-    res.json({ success: success });
+    if (config.hostPasswordEnabled) {
+        if (success) {
+            hostPasswordAttemptLimiter.reset(ip);
+        } else {
+            hostPasswordAttemptLimiter.recordFailure(ip);
+        }
+    }
+    return res.json({ success });
 });
 
 // Sentry error handler (must be registered before other error handlers)
@@ -651,15 +696,26 @@ io.use((socket, next) => {
         socket.data.authorized = true;
         return next();
     }
+    const ip = getSocketIp(socket);
+    const retryAfterMs = hostPasswordAttemptLimiter.retryAfterMs(ip);
+    if (retryAfterMs > 0) {
+        log.warn('Host password attempt limit exceeded', { ip, transport: 'socket.io' });
+        const err = new Error('Too many password attempts');
+        err.data = { code: 'TOO_MANY_ATTEMPTS', retryAfter: Math.ceil(retryAfterMs / 1000) };
+        return next(err);
+    }
+
     const auth = socket.handshake.auth || {};
     const provided = typeof auth.password === 'string' ? auth.password : '';
     if (provided && provided === config.hostPassword) {
+        hostPasswordAttemptLimiter.reset(ip);
         socket.data.authorized = true;
         return next();
     }
+    hostPasswordAttemptLimiter.recordFailure(ip);
     log.warn('Socket.IO unauthorized handshake rejected', {
         id: socket.id,
-        address: socket.handshake.address,
+        address: ip,
     });
     const err = new Error('Unauthorized');
     err.data = { code: 'UNAUTHORIZED' };
