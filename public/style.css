@@ -541,37 +541,7 @@ button {
 .meeting-fields #roomIn,
 .meeting-fields #usernameIn {
     padding-left: 48px;
-}
-
-.room-input-wrapper::after {
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--success-color);
-    border-radius: 9px;
-    content: '';
-    opacity: 0;
-    pointer-events: none;
-}
-
-.room-generated .room-input-wrapper::after {
-    animation: room-generated-ring 650ms ease-out;
-}
-
-@keyframes room-generated-ring {
-    0% {
-        opacity: 0.9;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1.035, 1.18);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .room-generated .room-input-wrapper::after {
-        animation: none;
-    }
+    text-align: left;
 }
 
 #signInBtn {
@@ -1342,13 +1312,29 @@ input {
 }
 
 /* Decoding flicker while a random value is revealed */
-.username-input-wrapper input.is-scrambling {
+#usernameIn.is-scrambling,
+#roomIn.is-scrambling {
     color: var(--primary-light);
     letter-spacing: 0.08em;
     text-shadow:
         0 0 6px rgba(96, 130, 246, 0.55),
         0 0 18px rgba(59, 130, 246, 0.35);
     animation: scramble-flicker 120ms steps(2, end) infinite;
+}
+
+#usernameIn.is-generated,
+#roomIn.is-generated {
+    color: var(--primary-light);
+    animation: generated-text-settle 480ms ease-out;
+}
+
+@keyframes generated-text-settle {
+    from {
+        text-shadow: 0 0 14px rgba(96, 165, 250, 0.65);
+    }
+    to {
+        text-shadow: none;
+    }
 }
 
 @keyframes scramble-flicker {
@@ -1359,7 +1345,10 @@ input {
 
 @media (prefers-reduced-motion: reduce) {
     .random-username-btn i.is-shuffling,
-    .username-input-wrapper input.is-scrambling {
+    #usernameIn.is-scrambling,
+    #roomIn.is-scrambling,
+    #usernameIn.is-generated,
+    #roomIn.is-generated {
         animation: none;
     }
 }

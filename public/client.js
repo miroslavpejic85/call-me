@@ -662,8 +662,10 @@ function handleListeners() {
     localVideoContainer.addEventListener('click', toggleFullScreen);
     remoteVideo.addEventListener('click', toggleFullScreen);
     usernameIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+    usernameIn.addEventListener('input', () => usernameIn.classList.remove('is-generated'));
     if (roomIn) {
         roomIn.addEventListener('keyup', (e) => handleKeyUp(e, handleSignInClick));
+        roomIn.addEventListener('input', () => roomIn.classList.remove('is-generated'));
     }
     document.getElementById('randomUsernameBtn').addEventListener('click', handleRandomUsername);
     document.getElementById('copyUsernameBtn').addEventListener('click', handleCopyUsername);
@@ -1074,9 +1076,12 @@ function handleRandomUsername() {
     const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
     const num = Math.floor(Math.random() * 1000);
+    usernameIn.classList.remove('is-generated');
     pulseGenerateBtn(document.getElementById('randomUsernameBtn'));
-    scrambleTextInto(usernameIn, `${adj}${noun}${num}`, { duration: 420 });
-    usernameIn.focus();
+    scrambleTextInto(usernameIn, `${adj}${noun}${num}`, {
+        duration: 420,
+        onComplete: () => usernameIn.classList.add('is-generated'),
+    });
 }
 
 // Copy username to clipboard
@@ -1098,16 +1103,12 @@ async function handleCopyUsername() {
 // Generate random room name
 function handleRandomRoom() {
     if (!roomIn) return;
-    roomField?.classList.remove('room-generated');
+    roomIn.classList.remove('is-generated');
     pulseGenerateBtn(document.getElementById('randomRoomBtn'));
     scrambleTextInto(roomIn, crypto.randomUUID(), {
         duration: 620,
-        onComplete: () => {
-            void roomField?.offsetWidth;
-            roomField?.classList.add('room-generated');
-        },
+        onComplete: () => roomIn.classList.add('is-generated'),
     });
-    roomIn.focus();
 }
 
 // Copy room name to clipboard
