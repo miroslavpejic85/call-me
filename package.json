@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.5.39",
+    "version": "1.5.40",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@ngrok/ngrok": "1.7.0",
-        "@sentry/node": "^10.75.2",
+        "@sentry/node": "^11.0.0",
         "axios": "^1.20.0",
         "colors": "^1.4.0",
         "cors": "^2.8.6",
@@ -38,6 +38,6 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.14",
-        "prettier": "3.9.8"
+        "prettier": "3.9.9"
     }
 }
