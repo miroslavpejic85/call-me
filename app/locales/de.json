@@ -11,6 +11,9 @@
         "microphone": "Mikrofon",
         "enterUsername": "Bitte geben Sie Ihren Anzeigenamen ein",
         "subtitle": "Sofortige Videoanrufe. Keine Anmeldung nötig.",
+        "roomFullTitle": "Der Raum ist voll",
+        "roomFullMessage": "Dieser Raum hat sein Limit von __limit__ Teilnehmenden erreicht. Versuchen Sie es später erneut oder wählen Sie einen anderen Raum.",
+        "roomFullAction": "Einen anderen Raum wählen",
         "directCallLabel": "Oder jemanden direkt anrufen",
         "directCallPlaceholder": "Namen zum Anrufen eingeben",
         "directCallButton": "Jetzt anrufen"

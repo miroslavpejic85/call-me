@@ -11,6 +11,9 @@
         "microphone": "Microphone",
         "enterUsername": "Veuillez entrer votre nom d'affichage",
         "subtitle": "Appels vidéo instantanés. Aucune inscription nécessaire.",
+        "roomFullTitle": "La salle est pleine",
+        "roomFullMessage": "Cette salle a atteint sa limite de __limit__ participants. Réessayez plus tard ou choisissez une autre salle.",
+        "roomFullAction": "Choisir une autre salle",
         "directCallLabel": "Ou appelez quelqu'un directement",
         "directCallPlaceholder": "Entrez un nom à appeler",
         "directCallButton": "Appeler maintenant"

@@ -11,6 +11,9 @@
         "microphone": "Microfone",
         "enterUsername": "Por favor, digite seu nome de exibição",
         "subtitle": "Chamadas de vídeo instantâneas. Sem cadastro.",
+        "roomFullTitle": "Sala lotada",
+        "roomFullMessage": "Esta sala atingiu o limite de __limit__ participantes. Tente novamente mais tarde ou escolha outra sala.",
+        "roomFullAction": "Escolher outra sala",
         "directCallLabel": "Ou ligue para alguém diretamente",
         "directCallPlaceholder": "Digite um nome para ligar",
         "directCallButton": "Ligar agora"

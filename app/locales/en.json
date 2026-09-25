@@ -12,6 +12,9 @@
         "enterUsername": "Please enter your display name",
         "enterRoom": "Please enter a room name",
         "subtitle": "Instant Video Calls. No signup needed.",
+        "roomFullTitle": "Room is full",
+        "roomFullMessage": "This room has reached its limit of __limit__ participants. Try again later or choose another room.",
+        "roomFullAction": "Choose another room",
         "directCallLabel": "Or call someone directly",
         "directCallPlaceholder": "Enter name to call",
         "directCallButton": "Call Now"

@@ -11,6 +11,9 @@
         "microphone": "माइक्रोવोन",
         "enterUsername": "कृपया अपना डिस्प्ले नाम दर्ज करें",
         "subtitle": "तुरंत वीडियो कॉल। साइनअप की ज़रूरत नहीं।",
+        "roomFullTitle": "रूम भर गया है",
+        "roomFullMessage": "इस रूम में __limit__ प्रतिभागियों की सीमा पूरी हो गई है। बाद में फिर कोशिश करें या कोई दूसरा रूम चुनें।",
+        "roomFullAction": "दूसरा रूम चुनें",
         "directCallLabel": "या किसी को सीधे कॉल करें",
         "directCallPlaceholder": "कॉल करने के लिए नाम दर्ज करें",
         "directCallButton": "अभी कॉल करें"

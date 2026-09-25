@@ -11,6 +11,9 @@
         "microphone": "الميكروفون",
         "enterUsername": "يرجى إدخال اسم العرض",
         "subtitle": "مكالمات فيديو فورية. لا حاجة للتسجيل.",
+        "roomFullTitle": "الغرفة ممتلئة",
+        "roomFullMessage": "وصلت هذه الغرفة إلى الحد الأقصى وهو __limit__ مشاركين. حاول مرة أخرى لاحقًا أو اختر غرفة أخرى.",
+        "roomFullAction": "اختر غرفة أخرى",
         "directCallLabel": "أو اتصل بشخص مباشرة",
         "directCallPlaceholder": "أدخل اسمًا للاتصال",
         "directCallButton": "اتصل الآن"

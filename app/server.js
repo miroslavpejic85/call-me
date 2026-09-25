@@ -147,6 +147,7 @@ const config = {
     pushVapidPrivateKey: process.env.PUSH_VAPID_PRIVATE_KEY || '',
     pushVapidEmail: process.env.PUSH_VAPID_EMAIL || 'mailto:admin@example.com',
     ringTimeout: parseInt(process.env.RINGING_TIMEOUT, 10) || 30,
+    roomMaxParticipants: parseNonNegativeInt(process.env.ROOM_MAX_PARTICIPANTS, 0),
     // Outbound webhooks for call lifecycle events (external integrations)
     webhookEnabled: process.env.WEBHOOK_ENABLED === 'true',
     webhookUrl: process.env.WEBHOOK_URL || '',
@@ -955,29 +956,41 @@ function handleConnection(socket) {
 
         const key = roomKey(room, name);
 
-        if (!users.has(key)) {
-            users.set(key, socket);
-            socket.username = name;
-            socket.room = room;
-            socket.connectedAt = Date.now();
-            socket.join(ioRoom(room));
-
-            // Initialize user media status (default: both enabled, no screen sharing)
-            userMediaStatus.set(key, {
-                video: true,
-                audio: true,
-                screenSharing: false,
-            });
-
-            log.debug('User signed in:', { name, room });
-            // Deliver iceServers (including any TURN credentials) only after
-            // successful authentication, not on the anonymous ping.
-            sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers, room });
-            broadcastConnectedUsers(room);
-            sendWebhook('user.joined', { room, user: name });
-        } else {
+        if (users.has(key)) {
             sendMsgTo(socket, { type: 'signIn', success: false, message: 'Username already in use' });
+            return;
         }
+
+        if (config.roomMaxParticipants > 0 && getConnectedUsers(room).length >= config.roomMaxParticipants) {
+            sendMsgTo(socket, {
+                type: 'signIn',
+                success: false,
+                reason: 'roomFull',
+                limit: config.roomMaxParticipants,
+                message: 'Room participant limit reached',
+            });
+            return;
+        }
+
+        users.set(key, socket);
+        socket.username = name;
+        socket.room = room;
+        socket.connectedAt = Date.now();
+        socket.join(ioRoom(room));
+
+        // Initialize user media status (default: both enabled, no screen sharing)
+        userMediaStatus.set(key, {
+            video: true,
+            audio: true,
+            screenSharing: false,
+        });
+
+        log.debug('User signed in:', { name, room });
+        // Deliver iceServers (including any TURN credentials) only after
+        // successful authentication, not on the anonymous ping.
+        sendMsgTo(socket, { type: 'signIn', success: true, iceServers: config.iceServers, room });
+        broadcastConnectedUsers(room);
+        sendWebhook('user.joined', { room, user: name });
     }
 
     // Function to handle offer request

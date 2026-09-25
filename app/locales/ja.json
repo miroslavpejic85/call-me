@@ -11,6 +11,9 @@
         "microphone": "マイク",
         "enterUsername": "表示名を入力してください",
         "subtitle": "即時ビデオ通話。登録不要。",
+        "roomFullTitle": "ルームは満員です",
+        "roomFullMessage": "このルームは参加者数の上限（__limit__人）に達しました。後でもう一度試すか、別のルームを選択してください。",
+        "roomFullAction": "別のルームを選択",
         "directCallLabel": "または直接電話をかける",
         "directCallPlaceholder": "通話相手の名前を入力",
         "directCallButton": "今すぐ電話"

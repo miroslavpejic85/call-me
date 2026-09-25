@@ -11,6 +11,9 @@
         "microphone": "麦克风",
         "enterUsername": "请输入您的显示名称",
         "subtitle": "即时视频通话。无需注册。",
+        "roomFullTitle": "房间已满",
+        "roomFullMessage": "此房间已达到 __limit__ 人的上限。请稍后再试或选择其他房间。",
+        "roomFullAction": "选择其他房间",
         "directCallLabel": "或直接呼叫某人",
         "directCallPlaceholder": "输入要呼叫的名称",
         "directCallButton": "立即通话"

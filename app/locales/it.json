@@ -11,6 +11,9 @@
         "microphone": "Microfono",
         "enterUsername": "Inserisci il tuo nome visualizzato",
         "subtitle": "Videochiamate istantanee. Nessuna registrazione necessaria.",
+        "roomFullTitle": "La stanza è piena",
+        "roomFullMessage": "Questa stanza ha raggiunto il limite di __limit__ partecipanti. Riprova più tardi o scegli un'altra stanza.",
+        "roomFullAction": "Scegli un'altra stanza",
         "directCallLabel": "Oppure chiama qualcuno direttamente",
         "directCallPlaceholder": "Inserisci un nome da chiamare",
         "directCallButton": "Chiama ora"

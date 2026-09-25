@@ -1727,8 +1727,26 @@ function handleOfferBusy(data) {
 
 // Handle sign-in response from the server
 async function handleSignIn(data) {
-    const { success, message, iceServers, room } = data;
+    const { success, message, reason, limit, iceServers, room } = data;
     if (!success) {
+        if (reason === 'roomFull') {
+            await Swal.fire({
+                heightAuto: false,
+                scrollbarPadding: false,
+                icon: 'info',
+                title: t('signIn.roomFullTitle'),
+                text: t('signIn.roomFullMessage', { limit }),
+                confirmButtonText: t('signIn.roomFullAction'),
+                allowOutsideClick: false,
+                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+            });
+            if (roomIn) {
+                roomIn.focus();
+                roomIn.select();
+            }
+            return;
+        }
         handleError(message);
         if (!message.startsWith('Invalid username')) {
             setTimeout(handleLeaveClick, 3000);

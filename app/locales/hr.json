@@ -11,6 +11,9 @@
         "microphone": "Mikrofon",
         "enterUsername": "Molimo unesite svoje ime za prikaz",
         "subtitle": "Trenutni video pozivi. Bez registracije.",
+        "roomFullTitle": "Soba je puna",
+        "roomFullMessage": "Ova je soba dosegnula ograničenje od __limit__ sudionika. Pokušajte ponovno kasnije ili odaberite drugu sobu.",
+        "roomFullAction": "Odaberi drugu sobu",
         "directCallLabel": "Ili nazovite nekoga izravno",
         "directCallPlaceholder": "Unesite ime za poziv",
         "directCallButton": "Pozovi odmah"
