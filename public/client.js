@@ -257,11 +257,19 @@ function handleConfig() {
     applyBranding(room);
 }
 
+function resolveAppConfig(room) {
+    const roomCfg = (room && app.rooms && app.rooms[room]) || {};
+    return {
+        ...app,
+        ...roomCfg,
+        roomFull: { ...app.roomFull, ...roomCfg.roomFull },
+    };
+}
+
 // Apply the global config, overlaying any per-room visual overrides for `room`.
 // Branding only (NOT security). Safe to call multiple times.
 function applyBranding(room) {
-    const roomCfg = (room && app.rooms && app.rooms[room]) || {};
-    const cfg = { ...app, ...roomCfg };
+    const cfg = resolveAppConfig(room);
     const title = cfg.title || t('appTitle');
     const name = cfg.name || t('appName');
 
@@ -1730,13 +1738,17 @@ async function handleSignIn(data) {
     const { success, message, reason, limit, iceServers, room } = data;
     if (!success) {
         if (reason === 'roomFull') {
+            const roomFull = resolveAppConfig(room || roomName).roomFull;
+            const roomFullMessage = roomFull.message
+                ? roomFull.message.replace(/__limit__/g, limit)
+                : t('signIn.roomFullMessage', { limit });
             await Swal.fire({
                 heightAuto: false,
                 scrollbarPadding: false,
                 icon: 'info',
-                title: t('signIn.roomFullTitle'),
-                text: t('signIn.roomFullMessage', { limit }),
-                confirmButtonText: t('signIn.roomFullAction'),
+                title: roomFull.title || t('signIn.roomFullTitle'),
+                text: roomFullMessage,
+                confirmButtonText: roomFull.action || t('signIn.roomFullAction'),
                 allowOutsideClick: false,
                 showClass: { popup: 'animate__animated animate__fadeInDown' },
                 hideClass: { popup: 'animate__animated animate__fadeOutUp' },
