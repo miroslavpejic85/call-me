@@ -1753,10 +1753,7 @@ async function handleSignIn(data) {
                 showClass: { popup: 'animate__animated animate__fadeInDown' },
                 hideClass: { popup: 'animate__animated animate__fadeOutUp' },
             });
-            if (roomIn) {
-                roomIn.focus();
-                roomIn.select();
-            }
+            window.location.assign(roomFull.url || '/');
             return;
         }
         handleError(message);

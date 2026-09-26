@@ -15,6 +15,7 @@ window.myAppConfig = {
     //     title: 'Room is full',
     //     message: 'This room allows up to __limit__ participants.',
     //     action: 'Choose another room',
+    //     url: '/',
     // },
 
     // Optional per-room visual overrides (branding only, NOT security).
@@ -31,6 +32,7 @@ window.myAppConfig = {
     //             title: 'All support agents are busy',
     //             message: 'This support room allows up to __limit__ participants.',
     //             action: 'Try another room',
+    //             url: 'https://example.com/support',
     //         },
     //     },
     //     Sales: {
