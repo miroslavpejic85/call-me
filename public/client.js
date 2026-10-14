@@ -2118,11 +2118,9 @@ function showIncomingCallOverlay(callerName) {
     });
     playRing();
 
-    // Below the desktop breakpoint the side panels overlay the stage and would hide Accept/Decline
-    if (!window.matchMedia('(min-width: 1025px)').matches) {
-        userSidebar?.classList.remove('active');
-        closePrivateChat();
-    }
+    // Match the outgoing flow: give the incoming call the full stage
+    userSidebar?.classList.remove('active');
+    closePrivateChat();
 
     incomingCallOverlay.style.display = 'flex';
 
