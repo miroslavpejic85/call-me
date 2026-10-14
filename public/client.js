@@ -181,6 +181,7 @@ let fileTransferStatusEl = null;
 
 // On html page loaded...
 document.addEventListener('DOMContentLoaded', async function () {
+    observeDecorativeIcons();
     userInfo = getUserInfo(userAgent);
     await initI18n();
     handleConfig();
@@ -420,6 +421,25 @@ async function promptHostPassword(maxRetries = 3, attempts = 0) {
         });
         return null;
     }
+}
+
+// Font Awesome glyphs are CSS content and would otherwise become the accessible name of icon-only buttons
+const DECORATIVE_ICON_SELECTOR = 'i[class*="fa-"]:not([aria-hidden])';
+
+function hideDecorativeIcons(root) {
+    if (root.matches?.(DECORATIVE_ICON_SELECTOR)) root.setAttribute('aria-hidden', 'true');
+    root.querySelectorAll?.(DECORATIVE_ICON_SELECTOR).forEach((icon) => icon.setAttribute('aria-hidden', 'true'));
+}
+
+function observeDecorativeIcons() {
+    hideDecorativeIcons(document.body);
+    new MutationObserver((mutations) => {
+        mutations.forEach(({ addedNodes }) => {
+            addedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) hideDecorativeIcons(node);
+            });
+        });
+    }).observe(document.body, { childList: true, subtree: true });
 }
 
 // Initialize tooltips and handle hiding them when clicked
@@ -2097,6 +2117,12 @@ function showIncomingCallOverlay(callerName) {
         },
     });
     playRing();
+
+    // Below the desktop breakpoint the side panels overlay the stage and would hide Accept/Decline
+    if (!window.matchMedia('(min-width: 1025px)').matches) {
+        userSidebar?.classList.remove('active');
+        closePrivateChat();
+    }
 
     incomingCallOverlay.style.display = 'flex';
 

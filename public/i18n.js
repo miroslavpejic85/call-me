@@ -267,6 +267,9 @@ function setElementTitle(element, translatedTitle) {
     // Keep regular title attribute in sync
     element.setAttribute('title', translatedTitle);
 
+    // Icon-only controls (e.g. badge-bearing #sidebarBtn) need the title as their accessible name
+    if (!element.querySelector('[data-i18n]')) element.setAttribute('aria-label', translatedTitle);
+
     // Bootstrap 5 stores original title here and may remove the title attribute
     element.setAttribute('data-bs-original-title', translatedTitle);
 
