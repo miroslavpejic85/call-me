@@ -7,7 +7,7 @@
  * @link    Live demo: https://cme.mirotalk.com
  * @license Open source: AGPLv3 | Commercial/closed source (official channel): https://docs.mirotalk.com/sites/cme/
  * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
- * @version 1.5.51
+ * @version 1.5.52
  */
 
 // This user agent
@@ -505,6 +505,43 @@ function handleLocalStorage() {
     joinAudioToggle.addEventListener('change', () => {
         localStorage.callMeJoinAudio = joinAudioToggle.checked;
     });
+
+    syncJoinToggleAvailability();
+}
+
+// Disable the sign-in camera/mic switches when the device is missing or permission is blocked
+async function syncJoinToggleAvailability() {
+    const toggles = [
+        { el: joinVideoToggle, permission: 'camera', kind: 'videoinput', stored: 'callMeJoinVideo' },
+        { el: joinAudioToggle, permission: 'microphone', kind: 'audioinput', stored: 'callMeJoinAudio' },
+    ];
+
+    let devices = [];
+    try {
+        devices = await navigator.mediaDevices.enumerateDevices();
+    } catch (e) {
+        console.warn('Could not enumerate devices for join toggles:', e);
+    }
+
+    for (const { el, permission, kind, stored } of toggles) {
+        const apply = (denied) => {
+            // Some browsers list no devices before permission, so only trust a non-empty list
+            const missing = devices.length > 0 && !devices.some((d) => d.kind === kind);
+            const unavailable = denied || missing;
+            el.disabled = unavailable;
+            el.checked = unavailable ? false : localStorage[stored] !== 'false';
+        };
+
+        apply(false);
+
+        try {
+            const status = await navigator.permissions.query({ name: permission });
+            apply(status.state === 'denied');
+            status.addEventListener('change', () => apply(status.state === 'denied'));
+        } catch (e) {
+            // Permissions API for camera/microphone is not supported by every browser
+        }
+    }
 }
 
 // Handle Room direct join
@@ -1313,6 +1350,7 @@ async function handleVideoClick() {
 // Toggle audio stream
 function handleAudioClick() {
     const audioTrack = stream.getAudioTracks()[0];
+    if (!audioTrack) return;
     audioTrack.enabled = !audioTrack.enabled;
     audioBtn.classList.toggle('btn-danger');
 
@@ -1364,8 +1402,10 @@ async function startScreenSharing() {
         // Store original camera stream
         originalStream = stream;
 
-        // Determine if camera was off (track stopped) before screen share
-        wasCameraOffBeforeScreenShare = videoBtn && videoBtn.classList.contains('btn-danger');
+        // Determine if camera was off (track stopped) before screen share.
+        // Without any camera track there is nothing to hide, so the screen share stays visible.
+        wasCameraOffBeforeScreenShare =
+            originalStream.getVideoTracks().length > 0 && videoBtn && videoBtn.classList.contains('btn-danger');
 
         // Get screen share stream
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -1469,8 +1509,10 @@ async function stopScreenSharing() {
         stream = originalStream;
 
         const cameraVideoTrack = stream.getVideoTracks()[0];
+        // No camera track at all (joined without camera) counts as camera off after sharing
+        const cameraOff = wasCameraOff || !cameraVideoTrack;
 
-        if (wasCameraOff) {
+        if (cameraOff) {
             // Camera was off before screen share — keep it off (track is already stopped)
             // Don't try to set .enabled on a stopped track
             console.log('Camera was off before screen share, keeping it off');
@@ -1487,16 +1529,17 @@ async function stopScreenSharing() {
         localVideo.classList.add('camera-feed'); // Apply camera feed styling
 
         // Show/hide camera off overlay based on camera state
-        showCameraOffOverlay('local', wasCameraOff);
+        showCameraOffOverlay('local', cameraOff);
+        if (cameraOff) videoBtn.classList.add('btn-danger');
 
         console.log('Local video classes after screen share stop:', localVideo.className);
-        console.log('Camera was off before screen share:', wasCameraOff);
+        console.log('Camera was off before screen share:', cameraOff);
 
         // Update peer connection if it exists
         if (thisConnection) {
             const videoSender = findVideoSender();
             if (videoSender) {
-                if (wasCameraOff) {
+                if (cameraOff) {
                     // Camera was off — send null to peer
                     await videoSender.replaceTrack(null);
                 } else if (cameraVideoTrack && cameraVideoTrack.readyState === 'live') {
@@ -1846,52 +1889,53 @@ async function handleSignIn(data) {
             }
         }
 
-        if (myStream) {
-            stream = myStream;
-            localVideo.srcObject = stream;
-            localVideo.playsInline = true;
-            localVideo.autoplay = true;
-            localVideo.muted = true;
-            localVideo.volume = 0;
-            localVideo.controls = false;
-            localVideo.classList.add('camera-feed'); // Set default styling for camera
-            localUsername.innerText = userName;
-            updateUsernameDisplay();
-            initializeConnection();
-            await handleEnumerateDevices();
-            // Initialize device settings after getting media
-            await initializeDeviceSettings();
-            handleVideoMirror(localVideo, myStream);
+        // Join even without camera/microphone (denied, missing or in use) using an empty stream
+        if (!myStream) {
+            myStream = new MediaStream();
+            if (lastError) handleMediaStreamError(lastError);
+        }
 
-            // Apply initial media toggles from sign-in card
-            if (!joinVideoToggle.checked) {
-                const vt = stream.getVideoTracks()[0];
-                if (vt) {
-                    vt.stop();
-                    vt.enabled = false;
-                }
-                videoBtn.classList.add('btn-danger');
-                showCameraOffOverlay('local', true);
+        stream = myStream;
+        localVideo.srcObject = stream;
+        localVideo.playsInline = true;
+        localVideo.autoplay = true;
+        localVideo.muted = true;
+        localVideo.volume = 0;
+        localVideo.controls = false;
+        localVideo.classList.add('camera-feed'); // Set default styling for camera
+        localUsername.innerText = userName;
+        updateUsernameDisplay();
+        initializeConnection();
+        await handleEnumerateDevices();
+        // Initialize device settings after getting media
+        await initializeDeviceSettings();
+        handleVideoMirror(localVideo, myStream);
+
+        // Apply initial media toggles from sign-in card
+        if (!joinVideoToggle.checked) {
+            const vt = stream.getVideoTracks()[0];
+            if (vt) {
+                vt.stop();
+                vt.enabled = false;
             }
-            if (!joinAudioToggle.checked) {
-                const at = stream.getAudioTracks()[0];
-                if (at) at.enabled = false;
-                audioBtn.classList.add('btn-danger');
-            }
+            videoBtn.classList.add('btn-danger');
+            showCameraOffOverlay('local', true);
+        }
+        if (!joinAudioToggle.checked) {
+            const at = stream.getAudioTracks()[0];
+            if (at) at.enabled = false;
+            audioBtn.classList.add('btn-danger');
+        }
 
-            // Update UI based on available devices
-            updateUIForAvailableDevices();
+        // Update UI based on available devices
+        updateUIForAvailableDevices();
 
-            // Send initial media status to server
-            sendMediaStatusToServer();
+        // Send initial media status to server
+        sendMediaStatusToServer();
 
-            // Show push notification toggle if server has push enabled
-            if (pushEnabled) {
-                initPushNotificationToggle();
-            }
-        } else {
-            // All attempts failed, show error only now
-            handleMediaStreamError(lastError);
+        // Show push notification toggle if server has push enabled
+        if (pushEnabled) {
+            initPushNotificationToggle();
         }
     }
 }
@@ -1942,17 +1986,11 @@ function handleMediaStreamError(error) {
         position: 'top',
         icon: 'warning',
         html: errorMessage,
-        denyButtonText: t('common.exit'),
-        showDenyButton: true,
         showConfirmButton: false,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
+        timer: 8000,
+        timerProgressBar: true,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-    }).then((result) => {
-        if (result.isDenied) {
-            window.location.href = '/';
-        }
     });
 
     sound('alert');
@@ -1987,29 +2025,30 @@ function initializeConnection() {
         console.log('Added empty sendrecv audio transceiver');
     }
 
+    // Track-based remote stream: peers joining without camera/mic send tracks without a stream (e.streams is empty)
+    const remoteStream = new MediaStream();
+
     thisConnection.ontrack = (e) => {
-        if (e.streams && e.streams[0]) {
-            const remoteStream = e.streams[0];
-
-            remoteVideo.srcObject = remoteStream;
-            remoteVideo.playsInline = true;
-            remoteVideo.autoplay = true;
-            remoteVideo.controls = false;
-
-            // Initial styling - will be updated via server status
-            remoteVideo.classList.add('camera-feed');
-            remoteVideo.classList.remove('screen-share');
-
-            startSessionTime();
-            renderUserList(); // Update UI to show hang-up button
-
-            console.log('Remote stream set to video element');
-
-            // Reapply media status after stream is connected (in case caller had screen sharing on)
-            reapplyRemoteMediaStatus();
-        } else {
-            handleError(t('errors.noStreamInOnTrack'));
+        if (!remoteStream.getTracks().includes(e.track)) {
+            remoteStream.addTrack(e.track);
         }
+
+        remoteVideo.srcObject = remoteStream;
+        remoteVideo.playsInline = true;
+        remoteVideo.autoplay = true;
+        remoteVideo.controls = false;
+
+        // Initial styling - will be updated via server status
+        remoteVideo.classList.add('camera-feed');
+        remoteVideo.classList.remove('screen-share');
+
+        startSessionTime();
+        renderUserList(); // Update UI to show hang-up button
+
+        console.log('Remote stream set to video element');
+
+        // Reapply media status after stream is connected (in case caller had screen sharing on)
+        reapplyRemoteMediaStatus();
     };
 
     thisConnection.onicecandidate = (event) => {

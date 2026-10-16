@@ -637,6 +637,16 @@ button {
     box-shadow: var(--focus-ring);
 }
 
+.media-toggle-item:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.media-toggle-item:has(input:disabled):hover {
+    background: var(--surface-input);
+    border-color: var(--border-subtle);
+}
+
 .media-toggle-icon {
     display: flex;
     align-items: center;
