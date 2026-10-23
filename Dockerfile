@@ -18,6 +18,8 @@ RUN npm ci --only=production --silent \
 
 # Copy the application code, already owned by the runtime user
 COPY --chown=node:node app app
+# Default config from the template; overridden by public/config.js if present
+COPY --chown=node:node public/config.template.js public/config.js
 COPY --chown=node:node public public
 
 # Run as the non-root "node" user (uid/gid 1000) shipped with the base image
