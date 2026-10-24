@@ -7,7 +7,7 @@
  * @link    Live demo: https://cme.mirotalk.com
  * @license Open source: AGPLv3 | Commercial/closed source (official channel): https://docs.mirotalk.com/sites/cme/
  * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
- * @version 1.5.54
+ * @version 1.5.55
  */
 
 // This user agent
@@ -1595,11 +1595,7 @@ async function swapCamera() {
 
     try {
         const newStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
-        // Stop the previous video track
-        const videoTrack = stream.getVideoTracks()[0];
-        if (videoTrack) {
-            videoTrack.stop();
-        }
+        const oldVideoTrack = stream.getVideoTracks()[0];
 
         // Update selectedDevices.videoInput so video toggle re-acquires the correct camera
         const newVideoTrack = newStream.getVideoTracks()[0];
@@ -1611,8 +1607,16 @@ async function swapCamera() {
         }
 
         // Refresh video streams
-        refreshLocalVideoStream(newStream);
+        if (!refreshLocalVideoStream(newStream)) {
+            newStream.getTracks().forEach((track) => track.stop());
+            return;
+        }
         await refreshPeerVideoStreams(newStream);
+
+        // Stop the previous video track only after the new one is in place
+        if (oldVideoTrack && oldVideoTrack !== newVideoTrack) {
+            oldVideoTrack.stop();
+        }
 
         // Check video/audio status
         checkVideoAudioStatus();
@@ -1626,7 +1630,7 @@ function refreshLocalVideoStream(newStream) {
     const videoTrack = newStream.getVideoTracks()[0];
     if (!videoTrack) {
         handleError(t('errors.noVideoTrackInStream'));
-        return;
+        return false;
     }
 
     // Preserve previous video enabled state (if the user had video disabled)
@@ -1644,13 +1648,8 @@ function refreshLocalVideoStream(newStream) {
     // Apply preserved enabled state to new track
     videoTrack.enabled = wasVideoEnabled;
 
-    const audioTrack = stream.getAudioTracks()[0];
-    if (!audioTrack) {
-        handleError(t('errors.noAudioTrackInStream'));
-        return;
-    }
-
-    const updatedStream = new MediaStream([videoTrack, audioTrack]); // Create a new stream only with valid tracks
+    // Audio is optional: users may join with camera access but no microphone
+    const updatedStream = new MediaStream([videoTrack, ...stream.getAudioTracks()]);
 
     stream = updatedStream;
     localVideo.srcObject = stream;
@@ -1669,6 +1668,7 @@ function refreshLocalVideoStream(newStream) {
     }
 
     handleVideoMirror(localVideo, stream);
+    return true;
 }
 
 // handle video mirror
