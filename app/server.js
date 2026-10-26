@@ -50,6 +50,20 @@ const PUBLIC_DIR = path.join(__dirname, '../', 'public');
 // Home page/client
 const HOME = path.join(PUBLIC_DIR, '/index.html');
 
+// App version shown in the home page footer
+const APP_VERSION = `v${packageJson.version}`;
+
+// Serve the home page with the {{APP_VERSION}} placeholder replaced
+function sendHome(res) {
+    fs.readFile(HOME, 'utf8', (err, html) => {
+        if (err) {
+            log.error('Error reading home page', err.message);
+            return res.status(500).send('Internal Server Error');
+        }
+        res.type('html').send(html.replace(/{{APP_VERSION}}/g, APP_VERSION));
+    });
+}
+
 // Privacy page
 const PRIVACY = path.join(PUBLIC_DIR, '/privacy.html');
 
@@ -330,7 +344,8 @@ const apiRateLimiter = rateLimit({
 app.use(cors(corsOptions)); // Handle cors options
 app.use(helmet.noSniff()); // Enable content type sniffing prevention
 app.use(applyEmbedHeaders); // Apply iframe embedding restrictions (CSP frame-ancestors / X-Frame-Options)
-app.use(express.static(PUBLIC_DIR)); // Serve static files from the 'public' directory
+app.get(['/', '/index.html'], (req, res) => sendHome(res)); // Serve the home page with injected app version
+app.use(express.static(PUBLIC_DIR, { index: false })); // Serve static files from the 'public' directory
 app.use(express.json()); // Api parse body data as json
 if (config.rateLimitEnabled) {
     app.use(apiRateLimiter); // Throttle requests per IP to prevent abuse
@@ -346,11 +361,6 @@ app.use((req, res, next) => {
         path: req.originalUrl,
     });
     next();
-});
-
-// Set up route to serve the main HTML file
-app.get('/', (req, res) => {
-    res.sendFile(HOME);
 });
 
 // Serve the privacy policy page
@@ -407,7 +417,7 @@ app.get('/join/', (req, res) => {
             if (!isValidUsername(room)) {
                 return notFound(res);
             }
-            return res.sendFile(HOME);
+            return sendHome(res);
         }
 
         if (config.hostPasswordEnabled) {
@@ -438,7 +448,7 @@ app.get('/join/', (req, res) => {
         }
 
         if (user || (user && call)) {
-            return res.sendFile(HOME);
+            return sendHome(res);
         }
         return notFound(res);
     }

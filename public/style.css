@@ -431,6 +431,15 @@ button {
     flex-shrink: 0;
 }
 
+.home-footer-version {
+    margin-left: 4px;
+    opacity: 0.8;
+}
+
+.home-footer-version:empty {
+    display: none;
+}
+
 .home-intro-footer a {
     display: inline-flex;
     align-items: center;
