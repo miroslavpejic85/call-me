@@ -9,6 +9,15 @@ window.myAppConfig = {
         url: 'https://docs.mirotalk.com/sites/cme',
     },
 
+    // MiroTalk apps switcher in the home top bar (hidden by default)
+    appSwitcher: {
+        show: false,
+        domain: 'mirotalk.com', // links default to https://{app}.{domain}/
+        apps: 'sfu,p2p,c2c,bro,cme,cloud', // shown apps, in order (rnd and admin are opt-in)
+        urls: {}, // optional full URL per app, e.g. { sfu: 'https://meet.example.com' }
+        docsUrl: 'https://docs.mirotalk.com/', // footer link, empty hides it
+    },
+
     // Optional room-full dialog overrides. Omitted values use the current locale.
     // Use __limit__ in the message to show the configured participant limit.
     // roomFull: {

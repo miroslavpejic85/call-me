@@ -185,6 +185,10 @@ You can explore a `widget` example that demonstrates this functionality [here](.
 
 Give each room its own name, subtitle, theme color, or GitHub visibility. Uncomment and edit the `rooms` map in your `public/config.js` (created from [`public/config.template.js`](./public/config.template.js)). Rooms without an entry keep the default look. Visual only — not a security feature.
 
+#### MiroTalk app switcher (optional)
+
+Set `appSwitcher.show: true` in your `public/config.js` to add a MiroTalk apps menu (SFU, P2P, C2C, BRO, CME, Cloud) to the home top bar. Use `domain`, `apps`, `urls`, and `docsUrl` to customize the links; it is hidden by default.
+
 </details>
 
 ---

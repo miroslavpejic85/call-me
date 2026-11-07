@@ -7,7 +7,7 @@
  * @link    Live demo: https://cme.mirotalk.com
  * @license Open source: AGPLv3 | Commercial/closed source (official channel): https://docs.mirotalk.com/sites/cme/
  * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
- * @version 1.5.56
+ * @version 1.5.57
  */
 
 // This user agent
@@ -266,6 +266,20 @@ function handleConfig() {
     // again from handleSignIn() with the room actually joined.
     const room = roomName || new URLSearchParams(window.location.search).get('room');
     applyBranding(room);
+    applyAppSwitcherConfig();
+}
+
+function applyAppSwitcherConfig() {
+    const appSwitcher = document.getElementById('appSwitcher');
+    if (!appSwitcher) return;
+    const { show, domain, apps, urls, docsUrl } = app.appSwitcher || {};
+    appSwitcher.hidden = show !== true;
+    if (show !== true) return;
+    if (typeof domain === 'string' && domain.trim()) appSwitcher.setAttribute('domain', domain.trim());
+    const appList = Array.isArray(apps) ? apps.join(',') : apps;
+    if (typeof appList === 'string' && appList.trim()) appSwitcher.setAttribute('apps', appList);
+    if (urls && typeof urls === 'object') appSwitcher.setAttribute('urls', JSON.stringify(urls));
+    if (typeof docsUrl === 'string') appSwitcher.setAttribute('docs-url', docsUrl.trim());
 }
 
 function resolveAppConfig(room) {

@@ -510,6 +510,22 @@ button {
     color: var(--text-color);
 }
 
+/* Match the app switcher to the home theme and the other top bar buttons */
+#appSwitcher {
+    --landing-surface: var(--bg-secondary);
+    --landing-text: var(--text-color);
+    --landing-text-muted: var(--text-secondary);
+    --landing-primary: var(--primary-color);
+    --landing-accent: var(--primary-light);
+    --landing-border: var(--border-subtle);
+    --landing-hover: var(--surface-control);
+    --landing-tint: var(--primary-tint);
+    --landing-trigger-size: 40px;
+    --landing-trigger-bg: transparent;
+    --landing-trigger-border: var(--border-subtle);
+    --landing-trigger-radius: var(--radius-control);
+}
+
 /* Modern Card Styles with Glassmorphism */
 .card {
     width: min(520px, 100%);
