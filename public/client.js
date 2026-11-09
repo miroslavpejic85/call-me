@@ -7,7 +7,7 @@
  * @link    Live demo: https://cme.mirotalk.com
  * @license Open source: AGPLv3 | Commercial/closed source (official channel): https://docs.mirotalk.com/sites/cme/
  * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
- * @version 1.5.57
+ * @version 1.5.58
  */
 
 // This user agent

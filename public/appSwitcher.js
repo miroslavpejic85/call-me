@@ -310,7 +310,7 @@
         <button type="button" aria-label="MiroTalk apps" title="MiroTalk apps" aria-expanded="false" aria-controls="apps">
             ${icon('M3 3h4v4H3z M10 3h4v4h-4z M17 3h4v4h-4z M3 10h4v4H3z M10 10h4v4h-4z M17 10h4v4h-4z M3 17h4v4H3z M10 17h4v4h-4z M17 17h4v4h-4z')}
         </button>
-        <section id="apps" class="panel" popover="auto" aria-labelledby="apps-title" hidden>
+        <section id="apps" class="panel" popover="manual" aria-labelledby="apps-title" hidden>
             <h2 id="apps-title">MiroTalk apps</h2>
             <p>One ecosystem. More ways to connect.</p>
             <nav aria-label="MiroTalk applications">
