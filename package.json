@@ -1,6 +1,6 @@
 {
     "name": "call-me",
-    "version": "1.5.58",
+    "version": "1.5.59",
     "description": "Your Go-To for Instant Video Calls",
     "author": "Miroslav Pejic - miroslav.pejic.85@gmail.com",
     "license": "AGPLv3",
@@ -21,14 +21,14 @@
         "generate-vapid-keys": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('PUSH_VAPID_PUBLIC_KEY='+k.publicKey);console.log('PUSH_VAPID_PRIVATE_KEY='+k.privateKey)\""
     },
     "dependencies": {
-        "@ngrok/ngrok": "1.7.0",
-        "@sentry/node": "^11.11.0",
+        "@ngrok/ngrok": "1.8.0",
+        "@sentry/node": "^11.12.0",
         "axios": "^1.21.1",
         "colors": "^1.4.0",
         "cors": "^2.8.6",
         "dotenv": "^18.0.10",
         "express": "^5.3.0",
-        "express-rate-limit": "^8.7.3",
+        "express-rate-limit": "^8.7.4",
         "helmet": "^8.3.0",
         "httpolyglot": "0.1.2",
         "js-yaml": "5.5.0",
@@ -37,6 +37,6 @@
         "web-push": "^4.0.0"
     },
     "devDependencies": {
-        "prettier": "3.9.10"
+        "prettier": "3.10.1"
     }
 }
