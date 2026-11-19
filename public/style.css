@@ -2691,6 +2691,48 @@ body:has(#userSidebar.active) #roomPage > .room-controls #sidebarBtn {
     text-align: center;
 }
 
+/* Live camera preview (full-screen settings only) */
+.settings-video-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 40vh;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #000;
+}
+
+.settings-video-preview[hidden] {
+    display: none;
+}
+
+.settings-video-preview video {
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    cursor: default;
+}
+
+.settings-video-preview video:hover {
+    filter: none;
+}
+
+.settings-video-preview-off {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    font-size: 1.6rem;
+    color: rgba(255, 255, 255, 0.58);
+    background: #000;
+}
+
+.settings-video-preview.is-off .settings-video-preview-off {
+    display: grid;
+}
+
 .setting-group {
     margin-bottom: 14px;
 }

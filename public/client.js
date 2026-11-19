@@ -7,7 +7,7 @@
  * @link    Live demo: https://cme.mirotalk.com
  * @license Open source: AGPLv3 | Commercial/closed source (official channel): https://docs.mirotalk.com/sites/cme/
  * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
- * @version 1.5.59
+ * @version 1.6.00
  */
 
 // This user agent
@@ -89,6 +89,9 @@ const screenShareBtn = document.getElementById('screenShareBtn');
 const leaveBtn = document.getElementById('leaveBtn');
 const localVideoContainer = document.getElementById('localVideoContainer');
 const localVideo = document.getElementById('localVideo');
+const settingsVideoPreview = document.getElementById('settingsVideoPreview');
+const settingsVideoPreviewVideo = document.getElementById('settingsVideoPreviewVideo');
+const settingsFullScreenQuery = window.matchMedia('(max-width: 768px)');
 const remoteAudioDisabled = document.getElementById('remoteAudioDisabled');
 const remoteVideoDisabled = document.getElementById('remoteVideoDisabled');
 const localUsername = document.getElementById('localUsername');
@@ -2391,6 +2394,7 @@ function showCameraOffOverlay(type, show) {
             }
         }
     }
+    if (type === 'local') syncSettingsVideoPreview();
 }
 
 // Play audio sound
@@ -3276,7 +3280,34 @@ function switchTab(tabName) {
             settingsContent.classList.add('active');
         }
     }
+    syncSettingsVideoPreview();
 }
+
+// Mirror my camera above the camera select when the settings tab covers the screen
+function syncSettingsVideoPreview() {
+    const stream = localVideo.srcObject;
+    const videoTrack = stream?.getVideoTracks?.()[0];
+    const fullScreen = !!userInfo?.device?.isMobile || settingsFullScreenQuery.matches;
+    const show = !!videoTrack && fullScreen && currentTab === 'settings' && userSidebar.classList.contains('active');
+    settingsVideoPreview.hidden = !show;
+    if (!show) {
+        if (settingsVideoPreviewVideo.srcObject) settingsVideoPreviewVideo.srcObject = null;
+        return;
+    }
+    if (settingsVideoPreviewVideo.srcObject !== stream) {
+        settingsVideoPreviewVideo.srcObject = stream;
+        settingsVideoPreviewVideo.play().catch(() => {});
+    }
+    settingsVideoPreviewVideo.classList.toggle('mirror', localVideo.classList.contains('mirror'));
+    settingsVideoPreviewVideo.style.objectFit = isScreenSharing ? 'contain' : 'cover';
+    settingsVideoPreview.classList.toggle('is-off', videoTrack.readyState !== 'live' || !videoTrack.enabled);
+}
+
+// Sidebar open/close and my video stream/mirror changes all reach the preview
+new MutationObserver(syncSettingsVideoPreview).observe(userSidebar, { attributes: true, attributeFilter: ['class'] });
+new MutationObserver(syncSettingsVideoPreview).observe(localVideo, { attributes: true, attributeFilter: ['class'] });
+localVideo.addEventListener('loadstart', syncSettingsVideoPreview);
+settingsFullScreenQuery.addEventListener('change', syncSettingsVideoPreview);
 
 // Update participant count badge
 function updateParticipantCount() {
